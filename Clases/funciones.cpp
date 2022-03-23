@@ -162,10 +162,35 @@ vector<char> traducir(vector<pair<char, char>> tr, vector<char> str) {
 
 // Ejercicio 10
 bool integrantes_repetidos(vector<Mail> s) {
-    return true;
+    int fecha = s[0].fecha();
+    for(int i = 0; i < s.size(); i++){
+        for(LU n: s[i].libretas()){
+            for(int j = i+1; j < s.size(); j++){
+                for(LU k: s[j].libretas()){
+                    if(n == k && s[i].libretas() != s[j].libretas() && s[i].fecha() == s[j].fecha()){
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
 }
 
 // Ejercicio 11
 map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
-    return map<set<LU>, Mail>();
+    int fechaMayor = 0;
+    map<set<LU>, Mail> res;
+    for(int i = 0; i < s.size(); i++){
+        fechaMayor = s[i].fecha();
+        Mail ultimo = s[i];
+        for(int j = i+1; j < s.size(); i++){
+            if(s[i].libretas() == s[j].libretas() && fechaMayor < s[j].fecha()){
+                fechaMayor = s[j].fecha();
+                ultimo = s[j];
+            }
+        }
+        res[s[i].libretas()] = ultimo;
+    }
+    return res;
 }
