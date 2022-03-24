@@ -179,18 +179,21 @@ bool integrantes_repetidos(vector<Mail> s) {
 
 // Ejercicio 11
 map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
-    int fechaMayor = 0;
     map<set<LU>, Mail> res;
+    int fechaMayor;
     for(int i = 0; i < s.size(); i++){
-        fechaMayor = s[i].fecha();
-        Mail ultimo = s[i];
-        for(int j = i+1; j < s.size(); i++){
-            if(s[i].libretas() == s[j].libretas() && fechaMayor < s[j].fecha()){
-                fechaMayor = s[j].fecha();
-                ultimo = s[j];
+
+        if(s[i].adjunto()){
+            res[s[i].libretas()] = s[i];
+            for(int j = i+1; j < s.size(); j++){
+                if((s[i].libretas() == s[j].libretas()) && (s[i].fecha() < s[j].fecha()) && s[j].adjunto()){
+                    int fecha = s[j].fecha();
+                    //res[s[i].libretas()] = s[j];
+                    res.at(s[i].libretas()) = s[j];
+                }
             }
         }
-        res[s[i].libretas()] = ultimo;
     }
     return res;
 }
+
