@@ -120,7 +120,7 @@ public:
     string mensaje();
     Fecha fecha();
     Horario horario();
-    bool operator<(Recordatorio r);
+    //bool operator<(Recordatorio r);
 private:
     Fecha f_;
     Horario h_;
@@ -147,9 +147,9 @@ ostream& operator<<(ostream& os, Recordatorio r){
     return os;
 }
 
-bool Recordatorio::operator<(Recordatorio r) {
+/*bool Recordatorio::operator<(Recordatorio r) {
     return this->horario() < r.horario();
-}
+}*/
 // Ejercicio 14
 
 // Clase Agenda
@@ -170,13 +170,38 @@ private:
 Agenda::Agenda(Fecha fecha_inicial) : fecha_(fecha_inicial){}
 
 void Agenda::agregar_recordatorio(Recordatorio rec) {
-    for(Recordatorio r: this->recordatorios_de_hoy()){
+    bool yaPuesto = false; //Para ver si ya agregue el recordatorio a la lista voy a usar un bool
+    if(this->rec_de_hoy_.empty()){ //si esta vacio no tengo q comparar con otro rec
+        this->rec_de_hoy_.push_back(rec); //luego, simplemente agrego rec
+    }else{
+        list<Recordatorio> res;
+        for(Recordatorio r: this->recordatorios_de_hoy()){ //uso un for range, mas facil
+            //si el horario del rec q me pasaron a la funcion es mayor menor q el rec actual de mi lista
+            //lo añado
+            if(rec.horario() < r.horario()){
+                if(yaPuesto){ //si ya lo agregue solo sigo agregando a mi lista res los demas
+                    res.push_back(r);
+                }else{ //en caso de no haberlo agregado añado el rec q me pasaron antes y luego sigo con los demas
+                    yaPuesto = true; //lo hago true asi no sigo añadiendolo a la lista antes q todos los rec
+                    res.push_back(rec);
+                    res.push_back(r);
+                }
+            }else{
+                //en caso de q solo haya uno y el horario del q me pasaron es mayor q el q tengo en la lista,
+                //simplemente agrego al ultimo el rec
+                if(this->recordatorios_de_hoy().size() == 1){
+                    res.push_back(r);
+                    res.push_back(rec);
+                }else{ //Si no es asi y el horario de rec es mayor que el de r, entonces sigo añadiendo r,
+                       // hasta encontrar uno q sea mayor a rec
+                    res.push_back(r);
+                }
 
+            }
+        }
+        this->rec_de_hoy_ = res;
     }
-    this->rec_de_hoy_.push_back(rec);
 }
-
-
 
 void Agenda::incrementar_dia() {
     this->fecha_.incrementar_dia();
@@ -194,10 +219,9 @@ ostream& operator<<(ostream& os, Agenda a){
     os << a.hoy() << endl;
     os << "=====" << endl;
     for(Recordatorio r : a.recordatorios_de_hoy()){
-        if(r.fecha() == a.hoy()){
+        if(r.fecha() == a.hoy()){ //Cuidado aca, si rompe las pelotas comparar dia con dia y mes con mes
             os << r << endl;
         }
     }
     return os;
 }
-
