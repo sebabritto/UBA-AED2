@@ -169,8 +169,9 @@ private:
 
 Agenda::Agenda(Fecha fecha_inicial) : fecha_(fecha_inicial){}
 
+
 void Agenda::agregar_recordatorio(Recordatorio rec) {
-    bool yaPuesto = false; //Para ver si ya agregue el recordatorio a la lista voy a usar un bool
+   /* bool yaPuesto = false; //Para ver si ya agregue el recordatorio a la lista voy a usar un bool
     if(this->rec_de_hoy_.empty()){ //si esta vacio no tengo q comparar con otro rec
         this->rec_de_hoy_.push_back(rec); //luego, simplemente agrego rec
     }else{
@@ -200,8 +201,18 @@ void Agenda::agregar_recordatorio(Recordatorio rec) {
             }
         }
         this->rec_de_hoy_ = res;
+    }*/
+
+   //Pruebo sort
+    this->rec_de_hoy_.push_back(rec);
+    this->rec_de_hoy_.sort([](Recordatorio & rec1, Recordatorio & rec2){
+        return rec1.horario() < rec2.horario();
     }
+    );
+
 }
+
+
 
 void Agenda::incrementar_dia() {
     this->fecha_.incrementar_dia();
@@ -225,3 +236,4 @@ ostream& operator<<(ostream& os, Agenda a){
     }
     return os;
 }
+
