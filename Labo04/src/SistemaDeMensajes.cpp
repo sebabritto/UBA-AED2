@@ -1,8 +1,14 @@
 #include "SistemaDeMensajes.h"
+
+#if /*EJ == 4 || EJ == 5*/ EJ < 6
+#include "Proxy.h"
+#elif EJ == 6
 #include "Proxy2.h"
+#endif
+
+
 // Completar...
 SistemaDeMensajes::SistemaDeMensajes() {
-
     for(int i = 0; i < 4; i++){
         _conns[i] = nullptr;
     }
@@ -43,6 +49,12 @@ SistemaDeMensajes::~SistemaDeMensajes() {
 //Ejercicio 3
 
 void SistemaDeMensajes::desregistrarJugador(int id) {
+    /*for(Proxy* c: _proxys){
+        if(c->devolverJugador() == _conns[id]){
+            delete c;
+            c = nullptr;
+        }
+    }*/
     delete _conns[id];
     _conns[id] = nullptr;
 }
@@ -51,25 +63,36 @@ void SistemaDeMensajes::registrarJugador(int id, string ip) {
     if(_conns[id] == nullptr){
         _conns[id] = new ConexionJugador(ip);
     }else{
-        for(Proxy* c: _proxys){
-            if(c){
+        ConexionJugador* temp = _conns[id];
 
+        delete _conns[id];
+
+        ConexionJugador* nuevo = new ConexionJugador(ip);
+        _conns[id] = nuevo;
+        #if EJ == 6
+        for(Proxy* c: _proxys){
+            if(c->devolverJugador() == temp){
+                delete c;
+                c = new Proxy(&nuevo);
             }
         }
-        delete _conns[id];
-        _conns[id] = new ConexionJugador(ip);
-
+        #endif
     }
 }
 
 //Ejercicio 4
 
 Proxy* SistemaDeMensajes::obtenerProxy(int id) {
-    //return new Proxy(_conns[id]);
-    //ConexionJugador** c1 = &_conns[id];
-    Proxy* p = new Proxy(&_conns[id]);
+
+    #if /*EJ == 4 || EJ == 5*/ EJ < 6
+        Proxy* p = new Proxy(_conns[id]);
+    #elif EJ == 6
+        Proxy* p = new Proxy(&_conns[id]);
+    #endif
 
     //ordenar vector o crear un metodo en Proxy2 q te devuelva el id
+    //para ordenar un vector tendria q tener al menos un identificador para la conexion jugador para poder
+    //diferenciar uno de otro, es mejor devolver el puntero conexion jugador de proxy2
     _proxys.push_back(p);
 
     return p;
