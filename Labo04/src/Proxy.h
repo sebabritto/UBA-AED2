@@ -15,7 +15,7 @@ private:
     ConexionJugador* _conn;
 
     // No puedo copiarlo
-    Proxy Proxy(const Proxy&);
+    Proxy (const Proxy&);
 };
 
 #endif
