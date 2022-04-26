@@ -5,8 +5,8 @@
 
 - Prácticas
 
-  - [Práctica 1](Practicas/Practica1)
-  - [Práctica 2](Practicas/Practica2)
+  - Práctica 1: [Enunciado](Prácticas/Práctica_1/Especificacion.pdf), [Soluciones](Prácticas/Práctica_1)
+  - Práctica 2: [Enunciado](Prácticas/Práctica_2/Complejidad.pdf), [Soluciones](Prácticas/Práctica_2)
   
 - Laboratorios
 
