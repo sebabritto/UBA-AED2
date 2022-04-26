@@ -2,7 +2,9 @@ TAD Miembro es String
 
 TAD Red Antisocial
 
-	Igualdad Observacional:	();
+	Igualdad Observacional:	(∀ r₀, r₁: red)(r₀ =obs r₁ ⇐⇒
+		(lider(r₀) = lider(r₁) ∧ expulsados(r₀) = expulsados(r₁) ∧L
+		(∀ m: miembro)(m ∈ miembros(r₀) ⇒L seguidoresTotales(r₀, m) = seguidoresTotales(r₁, m))));
 	
 	Géneros:	red
 	
