@@ -10,8 +10,8 @@
   
 - Laboratorios
 
-  - [Labo 1](Laboratorio/Labo01)
-  - [Labo 2](Laboratorio/Labo02)
-  - [Labo 3](Laboratorio/Labo03)
-  - [Labo 4](Laboratorio/Labo04)
-  - [Labo 5](Laboratorio/Labo05)
+  - [1-Uso de Clases](Laboratorio/Labo01)
+  - [2-Definición de Clases](Laboratorio/Labo02)
+  - [3-Testing](Laboratorio/Labo03)
+  - [4-Memoria Dinamica](Laboratorio/Labo04)
+  - [5-Listas](Laboratorio/Labo05)
