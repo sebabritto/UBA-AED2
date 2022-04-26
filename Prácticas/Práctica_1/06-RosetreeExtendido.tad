@@ -23,28 +23,29 @@ TAD RosetreeExtendido(α)
 										else
 												alturaHijos(hijos(r)) + 1
 										fi
-
+		//--------------------------------------------------------------------------
 		hoja?(r) ≡ vacia?(hijos(r))
-
+		//--------------------------------------------------------------------------
 		alturaHijos(s) ≡ if vacia(fin(s)) then
 												altura(prim(s))
 										 else
 												max(altura(prim(s)), alturaHijos(fin(s)))
 										 fi
-
+		//--------------------------------------------------------------------------
 		#hojas(r) ≡ if hoja?(r) then
 										1
 								else
 										#hojasHijos(hijos(r))
 								fi
-
+		
 		#hojasHijos(s) ≡ if vacia?(fin(s)) then
 												#hojas(prim(s))
 										 else
 												#hojas(prim(s)) + #hojasHijos(fin(s))
-										 fi 
+										 fi
+		//--------------------------------------------------------------------------
 		podar(r) ≡ rose(raiz(r), podarHijos(hijos(r)))
-
+		//--------------------------------------------------------------------------
 		podarHijos(s) ≡ if vacia?(s) then
 												<>
 										else
@@ -54,27 +55,27 @@ TAD RosetreeExtendido(α)
 														podar(prim(s)) • podarHijos(fin(s))
 												fi
 										fi
-
+		//--------------------------------------------------------------------------
 		ramasAcotadas(r, n) ≡ ramasAcotadasAux(ramas(r), n)
-
+		//--------------------------------------------------------------------------
 		ramas(r) ≡  if nil?(r) then
 										<>
 								else
 										agregarATodos(raiz(r), ramasAux(hijos(r)))
 								fi
-
+		//--------------------------------------------------------------------------
 		agregarATodos(s, n) ≡   if vacia?(s) then
 																<>
 														else
 																(n • prim(s)) • agregarATodos(n, fin(s))
 														fi
-
+		//--------------------------------------------------------------------------
 		ramasAux(s) ≡   if vacia?(s) then
 												<>
 										else
 												ramas(prim(s)) & ramasAux(fin(h))
 										fi
-
+		//--------------------------------------------------------------------------
 		ramasAcotadasAux(s, n) ≡if vacia?(s) then
 																s
 														else
@@ -84,13 +85,13 @@ TAD RosetreeExtendido(α)
 																		ramasAcotadasAux(fin(s), n)
 																fi
 														fi
-
+		//--------------------------------------------------------------------------
 		devolverNivel(r, n) ≡   if n = 0 then
 																<>
 														else
 																nodosEnEseNivel(ramas(n),n)
 														fi
-
+		//--------------------------------------------------------------------------
 		nodosEnEseNivel(s, n) ≡ if vacia?(s) then
 																<>
 														else
@@ -100,19 +101,19 @@ TAD RosetreeExtendido(α)
 																		nodosEnEseNivel(fin(s), n)
 																fi
 														fi
-
+		//--------------------------------------------------------------------------
 		devolverNodoEnNivel(s, n) ≡ if n = 1 then 
 																		prim(s)
 																else
 																		devolverNodoEnNivel(fin(s), n - 1)
 																fi
-
+		//--------------------------------------------------------------------------
 		ramasConRepetidos(r) ≡  if vacia?(s) then
 																<> • <>
 														else
 																quedarseConLasMasLargas(repetidos(ramas(r)))
 														fi
-												
+		//--------------------------------------------------------------------------
 		repetidos(s) ≡  if vacia?(s) then
 												<>
 										else
@@ -122,9 +123,9 @@ TAD RosetreeExtendido(α)
 														repetidos(fin(s))
 												fi
 										fi
-
+		//--------------------------------------------------------------------------
 		tieneRepetidos?(s) ≡ ¬(vacia?(s)) ∧ (cantidadDeApariciones(s, prim(s)) > 1 ∨ tieneRepetidos?(fin(s)))
-
+    //--------------------------------------------------------------------------
 		//Problema: Que pasaria si de la lista que las ramas que tienen repetidos 
 		//no existe una con la longitud del arbol? Quedaria vacia. Solucionar.
 		quedarseConLasMasLargas(s, r) ≡ if vacia?(s) then

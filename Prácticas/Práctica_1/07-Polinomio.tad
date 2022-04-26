@@ -6,5 +6,6 @@ TAD Polinomio
 		Evaluar(x, n) ≡ n 
 		Evaluar(p1 + p2, n) ≡ Evaluar(p1, n) + Evaluar(p2, n)
 		Evaluar(p1 * p2, n) ≡ Evaluar(p1, n) * Evaluar(p2, n)
+		//--------------------------------------------------------------------------
 		Raiz(p1, n) ≡ Evaluar(p, n) = 0
 	Fin TAD

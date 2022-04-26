@@ -11,19 +11,24 @@ TAD ArbolBinarioExtendido(α)
 		esSimetrico?: ab(α) -> bool
 	Axiomas:
     esHoja?(a) ≡ ¬nil?(a) ∧ (nil?(izq(a)) ∧ nil?(der(a))))
+		//--------------------------------------------------------------------------
     #hojas(a) ≡ if nil?(a) then
                     0
                 else
                     β(esHoja?(a)) + #hojas(izq(a)) + #hojas(der(a))
                 fi
+		//--------------------------------------------------------------------------
     degeneradoIzquierda(a) ≡ nil?(a) ∨ esHoja?(a) ∨ (degeneradoIzquierda(izq(a)) ∧ nil?(der(a)))
-    zigzag(a) ≡ nil?(a) ∨ esHoja?(a) ∨
+    //--------------------------------------------------------------------------
+		zigzag(a) ≡ nil?(a) ∨ esHoja?(a) ∨
                 (((¬nil?(a) ∧ nil?(a) ∧ esHoja(izq(a))) ∨ (nil?(izq(izq(a))) ∧ ¬nil?(der(izq(a))))) ∧ zigzag(izq(a))) ∨
                 ((nil?(izq(a)) ∧ ¬nil?(der(a)) ∧ esHoja?(der(a))) ∨ (¬nil?(izq(der(a))) ∧ nil?(der(der(a))) ∧ zigzag(der(a))))
-    espejo(a) ≡ if nil?(a) then
+    //--------------------------------------------------------------------------
+		espejo(a) ≡ if nil?(a) then
                     a
                 else
                     bin(espejo(der(a)), raiz(a), espejo(izq(a)))
                 fi
-    esSimetrico?(a) ≡ a = espejo(a)
+    //--------------------------------------------------------------------------
+		esSimetrico?(a) ≡ a = espejo(a)
 Fin TAD

@@ -30,23 +30,23 @@ TAD Colectivo
 		#asientos(arranca(a, sp))	≡	a
 		#asientos(avanza(c)) ≡	#asientos(c)
 		#asientos(subePasajero(pj, pr, c)) ≡ #asientos(c)
-		
+		//--------------------------------------------------------------------------
 		#pasajeros(arranca(a, sp)) ≡ 0
 		#pasajeros(avanza(c)) ≡	#pasajeros(c) - #bajanEnParada(c, siguienteParada(c))
 		#pasajeros(subePasajero(pj, pr, c)) ≡	#pasajeros(c) + 1
-		
+		//--------------------------------------------------------------------------
 		paradaActual(arranca(a, sp)) ≡	prim(sp)
 		paradaActual(avanza(c)) ≡	siguienteParada(c)
 		paradaActual(subePasajero(pj, pr, c)) ≡ paradaActual(c)
-		
+		//--------------------------------------------------------------------------
 		paradas(arranca(a, sp)) ≡ sp
 		paradas(avanza(c)) ≡ paradas(c)
 		paradas(subePasajero(pj, pr, c)) ≡	paradas(c)
-		
+		//--------------------------------------------------------------------------
 		hayAsientosDisponibles?(arranca(a, sp)) ≡	true
 		hayAsientosDisponibles?(avanza(c)) ≡	(#pasajeros(c) - #bajanEnParada(c, siguienteParada)) < #asientos(c)
 		hayAsientosDisponibles?(subePasajero(pj, pr, c)) ≡	hayAsientosDisponibles?(c) ∧ (#pasajeros(c) + 1 < asientos(c))
-		
+		//--------------------------------------------------------------------------
 		bajanEnParada(arranca(a, sp), pr) ≡	Ø
 		bajanEnParada(avanza(c), pr) ≡	if siguienteParada(c) = pr then
 																			Ø
@@ -58,12 +58,13 @@ TAD Colectivo
 																									else
 																										bajanEnParada(c, pr')
 																									fi
-		
+		//--------------------------------------------------------------------------
 		#asientosOcupados(c) ≡	if hayAsientosDisponibles?(c) then
 															#pasajeros(c)
 														else
 															#asientos(c)
 														fi
+		//--------------------------------------------------------------------------
 		siguienteParada(c) ≡ dameSiguienteParada(c, paradas(c), paradaActual(c))
 		
 		dameSiguienteParada(c, sp, pr) ≡	if prim(sp) = pr then

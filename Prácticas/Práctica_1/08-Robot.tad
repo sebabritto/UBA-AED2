@@ -4,19 +4,15 @@ TAD Robot
 		elemMaxDeUnaSec: secu(coordenada) × coordenada -> bool
 	Axiomas: //∀ c: coordenada, ∀ r: robot
 		Trayectoria(Ubicar(c)) ≡ c • <>
-		
 		Trayectoria(Arriba(r)) ≡ (π1(posicionActual) - 1, π2(posicionActual)) • Trayectoria(r)
-		
 		Trayectoria(Abajo(r)) ≡ (π1(posicionActual) + 1, π2(posicionActual)) • Trayectoria(r)
-		
 		Trayectoria(Derecha(r)) ≡ (π1(posicionActual), π2(posicionActual) + 1) • Trayectoria(r)
-		
 		Trayectoria(Izquierda(r)) ≡ (π1(posicionActual), π2(posicionActual) - 1) • Trayectoria(r)
-		
+		//--------------------------------------------------------------------------
 		posicionActual(r) ≡ prim(Trayectoria(r))
-
+		//--------------------------------------------------------------------------
 		CuantasVecesPaso(c, r) ≡ cantApariciones(Trayectoria(c), c)
-
+		//--------------------------------------------------------------------------
 		MasALaDerecha(r) ≡ MaxDerecha(Trayectoria(r))
 
 		MaxDerecha(s) ≡ if vacia?(s) then

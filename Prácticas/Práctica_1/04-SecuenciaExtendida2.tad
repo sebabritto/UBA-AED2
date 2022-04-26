@@ -8,37 +8,41 @@ TAD SecuenciaExtendida2(α)
 		sinPrefijos: conj(secu(α)) × conj(secu(α)) -> conj(secu(α))
 		esPrefijoDeOtra: secu(α) × conj(secu(α)) -> bool
   Axiomas:
-      NTN(c, s) ≡ sinPrefijos(listaSubSecuencias(c, s), c)
-      listaSubSecuencias(c, s) ≡ 	if vacia?(s) then
-		                                  Ag(c, ∅)
-		                              else
-		                                  if(esSubSecuencia(dameUno(c), s)) then
-		                                      Ag(dameUno(c), listaSubSecuencias(sinUno(c), s))
-		                                  else
-		                                      listaSubSecuencias(sinUno(c), s)
-		                                  fi
-		                              fi
-      esSubSecuencia(s, t) ≡	if vacia?(s) ∨ vacia?(t) then
-		                              vacia?(s)
-		                          else
-		                              if prim(s) = prim(t) then
-		                                  esSubSecuencia(fin(s), fin(t))
-		                              else
-		                                  esSubSecuencia(s, fin(t))
-		                              fi
-		                          fi
-      sinPrefijos(xs, ys) ≡	if vacia?(xs) then
-	                              Ag(xs, ∅)
-	                          else
-	                              if esPrefijoDeOtra(dameUno(xs), ys) then
-	                                  sinPrefijos(sinUno(xs), ys)
+  	NTN(c, s) ≡ sinPrefijos(listaSubSecuencias(c, s), c)
+    //--------------------------------------------------------------------------
+		listaSubSecuencias(c, s) ≡ 	if vacia?(s) then
+	                                  Ag(c, ∅)
 	                              else
-	                                  Ag(dameUno(c), sinPrefijos(sinUno(xs), ys))
+	                                  if(esSubSecuencia(dameUno(c), s)) then
+	                                      Ag(dameUno(c), listaSubSecuencias(sinUno(c), s))
+	                                  else
+	                                      listaSubSecuencias(sinUno(c), s)
+	                                  fi
+	                              fi
+    //--------------------------------------------------------------------------
+		esSubSecuencia(s, t) ≡	if vacia?(s) ∨ vacia?(t) then
+	                              vacia?(s)
+	                          else
+	                              if prim(s) = prim(t) then
+	                                  esSubSecuencia(fin(s), fin(t))
+	                              else
+	                                  esSubSecuencia(s, fin(t))
 	                              fi
 	                          fi
-      esPrefijoDeOtra(s, c) ≡ if vacia?(c) then
-                                  false
+    //--------------------------------------------------------------------------
+		sinPrefijos(xs, ys) ≡	if vacia?(xs) then
+                              Ag(xs, ∅)
+                          else
+                              if esPrefijoDeOtra(dameUno(xs), ys) then
+                                  sinPrefijos(sinUno(xs), ys)
                               else
-                                  (s != dameUno(c) ∧ esPrefijo(s, dameUno(c))) ∨ esPrefijoDeOtra(s, sinUno(c))
-															fi
+                                  Ag(dameUno(c), sinPrefijos(sinUno(xs), ys))
+                              fi
+                          fi
+    //--------------------------------------------------------------------------
+		esPrefijoDeOtra(s, c) ≡ if vacia?(c) then
+                                false
+                            else
+                                (s != dameUno(c) ∧ esPrefijo(s, dameUno(c))) ∨ esPrefijoDeOtra(s, sinUno(c))
+														fi
 Fin TAD

@@ -4,15 +4,18 @@ TAD Fila
 		Esperando: persona × fila -> bool
 		Posicion: persona p × fila -> nat       {Esperando(p, f)}
 		SeColo?: persona p × fila f -> bool
+		
 	Generadores:
 		AbrirVentanilla:  -> fila
 		Llegar: persona p × fila f -> fila      {¬Esperando(p,f)}
 		Atender: fila f -> fila                 {¬Vacia(f)}
 		Retirarse: persona p × fila f -> fila   {Esperando(p, f)}
 		ColarseAdelanteDe: persona p × persona q × fila f -> fila
+		
 	Otras Operaciones:
 		Longitud: fila -> nat
 		Vacia: fila -> bool
+		
 	Axiomas: ∀ p1, p2, p3: persona, ∀ f: fila
 	
 		Esperando(p1, AbrirVentanilla) ≡ false

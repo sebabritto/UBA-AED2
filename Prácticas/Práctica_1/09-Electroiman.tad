@@ -20,21 +20,21 @@ TAD Electroiman
 											fi
 		Cinta(<-(e)) ≡ <-(Cinta(e))
 		Cinta(->(e)) ≡ ->(Cinta(e))
-
+    //--------------------------------------------------------------------------
 		ImanPrendido?(Arrancar(c)) ≡ false
 		ImanPrendido?(Prender(e)) ≡ true
 		ImanPrendido?(Apagar(e)) ≡ false
 		ImanPrendido?(<-(e)) ≡ ImanPrendido?(e)
 		ImanPrendido?(->(e)) ≡ ImanPrendido?(e)
-
+		//--------------------------------------------------------------------------
 		ImanCargado?(Arrancar(c)) ≡ false
 		ImanCargado?(Prender(e)) ≡ CeldaActualOcupada?(e)
 		ImanCargado?(Apagar(e)) ≡ false
 		ImanCargado?(<-(e)) ≡ ImanCargado?(e) ∨ CeldaActualOcupada(<-(e))
 		ImanCargado?(->(e)) ≡ ImanCargado?(e) ∨ CeldaActualOcupada(->(e))
-
+		//--------------------------------------------------------------------------
 		CeldaActualOcupada?(e) ≡ CeldaActualOcupada?(cinta(e))
-
+		//--------------------------------------------------------------------------
 		#Giros<-(e) ≡ #Giros<-(Cinta(e))
 		#Giros->(e) ≡ #Giros->(Cinta(e))
 	Fin TAD
@@ -52,13 +52,13 @@ TAD Cinta
 		#Celdas(SacarElem(c)) ≡ #Celdas(c)
 		#Celdas(<-(c)) ≡ #Celdas(c)
 		#Celdas(->(c)) ≡ #Celdas(c)
-
+		//--------------------------------------------------------------------------
 		CeldaOcupada?(m, Arrancar(n)) ≡ false
 		CeldaOcupada?(m, PonerElem(c)) ≡ (m =obs CeldaActual(c)) ∨ CeldaOcupada?(m, c) 
 		CeldaOcupada?(m, SacarElem(c)) ≡ ¬(m =obs CeldaActual(c)) ∨ CeldaOcupada?(m, c) 
 		CeldaOcupada?(m, <-(c)) ≡ CeldaOcupada(m, c)
 		CeldaOcupada?(m, ->(c)) ≡ CeldaOcupada(m, c)
-
+		//--------------------------------------------------------------------------
 		CeldaActual(Arrancar(n)) ≡ 0
 		CeldaActual(PonerElem(c)) ≡ CeldaActual(c) 
 		CeldaActual(SacarElem(c)) ≡ CeldaActual(c) 
@@ -72,23 +72,23 @@ TAD Cinta
 											else
 													CeldaActual(c) + 1
 											fi
-
+		//--------------------------------------------------------------------------
 		#Giros<-(Arrancar(n)) ≡ 0
 		#Giros<-(PonerElem(c)) ≡ #Giros<-(c)
 		#Giros<-(SacarElem(c)) ≡ #Giros<-(c)
 		#Giros<-(<-(c)) ≡ #Giros<-(c) + 1 
 		#Giros<-(->(c)) ≡ #Giros<-(c) 
-
+		//--------------------------------------------------------------------------
 		#Giros->(Arrancar(n)) ≡ 0
 		#Giros->(PonerElem(c)) ≡ #Giros->(c)
 		#Giros->(SacarElem(c)) ≡ #Giros->(c)
 		#Giros->(<-(c)) ≡ #Giros->(c)
 		#Giros->(->(c)) ≡ #Giros->(c) + 1
-
+		//--------------------------------------------------------------------------
 		CeldaActualOcupada?(c) ≡ CeldaOcupada?(CeldaActual(c),c)
-
+		//--------------------------------------------------------------------------
 		#Elem(c) ≡ #ElemAux(#Celdas(c)-1,c)
-
+		
 		#ElemAux(n, c) ≡ β(CeldaOcupada?(n, c)) +  (if n > 0 then
 																									#ElemAux(n-1, c)
 																							else

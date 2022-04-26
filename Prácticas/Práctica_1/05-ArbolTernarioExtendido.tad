@@ -13,6 +13,7 @@ TAD ArbolTernarioExtendido(α)
 								else
 										1 + max(altura(izq(a)), altura(med(a)), altura(der(a)))
 								fi
+		//--------------------------------------------------------------------------
 		nivelNormal(a, k) ≡ if k <= altura(a) then
 														if k = 1 then
 																¬nil?(a) y ¬nil?(izq(a)) ∧ ¬nil?(mid(a)) ∧ ¬nil(der(a))
@@ -24,8 +25,11 @@ TAD ArbolTernarioExtendido(α)
 												else 
 														false
 												fi
+		//--------------------------------------------------------------------------
 		acotado(a,k) ≡ (k = 0 ∨ nil?(a)) ∨ (1 <= k ∧ k <= 3 ∧ acotadoPorNivel(a, k, altura(a)-1))
+		//--------------------------------------------------------------------------
 		acotadoPorNivel(a,k,n) ≡ (n = 0) ∨ (contarNodosEnNivel(a, n) <= k ∧ acotadoPorNivel(a, k, n-1))
+		//--------------------------------------------------------------------------
 		contarNodosEnNivel(a, n) ≡  if n = 0 ∨ nil?(a) then
 																		β(¬nil?(a))
 																else
