@@ -10,8 +10,8 @@
   
 - Laboratorios
 
-  - [Labo 1](Laboratorios/Labo01)
-  - [Labo 2](Laboratorios/Labo02)
-  - [Labo 3](Laboratorios/Labo03)
-  - [Labo 4](Laboratorios/Labo04)
-  - [Labo 5](Laboratorios/Labo05)
+  - [Labo 1](Laboratorio/Labo01)
+  - [Labo 2](Laboratorio/Labo02)
+  - [Labo 3](Laboratorio/Labo03)
+  - [Labo 4](Laboratorio/Labo04)
+  - [Labo 5](Laboratorio/Labo05)
