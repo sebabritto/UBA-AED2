@@ -5,7 +5,7 @@
 
 - Prácticas
 
-  - [Practica 1](Practicas/Practica1)
+  - [Práctica 1](Practicas/Practica1)
   - [Práctica 2](Practicas/Practica2)
   
 - Laboratorios
