@@ -1,0 +1,24 @@
+TAD ConjuntoExtendido(α)
+	extiende
+	    Conjunto(α)
+	Otras Operaciones:
+		partesDe: conj(α) -> conj(conj(α))
+		agregarATodos: α × conj(conj(α))
+		combinacionesDeK: conj(α) × nat -> conj(conj(α)
+	Axiomas:
+    partesDe(c) ≡	if vacio?(c) then
+	                    Ag(c, ∅)
+	                else
+	                    agregarATodos(dameUno(c), partesDe(sinUno(c))) U partesDe(sinUno(c))
+	                fi
+    agregarATodos(n, cs) ≡	if vacio?(cs) then 
+		                            ∅
+		                        else
+		                            Ag(Ag(n, dameUno(cs)), agregarATodos(n, sinUno(cs)))
+		                        fi
+    combinacionesDeK(c, n) ≡	if vacio?(c) ∨ k = 0 ∨ k > #c then
+			                            Ag(∅, ∅)
+			                        else
+			                            combinacionesDeK(sinUno(c), k) U agregarATodos(dameUno(c), combinacionesDeK(sinUno(c), k-1))
+			                        fi
+Fin TAD

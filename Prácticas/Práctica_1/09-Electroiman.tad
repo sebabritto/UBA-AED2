@@ -1,0 +1,98 @@
+TAD Electroiman
+	Igualdad Observacional:	(∀ e1, e2: electroiman)(e1 =obs e2 ⟺ 
+		(ImanPrendido?(e1) =obs ImanPrendido?(e2) ∧ Cinta(e1) =obs Cinta(e2) ∧L 
+		(ImanPrendido?(e1) ⟹ ImanCargado?(e1) = ImanCargado?(e2))));
+	Géneros:	electroiman
+	
+	Exporta: observadores, generadores, otras operaciones
+	
+	Axiomas://∀ e: electroiman, ∀ c: cinta
+		Cinta(Arrancar(c)) ≡ c
+		Cinta(Prender(e)) ≡ if CeldaActualOcupada?(e) then
+													SacarElem(Cinta(e))
+											else
+													Cinta(e)
+											fi
+		Cinta(Apagar(e)) ≡  if ImanCargado?(e) then
+													PonerElem(Cinta(e))
+											else
+													Cinta(e)
+											fi
+		Cinta(<-(e)) ≡ <-(Cinta(e))
+		Cinta(->(e)) ≡ ->(Cinta(e))
+
+		ImanPrendido?(Arrancar(c)) ≡ false
+		ImanPrendido?(Prender(e)) ≡ true
+		ImanPrendido?(Apagar(e)) ≡ false
+		ImanPrendido?(<-(e)) ≡ ImanPrendido?(e)
+		ImanPrendido?(->(e)) ≡ ImanPrendido?(e)
+
+		ImanCargado?(Arrancar(c)) ≡ false
+		ImanCargado?(Prender(e)) ≡ CeldaActualOcupada?(e)
+		ImanCargado?(Apagar(e)) ≡ false
+		ImanCargado?(<-(e)) ≡ ImanCargado?(e) ∨ CeldaActualOcupada(<-(e))
+		ImanCargado?(->(e)) ≡ ImanCargado?(e) ∨ CeldaActualOcupada(->(e))
+
+		CeldaActualOcupada?(e) ≡ CeldaActualOcupada?(cinta(e))
+
+		#Giros<-(e) ≡ #Giros<-(Cinta(e))
+		#Giros->(e) ≡ #Giros->(Cinta(e))
+	Fin TAD
+	
+TAD Cinta
+	Igualdad Observacional:	(∀ c1, c2: cinta)(c1 =obs c2 ⟺ 
+		(#Celdas(c1) =obs #Celdas(c2) ∧ CeldaActual(c1) =obs CeldaActual(c2) ∧
+		#Giros<-(c1) =obs #Giros<-(c2) ∧ #Giros->(c1) =obs #Giros->(c2) ∧L
+		(∀ n: nat)(n < #Celdas(c1) ⟹L CeldaOcupada?(n, c1) =obs CeldaOcupada?(c2))
+    ));
+	Géneros:	cinta
+	Axiomas: ∀ n, m: na; ∀ c: cinta
+		#Celdas(Arrancar(n)) ≡ n
+		#Celdas(PonerElem(c)) ≡ #Celdas(c)
+		#Celdas(SacarElem(c)) ≡ #Celdas(c)
+		#Celdas(<-(c)) ≡ #Celdas(c)
+		#Celdas(->(c)) ≡ #Celdas(c)
+
+		CeldaOcupada?(m, Arrancar(n)) ≡ false
+		CeldaOcupada?(m, PonerElem(c)) ≡ (m =obs CeldaActual(c)) ∨ CeldaOcupada?(m, c) 
+		CeldaOcupada?(m, SacarElem(c)) ≡ ¬(m =obs CeldaActual(c)) ∨ CeldaOcupada?(m, c) 
+		CeldaOcupada?(m, <-(c)) ≡ CeldaOcupada(m, c)
+		CeldaOcupada?(m, ->(c)) ≡ CeldaOcupada(m, c)
+
+		CeldaActual(Arrancar(n)) ≡ 0
+		CeldaActual(PonerElem(c)) ≡ CeldaActual(c) 
+		CeldaActual(SacarElem(c)) ≡ CeldaActual(c) 
+		CeldaActual(<-(c)) ≡    If CeldaActual(c) = 0 then
+															#Celdas(c) - 1
+													else
+															CeldaActual(c) - 1
+													fi
+		CeldaActual(->(c)) ≡if CeldaActual(c) = #Celdas(c) - 1 then
+													0
+											else
+													CeldaActual(c) + 1
+											fi
+
+		#Giros<-(Arrancar(n)) ≡ 0
+		#Giros<-(PonerElem(c)) ≡ #Giros<-(c)
+		#Giros<-(SacarElem(c)) ≡ #Giros<-(c)
+		#Giros<-(<-(c)) ≡ #Giros<-(c) + 1 
+		#Giros<-(->(c)) ≡ #Giros<-(c) 
+
+		#Giros->(Arrancar(n)) ≡ 0
+		#Giros->(PonerElem(c)) ≡ #Giros->(c)
+		#Giros->(SacarElem(c)) ≡ #Giros->(c)
+		#Giros->(<-(c)) ≡ #Giros->(c)
+		#Giros->(->(c)) ≡ #Giros->(c) + 1
+
+		CeldaActualOcupada?(c) ≡ CeldaOcupada?(CeldaActual(c),c)
+
+		#Elem(c) ≡ #ElemAux(#Celdas(c)-1,c)
+
+		#ElemAux(n, c) ≡ β(CeldaOcupada?(n, c)) +  (if n > 0 then
+																									#ElemAux(n-1, c)
+																							else
+																									0
+																							fi)
+		
+Fin TAD

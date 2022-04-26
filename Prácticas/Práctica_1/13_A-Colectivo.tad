@@ -1,0 +1,74 @@
+TAD Colectivo
+	Igualdad Observacional:	(∀ c1, c2: colectivo)(c1 =obs c2 ⇐⇒ 
+		(#asientos(c1) = #asientos(c2) ∧ #pasajeros(c1) = #pasajeros(c2) ∧ paradaActual(c1) = paradaActual(c2) ∧
+		paradas(c1) = paradas(c2) ∧ hayAsientosDisponibles?(c1) = hayAsientosDisponibles?(c2) ∧L
+		(∀p: parada)(está?(p, paradas(c)) ⇒L	bajanEnParada(c1, p) = bajanEnParada(c2, p)))
+		);
+	Géneros:	colectivo
+	Exporta: observadores, generadores, otras operaciones
+	Usa: pasajero, parada
+	Observadores Básicos:
+		#asientos: colectivo -> nat
+		#pasajeros: colectivo -> nat
+		paradaActual: colectivo -> parada
+		paradas: colectivo -> secu(parada)
+		hayAsientosDisponibles?: colectivo -> bool
+		bajanEnParada: colectivo c × parada p -> conj(pasajero)	{está?(p, paradas(c))}
+		
+	Generadores:
+		arranca: nat asientos × secu(parada) sp -> colectivo {asientos > 1 ∧ long(sp) > 0}
+		avanza: colectivo c -> colectivo	{!vacía?(paradasRestantes(c))}
+		subePasajero: pasajero × parada p × colectivo c -> colectivo	{esta?(p, paradasRestantes(c))}
+		
+	Otras Operaciones:
+		#asientosOcupados: colectivo -> nat
+		siguienteParada: colectivo -> parada
+		paradasRestantes: colectivo -> secu(parada)
+		dameSiguienteParada: colectivo c × secu(parada) s × parada p -> parada {está?(p, paradas(c))}
+		
+	Axiomas: ∀ a: nat; ∀ pr, pr': parada; ∀ pj: pasajero; ∀ c: colectivo; ∀ sp: secu(parada)
+		#asientos(arranca(a, sp))	≡	a
+		#asientos(avanza(c)) ≡	#asientos(c)
+		#asientos(subePasajero(pj, pr, c)) ≡ #asientos(c)
+		
+		#pasajeros(arranca(a, sp)) ≡ 0
+		#pasajeros(avanza(c)) ≡	#pasajeros(c) - #bajanEnParada(c, siguienteParada(c))
+		#pasajeros(subePasajero(pj, pr, c)) ≡	#pasajeros(c) + 1
+		
+		paradaActual(arranca(a, sp)) ≡	prim(sp)
+		paradaActual(avanza(c)) ≡	siguienteParada(c)
+		paradaActual(subePasajero(pj, pr, c)) ≡ paradaActual(c)
+		
+		paradas(arranca(a, sp)) ≡ sp
+		paradas(avanza(c)) ≡ paradas(c)
+		paradas(subePasajero(pj, pr, c)) ≡	paradas(c)
+		
+		hayAsientosDisponibles?(arranca(a, sp)) ≡	true
+		hayAsientosDisponibles?(avanza(c)) ≡	(#pasajeros(c) - #bajanEnParada(c, siguienteParada)) < #asientos(c)
+		hayAsientosDisponibles?(subePasajero(pj, pr, c)) ≡	hayAsientosDisponibles?(c) ∧ (#pasajeros(c) + 1 < asientos(c))
+		
+		bajanEnParada(arranca(a, sp), pr) ≡	Ø
+		bajanEnParada(avanza(c), pr) ≡	if siguienteParada(c) = pr then
+																			Ø
+																		else
+																			bajanEnParada(c, pr)
+																		fi
+		bajanEnParada(subePasajero(pj, pr, c), pr') ≡ if pr = pr' then
+																										Ag(p1, bajanEnParada(c, pr'))
+																									else
+																										bajanEnParada(c, pr')
+																									fi
+		
+		#asientosOcupados(c) ≡	if hayAsientosDisponibles?(c) then
+															#pasajeros(c)
+														else
+															#asientos(c)
+														fi
+		siguienteParada(c) ≡ dameSiguienteParada(c, paradas(c), paradaActual(c))
+		
+		dameSiguienteParada(c, sp, pr) ≡	if prim(sp) = pr then
+																				prim(fin(sp))
+																			else
+																				dameSiguienteParada(c, fin(sp), pr)
+																			fi
+Fin TAD

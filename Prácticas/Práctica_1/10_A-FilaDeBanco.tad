@@ -1,0 +1,33 @@
+TAD Fila
+	Géneros:	fila
+	Generadores:
+		AbrirVentanilla:  -> fila
+		Llegar: persona p × fila f -> fila
+		Atender: fila f -> fila
+	Observadores Básicos:
+		Esperando: persona × fila -> bool
+		Posicion: persona p × fila -> nat
+	Otras Operaciones:
+		Longitud: fila -> nat
+		Vacia: fila -> bool
+	Axiomas: ∀ p1, p2: persona, ∀ f: fila
+		Esperando(p1, AbrirVentanilla) ≡ false
+		Esperando(p1, Llegar(p2, f)) ≡ (p =obs p2) ∨ (Esperando(p1, f))
+		Esperando(p1, Atender(f)) ≡ (Posicion(p1, f) = 1) ∨ Esperando(p1, f)
+
+		Posicion(p1, AbrirVentanilla) ≡ No cumple la restriccion, no se axiomatiza
+		Posicion(p1, Llegar(p2, f)) ≡   if p1 = p2 then
+																				Longitud(f)
+																		else
+																				Posicion(p1, f)
+																		fi
+		Posicion(p1, Atender(f)) ≡ Posicion(p,f) - 1
+
+		Longitud(AbrirVentanilla) ≡ 0
+		Longitud(Llegar(p1, f)) ≡ Longitud(f) + 1
+		Longitud(Atender(f)) ≡ Longitud(f) - 1
+
+		Vacia(AbrirVentanilla) ≡ true
+		Vacia(Llegar(p1, f)) ≡ false
+		Vacia(Atender(p1, f)) ≡ Longitud(f) = 1
+	Fin TAD

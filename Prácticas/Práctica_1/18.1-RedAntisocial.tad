@@ -1,0 +1,93 @@
+TAD Miembro es String
+
+TAD Red Antisocial
+
+	Igualdad Observacional:	();
+	
+	Géneros:	red
+	
+	Exporta: observadores, generadores, otras operaciones
+	
+	Usa:	Miembro, Bool, Nat
+	
+	Observadores Básicos:
+		lider: red -> miembro
+		seguidores: red r × miembro m -> conj(miembro) 		{m ∈ miembros(r)}
+		expulsados: red -> conj(miembro)
+		
+	Generadores:
+		crear:	miembro -> red
+		convocar: red r × miembro m × miembro m' -> red				  {m ∈ miembros(r) ∧ m' ∉ {miembros(r) U expulsados(r)}}
+		enjuiciar: red r × miembro m × conj(miembro) cm -> red	{m ∈ miembros(r) ∧ cm ⊆ miembros(r) ∧ #cm = 3}
+		absolver: red r × miembro m -> red											{m ∈ expulsados(r)}
+		
+	Otras Operaciones:
+		miembros: red -> conj(miembro)
+		#seguidores: red × miembro -> nat
+		//Auxiliares
+		esSeguidor?: red × conj(miembro) × miembro -> bool
+		cuantosSonSeguidores?: conj(miembro) cm × conj(miembro) cm' -> nat	
+		devolverSeguidoresTotales: red r × conj(miembro) cm -> conj(miembro) {cm ⊂ miembros(r)}
+		
+	Axiomas: ∀ r: red, ∀ m₀, m₁, m₂: miembro, ∀ cm, cm': conj(miembro)
+		lider(crear(m₀)) 						≡	m₀
+		lider(convocar(r, m₀, m₁))	≡	lider(r)
+		lider(enjuiciar(r, m₀, cm))	≡ lider(r)
+		lider(absolver(r,  m₀)) 		≡	lider(r)
+		//--------------------------------------------------------------------------
+		seguidores(crear(m₀), m₁) 						≡	Ø
+		seguidores(convocar(r, m₀, m₁), m₂) 	≡	if m₀ = m₂ then
+																											Ag(m₁, seguidores(r, m₀))
+																										else
+																											seguidores(r, m₂)
+																										fi
+		seguidores(enjuiciar(r, m₀, cm), m₁) ≡	if m₀ = m₁ ∧ cuantosSonSeguidores?(cm, seguidores(r, m₁)) < 2 then
+																											Ø
+																										else
+																											seguidores(r, m₁)
+																										fi
+		seguidores(absolver(r, m₀), m₁) 			≡	seguidores(r, m₁)
+		//--------------------------------------------------------------------------
+		expulsados(crear(m₀)) 						≡ Ø
+		expulsados(convocar(r, m₀, m₁)) 	≡	expulsados(r)
+		expulsados(enjuiciar(r, m₀, cm)) 	≡	if cuantosSonSeguidores?(cm, seguidores(r, m₁)) < 2 then
+																					expulsados(r) U Ag(m₀, devolverSeguidoresTotales(r, seguidores(r, m₀)))
+																				else
+																					expulsados(r)
+																				fi
+		expulsados(absolver(r,  m₀)) 			≡	expulsados(r) -  {m₀}
+		
+		//--------------------------------------------------------------------------
+		miembros(r) ≡ Ag(lider(r), devolverSeguidoresTotales(r, seguidores(r, lider(r))))
+		//--------------------------------------------------------------------------
+		#seguidores(r, m) ≡ #(devolverSeguidoresTotales(r, seguidores(m)))
+		//--------------------------------------------------------------------------
+		//En base al generador enjuiciar, le pasas los miembros del tribunal, junto con
+		//los seguidores del miembro a enjuiciar, luego te devuelve la cantidad de miembros
+		//en el tribunal que son seguidores del miembro a enjuiciar
+		cuantosSonSeguidores?(cm, cm') ≡ β(esSeguidor?(cm', dameUno(cm))) + 
+																				if Ø?(sinUno(cm)) then
+																					0
+																				else
+																					β(cuantosSonSeguidores?(sinUno(cm), cm'))
+																				fi
+																		
+		//Recorre el conjunto de miembros que le pasaste, al igual que sus seguidores
+		//y se fija si el miembro que pasaste como parametro pertenece a alguno.
+		esSeguidor?(r, cm, m) ≡	if Ø?(cm) then
+														false
+														else
+																m ∈ cm ∨ (esSeguidor?(seguidores(r, prim(cm)), m) ∨ esSeguidor?(fin(cm), m))
+														fi
+		//--------------------------------------------------------------------------
+		devolverSeguidoresTotales(r, cm) ≡ 	if Ø?(cm) then
+																					Ø
+																				else
+																					cm U devolverSeguidoresTotales(r, seguidores(r, prim(cm))) U devolverSeguidoresTotales(r, fin(cm))
+																				fi
+	
+													
+		//--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+
+Fin TAD
