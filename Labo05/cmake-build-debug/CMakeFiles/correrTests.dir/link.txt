@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread -std=gnu++11 -ggdb3 -g -g -rdynamic CMakeFiles/correrTests.dir/tests/lista_tests.cpp.o -o correrTests  libgtest.a libgtest_main.a 

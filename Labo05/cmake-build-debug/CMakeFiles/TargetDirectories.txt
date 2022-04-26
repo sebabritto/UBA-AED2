@@ -1,0 +1,6 @@
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/correrValgrind.dir
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/correrTests.dir
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/gtest_main.dir
+/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/CMakeFiles/gtest.dir

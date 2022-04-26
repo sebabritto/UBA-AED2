@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="taller_listas_enlazadas"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="correrValgrind">
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 correrValgrind"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="correrTests">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/correrTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 correrTests"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="correrTests/fast">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/correrTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 correrTests/fast"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main/fast">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/libgtest_main.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/libgtest.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest/fast">
+				<Option output="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug/libgtest.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/10"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/10"/>
+					<Add directory="/usr/include/c++/10/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/10/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j4 -f &quot;/mnt/c/Users/sebas/CLionProjects/Algo\ 2/Labo05/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/src/Lista.h">
+			<Option target="correrTests"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/src/Lista.hpp">
+			<Option target="correrTests"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/tests/gtest-1.8.1/gtest-all.cc">
+			<Option target="gtest"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/tests/gtest-1.8.1/gtest_main.cc">
+			<Option target="gtest_main"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/tests/lista_tests.cpp">
+			<Option target="correrTests"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/sebas/CLionProjects/Algo 2/Labo05/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
