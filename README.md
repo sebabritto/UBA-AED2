@@ -1,6 +1,17 @@
 # Algoritmos y Estructuras de Datos 2
-##Indice
 
--Practicas
-  -[Practica 1](Practicas/Practica 1)
-  -[Practica 2](Practicas/Practica 2)
+## Índice
+
+
+- Prácticas
+
+  - [Practica 1](Practicas/Practica1)
+  - [Práctica 2](Practicas/Practica2)
+  
+- Laboratorios
+
+  - [Labo 1](Laboratorios/Labo01)
+  - [Labo 2](Laboratorios/Labo02)
+  - [Labo 3](Laboratorios/Labo03)
+  - [Labo 4](Laboratorios/Labo04)
+  - [Labo 5](Laboratorios/Labo05)
