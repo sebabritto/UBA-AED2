@@ -87,9 +87,4 @@ TAD Red Antisocial
 																				else
 																					cm U devolverSeguidoresTotales(r, seguidores(r, prim(cm))) U devolverSeguidoresTotales(r, fin(cm))
 																				fi
-	
-													
-		//--------------------------------------------------------------------------
-		//--------------------------------------------------------------------------
-
 Fin TAD
