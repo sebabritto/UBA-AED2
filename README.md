@@ -15,3 +15,4 @@
   - [3-Testing](Laboratorio/Labo03)
   - [4-Memoria Dinamica](Laboratorio/Labo04)
   - [5-Listas](Laboratorio/Labo05)
+  - [6-Iteradores y Algoritmos Genericos](Laboratorio/Labo06)
