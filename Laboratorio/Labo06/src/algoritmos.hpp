@@ -47,13 +47,26 @@ template<class Iterator>
 typename Iterator::value_type minimoIter(const Iterator& desde, const Iterator& hasta){
     auto it1 = desde;
     auto min = it1;
-    while(it1 != hasta){
+    //auto ir = it1;
+    //ir++;
+    /*while(it1 != hasta){
         auto it2 = desde;
         while(it2 != hasta){
             if(*min > *it2){
                 min = it2;
             }
             ++it2;
+        }
+        ++it1;
+    }*/
+    while(it1 != hasta){
+        auto ir = it1;
+        ir++;
+        while(ir != hasta){
+            if(*min > *ir){
+                min = ir;
+            }
+            ++ir;
         }
         ++it1;
     }
@@ -149,6 +162,7 @@ void merge(const Contenedor& c1, const Contenedor& c2, Contenedor &res){
 }
 
 /////////////////////////////////EJERCICIO_8/////////////////////////////////
+#if EJ == 8
 template<class Contenedor>
 typename Contenedor::value_type minimo(const Contenedor& c){
 
@@ -166,5 +180,5 @@ typename Contenedor::value_type minimo(const Contenedor& c){
     }
     return *min;
 }
-
+#endif
 #endif //ALGO2_LABO_CLASE5_ALGORITMOS_H
