@@ -5,7 +5,7 @@ TAD ConjuntoExtendido(α)
 		partesDe: conj(α) -> conj(conj(α))
 		agregarATodos: α × conj(conj(α))
 		combinacionesDeK: conj(α) × nat -> conj(conj(α)
-	Axiomas:
+	Axiomas: ∀ c: conj(α), ∀ n: α, ∀ k: nat
     partesDe(c) ≡	if vacio?(c) then
 	                    Ag(c, ∅)
 	                else
@@ -18,7 +18,7 @@ TAD ConjuntoExtendido(α)
 		                            Ag(Ag(n, dameUno(cs)), agregarATodos(n, sinUno(cs)))
 		                        fi
     //--------------------------------------------------------------------------
-		combinacionesDeK(c, n) ≡	if vacio?(c) ∨ k = 0 ∨ k > #c then
+		combinacionesDeK(c, k) ≡	if vacio?(c) ∨ k = 0 ∨ k > #c then
 			                            Ag(∅, ∅)
 			                        else
 			                            combinacionesDeK(sinUno(c), k) U agregarATodos(dameUno(c), combinacionesDeK(sinUno(c), k-1))

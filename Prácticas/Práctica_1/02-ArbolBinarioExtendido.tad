@@ -9,7 +9,7 @@ TAD ArbolBinarioExtendido(α)
 		ultimoNivelCompleto: ab(α) -> nat
 		espejo: ab(α) -> ab(α)
 		esSimetrico?: ab(α) -> bool
-	Axiomas:
+	Axiomas: ∀ a: ab(α)
     esHoja?(a) ≡ ¬nil?(a) ∧ (nil?(izq(a)) ∧ nil?(der(a))))
 		//--------------------------------------------------------------------------
     #hojas(a) ≡ if nil?(a) then

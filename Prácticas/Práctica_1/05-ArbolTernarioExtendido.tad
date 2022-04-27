@@ -7,7 +7,7 @@ TAD ArbolTernarioExtendido(α)
 		acotado?: at(α) × nat → bool
 		acotadoPorNivel: at(α) × nat × nat → bool
 		contarNodosEnNivel: at(α) × nat → nat
-	Axiomas:
+	Axiomas: ∀ a: at(α), ∀ k: nat
 		altura(a) ≡ if nil?(a) then
 										0
 								else

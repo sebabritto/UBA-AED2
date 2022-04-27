@@ -13,7 +13,7 @@ TAD SecuenciaExtendida(α)
 		esPermutacion?: secu(α) × secu(α) -> bool
 		permutacionAux: secu(α) × secu(α) × secu(α) -> bool
 		combinar: secu(α) s × secu(α) t -> secu(α)  {estaOrdenada?(s) ∧ estaOrdenada?(t)}
-	Axiomas: 
+	Axiomas: ∀ s, t, c: secu(α), ∀ e: α
 		duplicar(s) ≡	if vacia?(s) then 
                   			<> 
                   		else 

@@ -17,7 +17,7 @@ TAD RosetreeExtendido(α)
 		devolverNivel: rosetree(α) x nat -> secu(α)
 		nodosEnEseNivel: secu(secu(α)) x nat -> secu(α)
 		devolverNodoEnNivel: secu(α) x nat -> α
-	Axiomas:
+	Axiomas: ∀ r: rosetree, ∀ s: secu(rosetree(α))
 		altura(r) ≡ if hoja?(r) then
 												1
 										else

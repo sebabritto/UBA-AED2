@@ -2,7 +2,7 @@ TAD Robot
 	Otras Operaciones:
 		MaxDerecha: secu(coordenada) -> coordenada
 		elemMaxDeUnaSec: secu(coordenada) × coordenada -> bool
-	Axiomas: //∀ c: coordenada, ∀ r: robot
+	Axiomas: ∀ c: coordenada, ∀ r: robot
 		Trayectoria(Ubicar(c)) ≡ c • <>
 		Trayectoria(Arriba(r)) ≡ (π1(posicionActual) - 1, π2(posicionActual)) • Trayectoria(r)
 		Trayectoria(Abajo(r)) ≡ (π1(posicionActual) + 1, π2(posicionActual)) • Trayectoria(r)
