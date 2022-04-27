@@ -8,13 +8,22 @@ TAD Tecnico es Nat
 
 TAD TecnicosADomicilio
 
-	Igualdad Observacional:	();
+	Igualdad Observacional:	(∀ t1, t2: tad)(t1 =obs t2 ⇐⇒
+		(direccionCentral(t1) = direccionCentral(t2) ∧ 
+		tecnicos(t1) = tecnicos(t2) ∧
+		pendientes(t1) = pendientes(t2) ∧L	
+		(∀ t: tecnico)(t ∈ tecnicos(t1) ⇒L (
+			disponible?(t, t1) = disponible?(t, t2) ∧ 
+			direccionTecnico(t, t1) = direccionTecnico(t, t2) ∧ 
+			visitas(t, t1) = visitas(t, t2)))
+			)
+		);
 	
 	Géneros:	tad
 	
-	Exporta: 
+	Exporta: tad, obsevadores, generadores, mayorCantidadDeVisitas
 	
-	Usa:	Direccion, Tecnico
+	Usa:	Bool, Nat, Secuencia, Conjunto, Direccion, Tecnico
 	
 	Observadores Básicos:
 		direccionCentral: tad -> direccion
