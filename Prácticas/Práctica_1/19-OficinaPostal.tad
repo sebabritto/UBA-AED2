@@ -1,0 +1,113 @@
+TAD CodigoPostal es Nat
+	Géneros:	cp
+	
+TAD Peso es Nat
+
+TAD Ciudad es Conj(cp)
+
+TAD Paquete es Tupla<CodigoPostal cp, Peso peso>
+
+	Géneros:	paquete
+	Otras Operaciones:
+		cp: paquete -> cp
+		peso: paquete -> peso
+		
+	Axiomas: ∀ p: paquete
+		cp(p) ≡ π₁(p)
+		peso(p) ≡ π₂(p)
+	Fin TAD
+	
+TAD OficinaPostal
+	Igualdad Observacional:	(∀ o, o': oficina)(o =obs o' ⇐⇒
+	(ciudad(o) = ciudad(o') ∧ carteros(o) = carteros(o') ∧ 
+	deposito(o) = deposito(o') ∧ rebotados(o) = rebotados(o')) ∧L
+	(∀ cr: cartero)(cr ∈ carteros(o) ⇒L (codigoPostal(o, cr) = codigoPostal(o', cr) ∧ 
+	cargamentoAsignado(o, cr) = cargamentoAsignado(o', cr)))
+	);
+	
+	Géneros:	oficina
+	
+	Exporta: oficina, observadores, generadores, otras operaciones
+	
+	Usa: Nat, Bool, Ciudad, CodigoPostal, Paquete, Peso
+	
+	Observadores Básicos:
+		ciudad: oficina -> conj(cp)
+		carteros: oficina -> conj(cartero)
+		codigoPostal: oficina × cartero -> cp												{c ∈ carteros(o)}
+		cargamentoAsignado: oficina o × cartero c -> conj(paquete)	{c ∈ carteros(o)}
+		deposito: oficina -> conj(paquete)
+		rebotados: oficina -> conj(paquete)		
+		
+	Generadores:
+		crearOficina: ciudad × dicc(cartero, cp) dc -> oficina									{(∀ cl: clave)(cl ∈ claves(dc) ⇒L obtener(cl, dc) ∈ ciudad)}
+		recibeCargamento: oficina × conj(paquete) -> oficina
+		iniciarRecorrido: oficina o × cartero c -> oficina											{c ∈ carteros(o)}
+		finalizarRecorrido: oficina o × cartero c × conj(paquete) cg -> oficina	{c ∈ carteros(o) ∧ cp ⊆ cargamentoAsignado(o, c)}
+		
+	Otras Operaciones:
+		#paquetesRebotados:	oficina -> nat
+		#paquetesEnDeposito:	oficina -> nat
+		asignarPaquetes: cp × conj(paquete) × peso -> conj(paquete)
+		
+	Axiomas: ∀ o: oficina, ∀ c: ciudad, ∀ dc: dicc(cartero, cp), ∀ cg: conj(paquete), ∀ cr, cr': cartero, ∀ cp: cp, ∀ p: peso
+		ciudad(crearOficina(c, dc)) 					≡ c
+		ciudad(recibeCargamento(o, cg)) 			≡ ciudad(o)
+		ciudad(iniciarRecorrido(o, cr)) 			≡	ciudad(o)
+		ciudad(finalizarRecorrido(o, cr, cg)) ≡	ciudad(o)
+		//--------------------------------------------------------------------------
+		carteros(crearOficina(c, dc)) 					≡ claves(dc)
+		carteros(recibeCargamento(o, cg)) 			≡ carteros(o)
+		carteros(iniciarRecorrido(o, cr)) 			≡ carteros(o)
+		carteros(finalizarRecorrido(o, cr, cg))	≡	if cg = cargamentoAsignado(o, c) then
+																								carteros(o) - {c}
+																							else
+																								carteros(o)
+																							fi
+		//--------------------------------------------------------------------------
+		codigoPostal(crearOficina(c, dc), cr) 						≡	obtener(cr, dc)
+		codigoPostal(recibeCargamento(o, cg), cr) 				≡ codigoPostal(o, cr)
+		codigoPostal(iniciarRecorrido(o, cr), cr') 				≡ codigoPostal(o, cr')
+		codigoPostal(finalizarRecorrido(o, cr, cg), cr') 	≡	codigoPostal(o, cr')
+		//--------------------------------------------------------------------------
+		cargamentoAsignado(crearOficina(c, dc), cr) 						≡	Ø	
+		cargamentoAsignado(recibeCargamento(o, cg), cr) 				≡	cargamentoAsignado(o, cr)
+		cargamentoAsignado(iniciarRecorrido(o, cr), cr') 				≡	if cr = cr' then
+																																asignarPaquetes(codigoPostal(cr), deposito(o), 0)
+																															else
+																																cargamentoAsignado(o, cr')
+																															fi
+		cargamentoAsignado(finalizarRecorrido(o, cr, cg), cr')	≡	if cr = cr' then
+																																Ø
+																															else
+																																cargamentoAsignado(o, cr')
+																															fi
+		//--------------------------------------------------------------------------
+		deposito(crearOficina(c, dc)) 					≡	Ø
+		deposito(recibeCargamento(o, cg)) 			≡	if dameUno(cg) ∈ ciudad(o) then
+																								Ag(dameUno(cg), deposito(recibeCargamento(o, fin(cg))))
+																							else
+																								deposito(recibeCargamento(o, fin(cg)))
+																							fi
+		deposito(iniciarRecorrido(o, cr)) 			≡ deposito(o) - cargamentoAsignado(iniciarRecorrido(o, cr))
+		deposito(finalizarRecorrido(o, cr, cg)) ≡	deposito(o) U cg
+		//--------------------------------------------------------------------------
+		rebotados(crearOficina(c, dc)) 						≡	Ø
+		rebotados(recibeCargamento(o, cg)) 				≡	rebotados(o)
+		rebotados(iniciarRecorrido(o, cr)) 				≡ rebotados(o)
+		rebotados(finalizarRecorrido(o, cr, cg)) 	≡	rebotados(o) U cg
+		//--------------------------------------------------------------------------
+		#paquetesRebotados(o) ≡ #(rebotados(o))
+		//--------------------------------------------------------------------------
+		#paquetesEnDeposito(o) ≡ #(deposito(o))
+		//--------------------------------------------------------------------------
+		asignarPaquetes(cp, cg, p) ≡	if Ø?(cg) then
+																		Ø
+																	else
+																		if dameUno(cg).cp = cp ∧ peso(dameUno(cg)) + p <= 25000 then
+																			Ag(dameUno(cg), asignarPaquetes(cp, sinUno(cg), p + peso(dameUno(cg))))
+																		else
+																			asignarPaquetes(cp, sinUno(cg))
+																		fi
+																	fi
+Fin TAD
