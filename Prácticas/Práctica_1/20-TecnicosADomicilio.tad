@@ -1,17 +1,163 @@
+TAD Direccion
+	Géneros:	direccion
+	Exporta: direccion, dist
+	Otras Operaciones:
+		dist: direccion d × direccion d' -> nat
+		
+TAD Tecnico es Nat
+
 TAD TecnicosADomicilio
 
 	Igualdad Observacional:	();
 	
-	Géneros:	
+	Géneros:	tad
 	
-	Exporta:
+	Exporta: 
 	
-	Usa:
+	Usa:	Direccion, Tecnico
 	
 	Observadores Básicos:
+		direccionCentral: tad -> direccion
+		tecnicos:	tad -> conj(tecnico)
+		disponible?: tecnico t × tad td -> bool						{t ∈ tecnicos(td)}
+		pendientes: tad -> secu(direccion)
+		direccionTecnico: tecnico t × tad td -> direccion	{t ∈ tecnicos(td)}
+		visitas: tecnico t × tad td -> secu(direccion)		{t ∈ tecnicos(td)}
 		
 	Generadores:
+		iniciar:	direccion × conj(tecnico) -> tad
+		solicitar:	direccion d × tad td -> tad						{d ≠ direccionCentral(td)}
+		termina: tecnico t × tad td -> tad								{t ∈ tecnicos(td)}
 		
-	Axiomas:
+	Otras Operaciones:
+		mayorCantidadDeVisitas: direccion × tad -> conj(tecnico)
+		tecnicosConMayorCantidadDeVisitas: direccion × nat × conj(tecnico) ct × tad td -> conj(tecnico)	{ct ⊆ tecnicos(td)}
+		cantidadMaximaDeVisitas: direccion × conj(tecnico) ct × td td -> nat														{ct ⊆ tecnicos(td)}
+		cantVisitasDeTecnico: direccion × tecnico t × td td -> nat																			{t ∈ tecnicos(td)}
+		cantVisitasDeTecnicoAux: direccion × secu(direccion) -> nat
+		tecnicosDisponibles: conj(tecnico) ct × tad td -> conj(tecnico)																	{ct ⊆ tecnicos(td)}
+		hayTecnicosDisponibles?: tad -> bool
+		dameUnTecnico: tad -> tecnico																																		{¬Ø?(tecnicos(td))}
+		hayPendientes?: tad -> bool
+		pendienteMasCercana: secu(direccion) × direccion -> direccion
+		proximaVisita: tecnico t × tad td -> direccion																									{t ∈ tecnicos(td)}
 		
+	Axiomas: ∀ td: tad, ∀ t, t': tecnico, ∀ d: direccion,∀ ct: conj(tecnico), ∀ sd: secu(direccion)
+		direccionCentral(iniciar(d, ct)) 		≡	d
+		direccionCentral(solicitar(d, td)) 	≡	direccionCentral(td)
+		direccionCentral(termina(t, td)) 		≡	direccionCentral(td)s
+	//----------------------------------------------------------------------------
+		tecnicos(iniciar(d, ct)) 		≡ ct
+		tecnicos(solicitar(d, td))	≡	tecnicos(td)
+		tecnicos(termina(t, td)) 		≡	tecnicos(td)
+	//----------------------------------------------------------------------------
+		disponible?(t, iniciar(d, ct)) 		≡	true
+		disponible?(t, solicitar(d, td)) 	≡	disponible?(t, td) ∧ dameUnTecnico(td) ≠ t
+		disponible?(t, termina(t', td)) 	≡	if t = t' then
+																					vacía?(pendientes(td))
+																				else
+																					disponible?(t, td)
+																				fi	
+	//----------------------------------------------------------------------------
+		pendientes(iniciar(d, ct)) 		≡	<>
+		pendientes(solicitar(d, td)) 	≡	if hayTecnicosDisponibles?(tecnicos(td), td) then
+																			pendientes(td)
+																		else
+																			pendientes(td) ◦ d
+																		fi
+		pendientes(termina(t, td)) 		≡	if hayPendientes?(td) then
+																			pendientes(td) - {proximaVisita(t, td)}
+																		else
+																			pendientes(td)
+																		fi
+	//----------------------------------------------------------------------------
+		direccionTecnico(t, iniciar(d, ct)) 	≡ d
+		direccionTecnico(t, solicitar(d, td))	≡ if dameUnTecnico(td) = t then
+																							d
+																						else
+																							direccionTecnico(t, td)
+																						fi
+		direccionTecnico(t, termina(t', td)) 	≡	if t = t' then
+																							if hayPendientes?(td) then
+																								proximaVisita(t, td)
+																							else
+																								direccionCentral(td)
+																							fi
+																						else
+																							direccionTecnico(t, td)
+																						fi
+	//----------------------------------------------------------------------------
+		visitas(t, iniciar(ct)) 			≡	<>
+		visitas(t, solicitar(d, td)) 	≡	if dameUnTecnico(td) = t then
+																			visitas(t, td) ◦ d
+																		else
+																			visitas(t, td)
+																		fi
+		visitas(t, termina(t', td)) 	≡	if t = t' then
+																			visitas(t, td) ◦ proximaVisita(t, td)
+																		else
+																			visitas(t, td)
+																		fi
+	//----------------------------------------------------------------------------
+		mayorCantidadDeVisitas(d, td) ≡	tecnicosConMayorCantidadDeVisitas(d, cantidadMaximaDeVisitas(d, tecnicos(td), td), tecnicos(td), td)
+		
+		tecnicosConMayorCantidadDeVisitas(d, m, ct, td) ≡	if Ø?(ct) then
+																												Ø
+																											else
+																												if cantVisitasDeTecnico(d, dameUno(ct), td) = m then
+																													Ag(dameUno(ct), tecnicosConMayorCantidadDeVisitas(d, m, fin(ct), td))
+																												else
+																													tecnicosConMayorCantidadDeVisitas(d, m, fin(ct), td)
+																												fi
+																											fi
+		
+		cantidadMaximaDeVisitas(d, ct, td) ≡ 	if Ø?(ct) then
+																						0
+																					else
+																						if cantVisitasDeTecnico(d, dameUno(ct), td) >= cantidadMaximaDeVisitas(d, sinUno(ct), td)
+																							cantVisitasDeTecnico(d, dameUno(ct), td)
+																						else
+																							cantVisitasDeTecnico(d, sinUno(ct), td)
+																						fi
+																					fi
+		
+		cantVisitasDeTecnico(d, t, td) ≡	cantVisitasDeTecnicoAux(d, visitas(t, td))
+		
+		cantVisitasDeTecnicoAux(d, sd) ≡ if vacía?(sd) then
+																			0
+																		else
+																			if d = prim(sd) then
+																				1 + cantidadDeVisitas(d, fin(sd))
+																			else
+																				cantidadDeVisitas(d, fin(sd))
+																			fi
+																		fi
+	//----------------------------------------------------------------------------
+		tecnicosDisponibles(ct, td) ≡ if Ø?(ct) then
+		 																Ø
+																	else
+																		if direccionTecnico(td, dameUno(ct)) = direccionCentral(td) then
+																			Ag(dameUno(ct), tecnicosDisponibles(sinUno(ct), td)
+																		else
+																			tecnicosDisponibles(sinUno(ct), td)
+																		fi
+																	fi
+	//----------------------------------------------------------------------------
+		hayTecnicosDisponibles?(ct, td) ≡ ¬(Ø?(tecnicosDisponibles(tecnicos(td), td)))
+	//----------------------------------------------------------------------------
+		dameUnTecnico(td) ≡ dameUno(tecnicosDisponibles(td))
+	//----------------------------------------------------------------------------
+		hayPendientes?(td) ≡ long(pendientes(td)) > 0			
+	//----------------------------------------------------------------------------
+		pendienteMasCercana(sd, d) ≡	if long(sd) = 1 then
+		 																prim(sd)
+																	else
+																		if dist(prim(sd), d) <= dist(pendienteMasCercana(fin(sd), d), d)
+																			prim(sd)
+																		else
+																			pendienteMasCercana(fin(sd), d)
+																		fi
+																	fi
+	//----------------------------------------------------------------------------
+		proximaVisita(t, td) ≡ pendienteMasCercana(pendientes(td), direccionTecnico(t, td))
 Fin TAD
