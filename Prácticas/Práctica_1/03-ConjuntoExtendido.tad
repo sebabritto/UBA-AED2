@@ -23,19 +23,5 @@ TAD ConjuntoExtendido(α)
 			                        else
 			                            combinacionesDeK(sinUno(c), k) U agregarATodos(dameUno(c), combinacionesDeK(sinUno(c), k-1))
 			                        fi
-		//--------------------------------------------------------------------------
-		primeros(n, c) ≡ 	if n = 0 then
-												Ø
-											else
-												Ag(dameUno(c), primeros(n-1, sinUno(c)))
-											fi
-		combinacionesDeK2(c, n) ≡	if n > #c then
-																Ø
-															else
-																if n = 0 then
-																	Ag(Ø, Ø)
-																else
-																	Ag(primeros(n, c), combinacionesDeK2(fin(c), n))
-																fi
-															fi
+
 Fin TAD
