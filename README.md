@@ -12,7 +12,8 @@
 
   - [1-Uso de Clases](Laboratorio/Labo01)
   - [2-Definición de Clases](Laboratorio/Labo02)
-  - [3-Testing](Laboratorio/Labo03)
-  - [4-Memoria Dinamica](Laboratorio/Labo04)
-  - [5-Listas](Laboratorio/Labo05)
-  - [6-Iteradores y Algoritmos Genericos](Laboratorio/Labo06)
+  - [3-Preprocesamiento y compilacion](Laboratorio/Labo03)
+  - [4-Punteros](Laboratorio/Labo04)
+  - [5-Listas Enlazadas](Laboratorio/Labo05)
+  - [6-Templates](Laboratorio/Labo06)
+  - [6.2-Algoritmos Genericos sobre Iteradores](Laboratorio/Labo06.2)
