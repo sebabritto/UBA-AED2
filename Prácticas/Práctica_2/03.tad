@@ -1,0 +1,17 @@
+a)  O(f) ⊆ O(g), significa que la cota superior de f esta contenida en 
+    la cota superior de g.
+    Si tengo O(f) ⊆ O(g) ∧ O(g) ⊆ O(f) ⟹ O(g) = O(f), es decir ambas crecen
+    simultaneamente
+
+b) Veo claramente que O(1) ∈ {O(x+1), O(x^2), O(√x)} , pero no veo claro O(1/x)
+    O(1) ⊆ O(1/x) ⟺ 1 ∈ O(1/x) ⟺ ∃ x₀ ∈ N, c ∈ ℝ, c > 0 / x>=x₀ ⟹ 1 <= c*1/x
+    x <= c, pero esto no se cumple ∀ x ∈ N ⟹ O(1) ∉ O(1/x)
+    pero O(1/x) ∈ O(1).
+    Ahora me fijo si O(√x) ⊆ O(x+1), a primera vista parece que si, pero me fijo
+    de todas formas:
+    O(√x) ⊆ O(x+1) ⟺ √x ∈ O(x+1)
+    ⟺ ∃ x₀ ∈ N, c ∈ ℝ, c > 0 / ∀ x ∈ N, x >= x₀ ⟹ √x <= c*(x+1)
+    ⟺ (√x)^2 <= c^2 * (x+1)^2 ⟺ |x| <= (x+1)^2, pero ya se que x ∈ N,
+    ⟺ x <= (x+1)^2 Vale, ∀ x ∈ N
+    Por lo tanto,
+    O(1/x) ⊆ O(1) ⊆ O(√x) ⊆ O(x+1) ⊆ O(x^2)

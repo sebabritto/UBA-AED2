@@ -1,0 +1,33 @@
+Probar que f ∈ O(h)
+a)f, h: ℕ -> ℕ
+    f(n) = n^2 - 4n - 2
+    h(n) = n^2
+    f ∈ O(h) ⟺ ∃ n₀ ∈ ℕ, k ∈ ℝ ∧ k > 0 / n >= n₀ ⟹ f(n) <= k*h(n) con n ∈ ℕ
+    Busco n, n₀ y k:
+        f(n) <= k * h(n)
+        n^2 - 4n - 2 <= k*n^2
+             -4n - 2 <= k*n^2 - n^2
+          -2(2n + 1) <= n^2(k - 1)
+           2(2n + 1) >= n^2(1 - k) Elijo k = 1
+           2(2n + 1) >= 0   ∀ n ∈ ℕ
+    
+b)f, g, h: ℕ -> ℕ
+    g(n) = n^c
+    h(n) = n^(c+1)
+    f ∈ O(g)
+    Si f ∈ O(g) ∧ g ∈ O(h) ⟹ f ∈ O(h)
+    Tengo que probar que g ∈ O(h):
+        g ∈ O(h) ⟺ ∃ n₀ ∈ N, c ∈ R>0 / n>=n₀ ⟹ g(n) <= c*h(n) con n ∈ ℕ
+        n^k <= c*n^(k+1)
+          1 <= c*n      ∀ c ∈ ℝ>0 ∧ n ∈ N
+
+c)f, g, h: ℕ -> ℕ
+    g(n) = log n
+    h(n) = n
+    f ∈ O(g) ⟹ f ∈ O(log n) ⟹ f ∈ O(n) ⟹ log n ∈ O(n) ⟹ g ∈ O(n) ⟹ g ∈ O(h)
+    Compruebo por limite:
+        Lim g(n)/h(n) = lim log n / n =  Lim 1/n = 0
+        n->∞            n->∞         L'H n->∞ 
+        Como Lim g(n)/h(n) = 0 ⟹ g ∈ O(h) 
+             n->∞
+        Luego f ∈ O(g) ∧ g ∈ O(h) ⟹ f ∈ O(h)
