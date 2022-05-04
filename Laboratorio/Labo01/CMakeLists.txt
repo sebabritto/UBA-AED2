@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(uso_clases)
+project(Labo01)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=gnu++11 -ggdb3 -g")
