@@ -1,10 +1,11 @@
 #include "Lista.h"
 
 Lista::Lista() {
-    // Completar
     this->tam = 0;
     this->primero = nullptr;
+    this->ultimo = nullptr;
 }
+
 
 Lista::Lista(const Lista& l) : Lista() {
     //Inicializa una lista vacía y luego utiliza operator= para no duplicar el código de la copia de una lista.
@@ -12,23 +13,19 @@ Lista::Lista(const Lista& l) : Lista() {
 }
 
 Lista::~Lista() {
-    // Completar
     Nodo* temp = primero;
     while(temp != nullptr){
         temp = temp->siguiente;
         delete primero;
         primero = temp;
+        tam--;
     }
 }
 
 Lista& Lista::operator=(const Lista& aCopiar) {
-    // Completar
     if(this != &aCopiar){
-        tam = 0;
-        if(aCopiar.tam == 0){
-            primero = nullptr;
-        }else{
-            this->~Lista();
+        this->~Lista();
+        if(aCopiar.tam != 0){
             Nodo* recorrer = aCopiar.primero;
             while(recorrer != nullptr){
                 this->agregarAtras(recorrer->dato);
@@ -40,81 +37,72 @@ Lista& Lista::operator=(const Lista& aCopiar) {
 }
 
 void Lista::agregarAdelante(const int& elem) {
-    // Completar
     Nodo* nuevo = new Nodo();
     nuevo->dato = elem;
-    nuevo->siguiente = primero;
-    primero = nuevo;
-    if(tam != 0){
+    if(tam == 0){
+        primero = nuevo;
+        ultimo = nuevo;
+    }else{
         primero->anterior = nuevo;
+        nuevo->siguiente = primero;
+        primero = nuevo;
     }
     tam++;
 }
 
 void Lista::agregarAtras(const int& elem) {
-    // Completar
     Nodo* nuevo = new Nodo();
     nuevo->dato = elem;
-    if(tam == 0) {
+    if(tam == 0){
         primero = nuevo;
+        ultimo = nuevo;
     }else{
-        Nodo* ultimo = primero;
-        //Nodo* ant = ultimo->anterior;
-        while(ultimo->siguiente != nullptr){
-            ultimo = ultimo->siguiente;
-        }
-        nuevo->anterior = ultimo;
         ultimo->siguiente = nuevo;
+        nuevo->anterior = ultimo;
+        ultimo = nuevo;
     }
     tam++;
 }
 
 void Lista::eliminar(Nat i) {
-    // Completar
-
     if(i == 0 && tam == 1){
         delete primero;
         primero = nullptr;
+        ultimo = nullptr;
     }else{
         Nodo* recorrer = primero;
-        Nodo* ant = recorrer->anterior;
-        Nodo* sig = recorrer->siguiente;
-        int size = 0;
+        Nat size = 0;
         while(recorrer != nullptr){
             if(i == 0){
+                primero = primero->siguiente;
                 delete recorrer;
                 recorrer = nullptr;
-                primero = sig;
-                primero->anterior = nullptr;
-            }else if(size == i){
-                if(size == tam-1){
-                    delete recorrer;
-                    recorrer = nullptr;
-                    ant->siguiente = nullptr;
+            }else if(i == size){
+                if(i == tam - 1){
+                   ultimo = ultimo->anterior;
+                   delete recorrer;
+                   recorrer = nullptr;
                 }else{
-                    ant->siguiente = sig;
-                    sig->anterior = ant;
+                    recorrer->siguiente->anterior = recorrer->anterior;
+                    recorrer->anterior->siguiente = recorrer->siguiente;
                     delete recorrer;
                     recorrer = nullptr;
                 }
             }else{
-                ant = recorrer;
                 recorrer = recorrer->siguiente;
-                sig = recorrer->siguiente;
             }
             size++;
         }
     }
-     tam--;
+    tam--;
 }
 
+
 int Lista::longitud() const {
-    // Completar
     return tam;
 }
 
 const int& Lista::iesimo(Nat i) const {
-    // Completar
     int size = 0;
     Nodo* recorrer = primero;
     while(recorrer != nullptr){
@@ -125,11 +113,12 @@ const int& Lista::iesimo(Nat i) const {
             recorrer = recorrer->siguiente;
         }
     }
-    //assert(false);
+    assert(false);
+    //return recorrer->dato;
 }
 
 int& Lista::iesimo(Nat i) {
-    // Completar (hint: es igual a la anterior...)
+    // (hint: es igual a la anterior...)
     int size = 0;
     Nodo* recorrer = primero;
     while(recorrer != nullptr){
@@ -140,10 +129,12 @@ int& Lista::iesimo(Nat i) {
             recorrer = recorrer->siguiente;
         }
     }
+    assert(false);
+    //return recorrer->dato;
 }
 
 void Lista::mostrar(ostream& o) {
-    // Completar
+
     Nodo* recorrer = primero;
     o << "[";
     while(recorrer != nullptr){

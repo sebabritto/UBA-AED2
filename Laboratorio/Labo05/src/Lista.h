@@ -88,13 +88,12 @@ public:
 private:
 
     struct Nodo {
-        // Completar
         int dato;
         Nodo* siguiente;
         Nodo* anterior;
     };
-    // Completar
     Nodo* primero;
+    Nodo* ultimo;
     int tam;
 };
 
