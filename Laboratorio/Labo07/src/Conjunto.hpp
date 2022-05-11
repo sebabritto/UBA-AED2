@@ -1,5 +1,6 @@
 
 #include "Conjunto.h"
+#include <stack>
 
 template <class T>
 Conjunto<T>::Conjunto() {
@@ -113,24 +114,22 @@ template <class T>
 const T& Conjunto<T>::siguiente(const T& clave) {
     Nodo* recorrer = _raiz;
     if(clave == recorrer->valor){
-        recorrer = recorrer->der;
-        while(recorrer->izq != nullptr){
-            recorrer = recorrer->izq;
+        if(recorrer->der != nullptr){
+            return minimo(recorrer->der);
         }
-        return recorrer->valor;
     }else{
         while(recorrer->valor != clave){
             if(clave < recorrer->valor){
-                recorrer = recorrer->izq;
+                if(recorrer->izq->valor == clave && recorrer->izq->izq == nullptr && recorrer->izq->der == nullptr){
+                    return recorrer->valor;
+                }else{
+                    recorrer = recorrer->izq;
+                }
             }else{
                 recorrer = recorrer->der;
             }
         }
-        recorrer = recorrer->der;
-        while(recorrer->izq != nullptr){
-            recorrer = recorrer->izq;
-        }
-        return recorrer->valor;
+        return minimo(recorrer->der);
     }
     //assert(false);
 }
@@ -198,8 +197,43 @@ unsigned int Conjunto<T>::cardinalNodo(Nodo *n) const{
 
 template <class T>
 void Conjunto<T>::mostrar(std::ostream& os) const {
-
-    assert(false);
+    /*Conjunto<T> copia = *this;
+    Nodo *recorrer = copia._raiz;
+    os << "[";
+    while(recorrer != nullptr){
+        if(recorrer->izq != nullptr){
+            os << minimo(recorrer->izq) << ", ";
+            remover(minimo(recorrer->izq));
+        }else{
+            if(recorrer->der != nullptr){
+                os << recorrer->valor << ", ";
+                remover(recorrer->valor);
+            }else{
+                os << recorrer->valor;
+                recorrer = nullptr;
+            }
+        }
+    }
+    os << "]";*/
+    stack<Nodo*> s;
+    Nodo* actual = _raiz;
+    os << "[";
+    while(actual != nullptr || s.empty() == false){
+        while(actual != nullptr){
+            s.push(actual);
+            actual = actual->izq;
+        }
+        actual = s.top();
+        s.pop();
+        if(actual->izq == nullptr && actual->der == nullptr && s.empty()){
+            os << actual->valor;
+        }else{
+            os << actual->valor << ", ";
+        }
+        actual = actual->der;
+    }
+    os << "]";
+    //assert(false);
 }
 
 

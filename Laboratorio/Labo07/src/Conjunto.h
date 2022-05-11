@@ -66,7 +66,7 @@ class Conjunto
         Nodo* _raiz;
         unsigned int cardinalNodo(Nodo* n) const;
         void eliminar(Nodo* n);
-        void removerNodo(Nodo* padre, Nodo* nodo, std::string dir, const T& valor);
+        void removerNodo(Nodo* padre, Nodo* nodo, std::string dir, const T& clave);
         const T& minimo(Nodo* n) const;
         const T& maximo(Nodo* n) const;
 };
