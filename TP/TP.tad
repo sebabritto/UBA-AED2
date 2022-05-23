@@ -1,0 +1,60 @@
+TAD Nombre es String
+
+TAD Construccion es String
+
+TAD Mapa
+	Igualdad Observacional:	();
+	
+	Géneros:	Mapa
+	
+	Exporta:	completar
+	
+	Usa:	completar
+	
+	Observadores Básicos:
+		horizontales:	Mapa -> conj(Nat)
+		verticales: Mapa -> conj(Nat)
+	
+	Generadores:
+		crear:	conj(Nat) × conj(Nat) -> Mapa
+		
+	Axiomas: ∀ hs, vs: conj(Nat)
+			horizontales(crear(hs, vs)) ≡ hs
+			verticales(crear(hs, vs))		≡ vs
+Fin TAD
+
+TAD SimCity
+	
+TAD Servidor
+	Igualdad Observacional:	(∀ s, s': servidor)(s =obs s' ⇐⇒ ());
+	
+	Géneros:	Servidor
+	
+	Exporta:
+	
+	Usa:
+	
+	Observadores Básicos:
+		estaEnElServidor?:	Servidor × SimCity -> bool
+		obtener:	Servidor × Nombre -> SimCity
+		nombres:	Servidor -> conj(Nombre)
+		turnoSimCity:	Servidor × Nombre	-> Nat
+		popularidadDeSimCity:	Servidor × Nombre -> Nat
+		estaUnido?:	Servidor × Nombre -> Bool
+		
+	Generadores:
+		iniciarServidor:	-> Servidor
+		agregarSimCity:	Servidor sv × SimCity sc × Nombre n -> Servidor					{n ∉ nombres(sv) ∧L (∀ nb: Nombre)(n ∈ nombres(sv) ⇒L sc ≠ obtener(sv, nb))}
+		pasarTurno:	Servidor × Nombre × dicc(Pos, Construccion) cs -> Servidor				
+		unir: Servidor sv × Nombre n1 × Nombre n2 -> Servidor										{{n1, n2} ⊆ nombres(sv) }
+	
+	Otras Operaciones:
+		agregarCasas: dicc(Pos, Nivel) ca × dicc(Pos, Construccion) cs -> dicc(Pos, Nivel)
+		damePosicionConCasa: conj(Pos) cp × dicc(Pos, Construccion) cs -> Pos
+		hayCasas?: conj(Pos) cp × dicc(Pos, Construccion) cs -> Bool
+		aumentarNivel: dicc(Pos, Nivel) ca -> dicc(Pos, Nivel)
+		
+	Axiomas:
+		
+		
+Fin TAD

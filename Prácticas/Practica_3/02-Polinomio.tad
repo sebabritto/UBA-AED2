@@ -1,0 +1,106 @@
+TAD Polinomio
+	Géneros:	polinomio
+	
+	Igualdad Observacional:	(∀ p1, p2: polinomio)(p1 =obs p2 ⇐⇒ (∀n: nat)(Evaluar(p1,n) =obs Evaluar(p2, n)));
+	
+	Observadores Básicos:
+		Evaluar: polinomio × nat -> nat
+	
+	Generadores:
+		Cte: nat -> polinomio
+		X: -> polinomio
+		• + •: polinomio × polinomio -> polinomio
+		• * •: polinomio × polinomio -> polinomio
+		
+	Otras Operaciones:
+		Raiz: polinomio × nat -> bool
+	
+	Axiomas: ∀c, n: nat, ∀ p1, p2: polinomio
+		Evaluar(Cte(c), n) ≡ c 
+		Evaluar(x, n) ≡ n 
+		Evaluar(p1 + p2, n) ≡ Evaluar(p1, n) + Evaluar(p2, n)
+		Evaluar(p1 * p2, n) ≡ Evaluar(p1, n) * Evaluar(p2, n)
+		//--------------------------------------------------------------------------
+		Raiz(p1, n) ≡ Evaluar(p, n) = 0
+	Fin TAD
+	
+Representación:
+	polinomio se representa con estr donde
+		estr es tupla ⟨grado:	nat, coef: 	array[0...n]⟩
+
+Solución Informal:
+	- e.grado debe ser el maximo de los grados del array, es decir, n
+	- Si el grado fuera 0, lo que lo haria una constante, el valor deberia ser mayor a 0, ya que son naturales.
+---
+
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	e.grado = n
+		(2)	≡	e.coef[e.grado ] > 0 
+---
+
+Función de abstracción:
+	Abs:	estr	->	polinomio	{Rep(e)}
+	(∀e: estr) Abs(e) =obs pol: polinomio | (1)∧(2)
+		donde:
+		(1)	≡	construirPolinomio(e, 0)
+		
+		construirPolinomio: estr × nat -> polinomio
+		construirPolinomio(e, g) ≡	if e.grado = g then
+		 															Cte(e.coef[g])
+																else
+																	Cte(e.coef[g]) + X*(construirPolinomio(e, g+1))
+																fi
+---
+Interfaz:
+	Se explica con:	Polinomio
+	Géneros:		polinomio
+	
+	Operaciones básicas:
+		Cte(in n: nat)	-> res: polinomio
+		Pre ≡ {true}
+		Post ≡ {res =obs Cte(n)}
+		Complejidad: Θ(1)
+		Descripción: Genera un polinomio con un constante
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		X()	-> res: polinomio
+		Pre ≡ {true}
+		Post ≡ {res =obs X()}
+		Complejidad: Θ(1)
+		Descripción: Genera un polinomio "x"
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Suma(in p1: polinomio, in p2: polinomio)	-> res: polinomio
+		Pre ≡ {true}
+		Post ≡ {res =obs p1 + p2}
+		Complejidad: Θ(1)
+		Descripción: Genera una suma de polinomios.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Producto(in p1: polinomio, in p2: polinomio)	-> res: polinomio
+		Pre ≡ {true}
+		Post ≡ {res =obs p1*p2}
+		Complejidad: Θ(1)
+		Descripción: Genera un producto de polinomios
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Evaluar(in p: polinomio, in n: nat)	-> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs Evaluar(p, n)}
+		Complejidad: Θ(1)
+		Descripción: Genera ...
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iEvaluar(in p: polinomio, in n: nat) -> res: nat
+			res ← 0
+			xn ← 1
+			i ← 0
+			while i <= p.grado do
+				res ← res + xn * p.coef[i]
+				xn ← x * n
+			end while
+		---

@@ -35,34 +35,67 @@ Función de abstracción:
 	Abs:	estr	->	cacotada	{Rep(e)}
 	(∀e: estr) Abs(e) =obs ca: cacotada | (1)∧(2)
 		donde:
-		(1)	≡	verCola(ca) = ...
+		(1)	≡	verCola(ca) = arregloACola(e.elem, e.inicio, e.fin)
 		(2)	≡	capacidad(ca) = tam(e.elem)
-		
+
 		arregloACola: ad(nat) × nat inicio × nat fin -> cola(nat)
-		arregloACola()
+		arregloACola(arr, inicio, fin) ≡	if (definido?(arr, inicio)) then
+																					if (inicio = fin) then
+																							encolar(arr[inicio], vacia)
+																					else
+																							if (inicio = tam(arr)-1) then
+																									encolar(arr[inicio], arregloACola(arr, 0, fin))
+																							else
+																									encolar(arr[inicio], arregloACola(arr, inicio + 1, fin))
+																							fi
+																					fi
+																			else
+																					vacia
+																			fi
 ---
 Interfaz:
-	Parámetros formales:
-		Géneros:	α
-		Función:
-			Copiar(in a:α) -> res: α
-			Pre ≡ {true}
-			Post ≡ {res = a}
-			Complejidad: Θ(copy(a))
-			Descripción: Función copia de α's.
-			---
-	Se explica con:	TipoDato
+	Se explica con:	ColaAcotada, Cola(α)
 	Géneros:		cacotada
-
+	
 	Operaciones básicas:
-		NuevaOp(in n: nat)	-> res: tipoDato
+		vacia(in n: nat)	-> res: cacotada
 		Pre ≡ {true}
-		Post ≡ {res =obs ...}
+		Post ≡ {res =obs vacia}
 		Complejidad: Θ(1)
-		Descripción: Genera ...
+		Descripción: Genera una cola acotada vacia
+		---
+		encolar(in n: nat, in/out ca: cacotada)
+		Pre ≡ {ca = ca₀ ∧ tamaño(verCola(ca)) < capacidad(c)}
+		Post ≡ {ca = encolar(n, ca₀)}
+		Complejidad: Θ(1)
+		Descripción: Encola un valor a la cola.
 		Aliasing: No presenta aspectos de aliasing.
 		---
+		verCola(in ca: cacotada)	-> res: cola(nat)
+		Pre ≡ {true}
+		Post ≡ {res =obs arregloACola(ca)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la cola acotada.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		capacidad(in ca: cacotada) -> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs capacidad(ca)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la capacidad maxima de elementos en la cola acotada.
+		---
 	Algoritmos del módulo:
-		iNuevaOp(in n: nat) -> res: estr
-			res ← ⟨0, 9⟩	// Ejemplo
+		ivacia(in n: nat) -> res: cacotada
+			res ← vacia(n)
+		---
+		iencolar(in n: nat, in ca: cacotada) -> res: cacotada
+			c ← ca
+			encolar(n, ca)
+			res ← c
+		---
+		iverCola(in ca: cacotada)	-> res: cola(nat)
+			res ← arregloACola(ca.elem, ca.inicio, ca.fin)	// Ejemplo
+		---
+		icapacidad(in ca: cacotada) -> res: nat
+			res ← tam(ca.elem)
 		---

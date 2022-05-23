@@ -1,0 +1,63 @@
+TAD Palindromo(α)
+	Observadores Básicos:
+		ver: palindromo(α) -> secu(α)
+		
+	Generadores:
+		medio: α -> palindromo(α)
+		medioDoble: α -> palindromo(α)
+		agregar: α × palindromo(α) -> palindromo(α)
+	
+	Axiomas:
+			ver(medio(α)) 			≡ a • <>
+			ver(medioDoble(α)) 	≡ a • a • <>
+			ver(agregar(a, p)) 	≡	a • (ver(p) ◦ a)
+Fin TAD
+
+Representación:
+	palindromo se representa con estr donde
+		estr es tupla ⟨long:	nat, palabra: 	secu(α) ⟩
+
+Solución Informal:
+	- e.long debe ser la longitud de e.palabra
+	- debe de haber por lo menos un valor, ya que no tiene generadores vacios.
+	- e.palabra debe ser un palindromo
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)
+		donde:
+		(1)	≡	e.long = long(e.palabra)
+		(2)	≡	e.long > 0
+		(3) ≡ (∀i: nat)(0 <= i < e.long/2 ⇒L e.palabra[i] = e.palabra[e.long - 1 - i])
+---
+Función de abstracción:
+	Abs:	estr	->	palindromo	{Rep(e)}
+	(∀e: estr) Abs(e) =obs pal: palindromo | (1)
+		donde:
+		(1)	≡	ver(pal) = e.palabra
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	TipoDato
+	Géneros:		tipoDato
+
+	Operaciones básicas:
+		NuevaOp(in n: nat)	-> res: tipoDato
+		Pre ≡ {true}
+		Post ≡ {res =obs ...}
+		Complejidad: Θ(1)
+		Descripción: Genera ...
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iNuevaOp(in n: nat) -> res: estr
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
