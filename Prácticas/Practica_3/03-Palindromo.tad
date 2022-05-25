@@ -37,27 +37,27 @@ Función de abstracción:
 		(1)	≡	ver(pal) = e.palabra
 ---
 Interfaz:
-	Parámetros formales:
-		Géneros:	α
-		Función:
-			Copiar(in a:α) -> res: α
-			Pre ≡ {true}
-			Post ≡ {res = a}
-			Complejidad: Θ(copy(a))
-			Descripción: Función copia de α's.
-			---
-	Se explica con:	TipoDato
-	Géneros:		tipoDato
-
+	Se explica con:	Palindromo
+	Géneros:	palindromo
+	
 	Operaciones básicas:
-		NuevaOp(in n: nat)	-> res: tipoDato
+		medio(in a: α)	-> res: palindromo(α)
 		Pre ≡ {true}
-		Post ≡ {res =obs ...}
-		Complejidad: Θ(1)
-		Descripción: Genera ...
-		Aliasing: No presenta aspectos de aliasing.
+		Post ≡ {res =obs medio(a)}
+		---
+		medioDoble(in a: α) -> res: palindromo(α)
+		Pre ≡ {true}
+		Post ≡ {res =obs medioDoble(a)}
+		---
+		agregar(in a: α, in/out p: palindromo(α))
+		Pre ≡ {p = p₀}
+		Post ≡ {p =obs agregar(a, p₀)}
+		---
+		ver(in p: palindromo(α)) -> res: secu(α)
+		Pre ≡ {true}
+		Post ≡ {}
 		---
 	Algoritmos del módulo:
-		iNuevaOp(in n: nat) -> res: estr
-			res ← ⟨0, 9⟩	// Ejemplo
+		iver(in p: estr) -> res: secu(α)
+			res ← p.palabra
 		---

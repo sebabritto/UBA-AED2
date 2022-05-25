@@ -90,12 +90,12 @@ Interfaz:
 		Evaluar(in p: polinomio, in n: nat)	-> res: nat
 		Pre ≡ {true}
 		Post ≡ {res =obs Evaluar(p, n)}
-		Complejidad: Θ(1)
+		Complejidad: Θ(n)
 		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
 	Algoritmos del módulo:
-		iEvaluar(in p: polinomio, in n: nat) -> res: nat
+		iEvaluar(in p: estr, in n: nat) -> res: nat
 			res ← 0
 			xn ← 1
 			i ← 0

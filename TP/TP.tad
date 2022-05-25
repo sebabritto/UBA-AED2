@@ -24,6 +24,44 @@ TAD Mapa
 Fin TAD
 
 TAD SimCity
+	Igualdad Observacional:	();
+	
+	Géneros:	SimCity
+	
+	Exporta:	completar
+	
+	Usa:	completar
+	
+	Observadores Básicos:
+		mapa:					SimCity -> Mapa
+		casas: 				SimCity -> dicc(Pos, Nivel)
+		comercios: 		SimCity -> dicc(Pos, Nivel)
+		popularidad:	SimCity -> Nat
+		
+	Generadores:
+		iniciar: 			Mapa																		-> SimCity
+		avanzarTurno: SimCity s × dicc(Pos, Construccion) cs	-> SimCity	{completar}
+		unir: 				SimCity a × SimCity b										-> SimCity 	{completar}
+		
+	Otras Operaciones:
+		turnos:									SimCity -> Nat
+		constMax:								SimCity -> conj(Pos)
+		nivelMax:								SimCity -> Nat
+		maxNivelAManhattan: 		Pos × SimCity -> Nat
+		nivelesCasasAManhattan: Pos × SimCity -> conj(Nat)
+	Axiomas: ∀ dc, dc': dicc(Pos, Nivel)
+		casas(unir(s1, s2)) ≡ casasAux(casas(s1), casas(s2))
+					
+					
+		casasAux(dl, dl') ≡ if vacío?(claves(dl2)) then
+														dl1
+												else
+													if dameUno(claves(dl2)) ∈ dl1 then
+														definir(dameUno(claves(dl2)), obtener(dameUno(claves(dl2)), dl2), casasAux(dl, borrar(dameUno(claves(dl2)), dl2)))
+													else
+														
+														
+Fin TAD
 	
 TAD Servidor
 	Igualdad Observacional:	(∀ s, s': servidor)(s =obs s' ⇐⇒ ());

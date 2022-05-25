@@ -93,9 +93,9 @@ Interfaz:
 			encolar(n, ca)
 			res ← c
 		---
-		iverCola(in ca: cacotada)	-> res: cola(nat)
+		iverCola(in ca: estr)	-> res: cola(nat)
 			res ← arregloACola(ca.elem, ca.inicio, ca.fin)	// Ejemplo
 		---
-		icapacidad(in ca: cacotada) -> res: nat
+		icapacidad(in ca: estr) -> res: nat
 			res ← tam(ca.elem)
 		---
