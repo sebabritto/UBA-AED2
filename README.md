@@ -7,6 +7,7 @@
 
   - Práctica 1: [Enunciado](Prácticas/Práctica_1/Especificacion.pdf), [Soluciones](Prácticas/Práctica_1)
   - Práctica 2: [Enunciado](Prácticas/Práctica_2/Complejidad.pdf), [Soluciones](Prácticas/Práctica_2)
+  - Práctica 3: [Enunciado](Prácticas/Práctica_3/Diseño.pdf), [Soluciones](Prácticas/Práctica_3)
   
 - Laboratorios
 
