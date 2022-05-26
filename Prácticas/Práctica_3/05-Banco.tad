@@ -1,0 +1,61 @@
+TAD Fila
+	Géneros:	fila
+	Observadores Básicos:
+		Esperando: persona × fila -> bool
+		Posicion: persona p × fila -> nat       {Esperando(p, f)}
+		SeColo?: persona p × fila f -> bool
+		Entro?: persona × fila -> bool
+		FueAtendido?: persona × fila -> bool
+		
+	Generadores:
+		AbrirVentanilla:  -> fila
+		Llegar: persona p × fila f -> fila      {¬Esperando(p,f)}
+		Atender: fila f -> fila                 {¬Vacia(f)}
+		Retirarse: persona p × fila f -> fila		{Esperando(p, f)}
+		ColarseAdelanteDe: persona p × persona q × fila f -> fila 
+		
+	Otras Operaciones:
+		Longitud: fila -> nat
+		Vacia: fila -> bool
+		
+Representación:
+	banco se representa con estr donde
+		estr es tupla ⟨entraron:	conj(persona), fila: 	cola(persona),
+									 colados: conj(persona), atendidos: conj(persona)⟩
+
+Solución Informal:
+	- e.entraron es un conjunto de todas las personas que alguna vez estuvieron en la fila
+	- e.colados son las personas que estan actualmente en la fila y se colaron al llegar
+	- e.atendidos son las personas que fueron atendidas en el banco
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (∀ p: persona)((1)∧(2)∧(3))
+		donde:
+		(1)	≡	estaEnLaFila(p, e.fila) ⇒L p ∈ e.entraron ∧ p ∉ e.atendidos
+		(2)	≡	p ∈ e.colados ⇒L estaEnLaFila(p, e.fila)
+		(3) ≡ p ∈ e.atendidos ⇒L p ∈ e.entraron ∧ ¬(estaEnLaFila(p, e.fila))
+		
+		estaEnLaFila: persona × cola(persona) -> bool
+		estaEnLaFila(p, cp) ≡	if vacía?(cp) then
+															false
+													else
+															próximo(cp) = p ∨ estaEnLaFila(p, desencolar(cp))
+													fi
+---
+Función de abstracción:
+	Abs:	estr	->	banco	{Rep(e)}
+	(∀e: estr) Abs(e) =obs b: banco | (∀ p: persona)((1)∧(2)∧(3)∧(4))
+		donde:
+		(1)	≡	p ∈ e.entraron ⇒L Entro?(p, b)
+		(2)	≡	estaEnLaFila(p, e.fila) ⇒ Esperando(p, b) ∧ posEnCola(p, e.fila) = Posicion(p, b)
+		(3) ≡ p ∈ e.colados ⇒L SeColo?(p, b)
+		(4) ≡ p ∈ e.atendidos ⇒L FueAtendido?(p, b)
+				
+	posEnCola: persona × cola(persona) -> nat
+	posEnCola(p, cp) ≡ 	if proximo(cp) = p then
+												1
+											else
+												1 + posEnCola(p, desencolar(cp))
+											fi 
+---
