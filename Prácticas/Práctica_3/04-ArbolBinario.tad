@@ -1,0 +1,46 @@
+Representación:
+	ab se representa con puntero(estr) donde
+		estr es tupla ⟨altura: nat, izq: puntero(estr), raiz: α, der: puntero(estr)⟩
+
+Solución Informal:
+	- e.altura debe ser igual a la altura del ArbolBinario
+	- si e.arg₁ ...
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	e.altura = altura(bin(e.izq, e.raiz, e.der))
+		(2) ≡
+---
+Función de abstracción:
+	Abs:	estr	->	ab	{Rep(e)}
+	(∀e: estr) Abs(e) =obs td: ab | (1)∧(2)
+		donde:
+		(1)	≡	obs₁(td) = ...
+		(2)	≡	obs₂(td) = ...
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	ArbolBinario
+	Géneros:		ab
+	Operaciones básicas:
+		NuevaOp(in n: nat)	-> res: tipoDato
+		Pre ≡ {true}
+		Post ≡ {res =obs ...}
+		Complejidad: Θ(1)
+		Descripción: Genera ...
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iNuevaOp(in n: nat) -> res: estr
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
