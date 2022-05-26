@@ -15,7 +15,7 @@ Fin TAD
 
 Representación:
 	palindromo se representa con estr donde
-		estr es tupla ⟨long:	nat, palabra: 	secu(α) ⟩
+		estr es tupla ⟨long: nat, palabra: secu(α) ⟩
 
 Solución Informal:
 	- e.long debe ser la longitud de e.palabra
@@ -55,9 +55,85 @@ Interfaz:
 		---
 		ver(in p: palindromo(α)) -> res: secu(α)
 		Pre ≡ {true}
-		Post ≡ {}
+		Post ≡ {res = ver(p)}
 		---
 	Algoritmos del módulo:
 		iver(in p: estr) -> res: secu(α)
 			res ← p.palabra
 		---
+		
+Problema Modificado
+
+Representación:
+	palindromo se representa con estr donde
+		estr es tupla ⟨long: nat, palabra: secu(α) ⟩
+
+Solución Informal:
+	- La longitud debe ser mayor a 0
+	- e.long debe ser el doble de la longitud de e.palabra si la longitud del palindromo es par,
+	 	o e.long debe ser el doble meenos de la longitud de e.palabra si la longitud del palindromo es impar
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	e.long > 0
+		(2)	≡	e.long = 2*long(e.palabra) ∨ e.long = 2*long(e.palabra) - 1
+---
+Función de abstracción:
+	Abs:	estr	->	palindromo	{Rep(e)}
+	(∀e: estr) Abs(e) =obs pal: palindromo | (1)∨(2)
+		donde:
+		(1)	≡	(e.long % 2 = 0) ⇒L	(ver(pal) = e.palabra & reverso(e.palabra))
+		(2)	≡	(e.long % 2 = 1 ) ⇒L (ver(pal)) = e.palabra & reverso(com(e.palabra))
+		
+	reverso: secu(α) -> secu(α)
+	reverso(s) ≡	if vacía?(s) then
+									s
+								else
+									reverso(fin(s)) ◦ prim(s)
+								fi
+---
+Interfaz:
+	Se explica con:	Palindromo
+	Géneros:	palindromo
+	
+	Algoritmos del módulo:
+	iver(in p: estr) -> res: secu(α)
+		res ← p.palabra & reverso(p.palabra)
+	---
+	ireverso(in s: secu(α)) -> res: secu(α)
+		if (vacía?(s)) then
+			s
+		else
+			res <- reverso(fin(s)) ◦ prim(s)
+		fi
+	---
+	iver(in p: estr) -> res: secu(α)
+		res ← e.palabra
+		if e.long % 2 = 0 then
+				for i = long(p.palabra) - 1 downto 0
+						res ← res • iesimo(p.palabra, i)
+				end for
+		else
+				for i = long(p.palabra) - 2 downto 0
+						res ← res • iesimo(p.palabra, i)
+				end for
+		fi
+---
+	iver(in p: estr) -> res: secu(α)
+		res ← e.palabra
+		if e.long % 2 = 0 then
+			pal ← e.palabra
+			while long(e.pal) ≠ 0 do
+					res ← res • ult(pal)
+					pal ← com(pal)
+			end while
+		else
+			pal ← com(e.palabra)
+			while long(e.pal) ≠ 0 do
+					res ← res • ult(pal)
+					pal ← com(pal)
+			end while
+		fi
+---
