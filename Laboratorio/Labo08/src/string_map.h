@@ -4,7 +4,7 @@
 #include <string>
 
 using namespace std;
-/**************************COCA_FECA**************************/
+
 template<typename T>
 class string_map {
 public:
@@ -29,6 +29,7 @@ public:
     DESTRUCTOR
     **/
     ~string_map();
+
 
     /**
     INSERT 
@@ -87,8 +88,10 @@ private:
 
     Nodo* raiz;
     int _size;
-
-    int contAux(const string& clave, vector<Nodo*> n);
+    void eliminarHijos(vector<Nodo*> v);
+    void eliminarNodo(Nodo* n);
+    int countAux(vector<Nodo*> v, string &key) const;
+    T& atAux(vector<Nodo*> v, const string& clave);
 };
 
 #include "string_map.hpp"
