@@ -16,6 +16,7 @@ TEST(string_map_test, asignar) {
     EXPECT_EQ(singleton.size(), 1);
 }
 
+
 TEST(string_map_test, obtener) {
     string_map<int> sin_prefijos;
     string_map<int> con_prefijos;

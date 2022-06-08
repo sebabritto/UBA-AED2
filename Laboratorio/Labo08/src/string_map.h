@@ -35,7 +35,7 @@ public:
     INSERT 
     * Inserta un par clave, valor en el diccionario
     **/
-    void insert(const pair<string, T>&);
+    void insert(const pair<string, T>& par);
 
     /**
     COUNT
@@ -84,14 +84,14 @@ private:
     struct Nodo {
         vector<Nodo*> siguientes;
         T* definicion;
+        Nodo(): siguientes(256, nullptr), definicion(nullptr){}
+        Nodo(T* def): siguientes(256, nullptr), definicion(def){}
     };
 
     Nodo* raiz;
     int _size;
     void eliminarHijos(vector<Nodo*> v);
-    void eliminarNodo(Nodo* n);
-    int countAux(vector<Nodo*> v, string &key) const;
-    T& atAux(vector<Nodo*> v, const string& clave);
+    void recursion(vector<Nodo*> v);
 };
 
 #include "string_map.hpp"
