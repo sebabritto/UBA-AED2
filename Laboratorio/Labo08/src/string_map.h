@@ -32,7 +32,7 @@ public:
 
 
     /**
-    INSERT 
+    INSERT
     * Inserta un par clave, valor en el diccionario
     **/
     void insert(const pair<string, T>& par);
@@ -91,7 +91,6 @@ private:
     Nodo* raiz;
     int _size;
     void eliminarHijos(vector<Nodo*> v);
-    void recursion(vector<Nodo*> v);
 };
 
 #include "string_map.hpp"

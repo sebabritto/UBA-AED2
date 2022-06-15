@@ -7,6 +7,7 @@ string_map<T>::string_map(){
 template <typename T>
 string_map<T>::~string_map(){
     eliminarHijos(raiz->siguientes);
+    delete raiz;
 }
 
 template<class T>
@@ -20,7 +21,6 @@ void string_map<T>::eliminarHijos(vector<Nodo *> v) {
         }
     }
 }
-
 
 template <typename T>
 string_map<T>::string_map(const string_map<T>& aCopiar) : string_map() {
@@ -39,26 +39,19 @@ string_map<T>& string_map<T>::operator=(const string_map<T>& d) {
 }
 
 template<typename T>
-void string_map<T>::recursion(vector<Nodo *> v) {
-
-}
-template<typename T>
-void string_map<T>::insert(const pair<string, T>& par) {
-    string clave = par.first;
-    T def = par.second;
-    T *aver = &def;
+void string_map<T>::insert(const pair<string, T>& p) {
+    T *def = new T(p.second);
     Nodo* nuevo = raiz;
-    for(char c: par.first){
+    for(char c: p.first){
         int i = int(c);
         if(nuevo->siguientes[i] == nullptr){
             nuevo->siguientes[i] = new Nodo();
         }
         nuevo = nuevo->siguientes[i];
     }
-    nuevo->definicion = &def;
+    nuevo->definicion = def;
     _size++;
 }
-
 
 template <typename T>
 T& string_map<T>::operator[](const string& clave){
@@ -109,7 +102,6 @@ T& string_map<T>::at(const string& clave) {
     return *(nuevo->definicion);
 }
 
-
 template <typename T>
 void string_map<T>::erase(const string& clave) {
     // COMPLETAR
@@ -117,15 +109,10 @@ void string_map<T>::erase(const string& clave) {
 
 template <typename T>
 int string_map<T>::size() const{
-    return _size;
+    return this->_size;
 }
 
 template <typename T>
 bool string_map<T>::empty() const{
-    for(int i = 0; i < raiz->siguientes.size(); i++){
-        if(raiz->siguientes[i] != nullptr){
-            return false;
-        }
-    }
-    return true;
+    return (_size == 0);
 }

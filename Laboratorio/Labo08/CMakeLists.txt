@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(Labo08)
+project(taller_trie)
 
 # Algunos flags para pasar al compilador (gnu++11 en vez de c++11 para que sea cross-plat)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=gnu++11 -ggdb3 -g")
