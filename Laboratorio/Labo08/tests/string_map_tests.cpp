@@ -133,42 +133,6 @@ TEST(string_map_test, no_aliasing) {
 }
 
 
-TEST(string_map_test, TrieDeTries) {
-    string_map<int> vacio;
-    string_map<int> singleton;
-    string_map<int> sin_prefijos;
-    string_map<int> con_prefijos;
-    string_map<string_map<int>> dicc_dicc;
-
-    singleton.insert(make_pair("hola", 1));
-
-    sin_prefijos.insert(make_pair("hola", 1));
-    sin_prefijos.insert(make_pair("chau", 2));
-    sin_prefijos.insert(make_pair("adios",  3));
-
-    con_prefijos.insert(make_pair("c",  1));
-    con_prefijos.insert(make_pair("casa",  2));
-    con_prefijos.insert(make_pair("casona",  3));
-
-    dicc_dicc.insert(make_pair("vacio",  vacio));
-    dicc_dicc.insert(make_pair("singleton",  singleton));
-    dicc_dicc.insert(make_pair("sin_prefijos",  sin_prefijos));
-    dicc_dicc.insert(make_pair("con_prefijos",  con_prefijos));
-
-	EXPECT_FALSE(dicc_dicc.at("vacio").count("hola") == 1);
-
-	EXPECT_EQ(dicc_dicc.at("singleton").at("hola"), 1);
-
-	EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("hola"), 1);
-	EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("chau"), 2);
-	EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("adios"), 3);
-
-	EXPECT_EQ(dicc_dicc.at("con_prefijos").at("c"), 1);
-	EXPECT_EQ(dicc_dicc.at("con_prefijos").at("casa"), 2);
-	EXPECT_EQ(dicc_dicc.at("con_prefijos").at("casona"), 3);
-
-}
-
 TEST(string_map_test, eraseUnicaClave) {
     string_map<int> singleton;
     singleton.insert(make_pair("hola", 1));
@@ -217,7 +181,43 @@ TEST(string_map_test, erase) {
     EXPECT_FALSE(sin_prefijos.count("adios") == 1);
 }
 
-#ifdef EXT
+TEST(string_map_test, TrieDeTries) {
+    string_map<int> vacio;
+    string_map<int> singleton;
+    string_map<int> sin_prefijos;
+    string_map<int> con_prefijos;
+    string_map<string_map<int>> dicc_dicc;
+
+    singleton.insert(make_pair("hola", 1));
+
+    sin_prefijos.insert(make_pair("hola", 1));
+    sin_prefijos.insert(make_pair("chau", 2));
+    sin_prefijos.insert(make_pair("adios",  3));
+
+    con_prefijos.insert(make_pair("c",  1));
+    con_prefijos.insert(make_pair("casa",  2));
+    con_prefijos.insert(make_pair("casona",  3));
+
+    dicc_dicc.insert(make_pair("vacio",  vacio));
+    dicc_dicc.insert(make_pair("singleton",  singleton));
+    dicc_dicc.insert(make_pair("sin_prefijos",  sin_prefijos));
+    dicc_dicc.insert(make_pair("con_prefijos",  con_prefijos));
+
+    EXPECT_FALSE(dicc_dicc.at("vacio").count("hola") == 1);
+
+    EXPECT_EQ(dicc_dicc.at("singleton").at("hola"), 1);
+
+    EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("hola"), 1);
+    EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("chau"), 2);
+    EXPECT_EQ(dicc_dicc.at("sin_prefijos").at("adios"), 3);
+
+    EXPECT_EQ(dicc_dicc.at("con_prefijos").at("c"), 1);
+    EXPECT_EQ(dicc_dicc.at("con_prefijos").at("casa"), 2);
+    EXPECT_EQ(dicc_dicc.at("con_prefijos").at("casona"), 3);
+
+}
+
+//#ifdef EXT
 
 TEST(string_map_test, operator_corchetes) {
     string_map<int> sin_prefijos;
@@ -240,7 +240,7 @@ TEST(string_map_test, operator_corchetes) {
     EXPECT_EQ(con_prefijos["casona"], 3);
 }
 
-#endif
+//#endif
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);

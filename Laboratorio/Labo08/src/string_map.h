@@ -90,7 +90,11 @@ private:
 
     Nodo* raiz;
     int _size;
-    void eliminarHijos(vector<Nodo*> v);
+
+    void copiar(vector<Nodo*>& v1, vector<Nodo*> v2);
+    void eliminar(Nodo* n);
+    void eliminarHijos(vector<Nodo *> v);
+    void borrar(Nodo* n, string clave, int d);
 };
 
 #include "string_map.hpp"

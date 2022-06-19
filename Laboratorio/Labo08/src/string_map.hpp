@@ -1,3 +1,6 @@
+
+#include "string_map.h"
+
 template <typename T>
 string_map<T>::string_map(){
     raiz = new Nodo();
@@ -6,18 +9,23 @@ string_map<T>::string_map(){
 
 template <typename T>
 string_map<T>::~string_map(){
-    eliminarHijos(raiz->siguientes);
-    delete raiz;
+    eliminar(raiz);
+}
+
+template<class T>
+void string_map<T>::eliminar(Nodo * n) {
+    if(n != nullptr){
+        eliminarHijos(n->siguientes);
+        delete n->definicion;
+        delete n;
+    }
 }
 
 template<class T>
 void string_map<T>::eliminarHijos(vector<Nodo *> v) {
-    for(int it = 0; it < v.size(); it++){
-        if(v[it]->siguientes.empty()){
-            delete v[it];
-        }else{
-            eliminarHijos(v[it]->siguientes);
-            delete v[it];
+    for(int i = 0; i < v.size(); i++){
+        if(v[i] != nullptr){
+            eliminar(v[i]);
         }
     }
 }
@@ -32,10 +40,25 @@ string_map<T>& string_map<T>::operator=(const string_map<T>& d) {
     if(this != &d){
         this->~string_map();
         if(d._size != 0){
-            this->raiz = d.raiz;
+            this->raiz = new Nodo();
+            copiar(this->raiz->siguientes, d.raiz->siguientes);
         }
     }
     return *this;
+}
+
+template<typename T>
+void string_map<T>::copiar(vector<Nodo *>& v1, vector<Nodo*> v2) {
+    for(int i = 0 ; i < v2.size(); i++){
+        if(v2[i] != nullptr){
+            v1[i] = new Nodo();
+            if(v2[i]->definicion != nullptr){
+                T *def = new T(*v2[i]->definicion);
+                v1[i]->definicion = def;
+            }
+            copiar(v1[i]->siguientes, v2[i]->siguientes);
+        }
+    }
 }
 
 template<typename T>
@@ -63,7 +86,10 @@ T& string_map<T>::operator[](const string& clave){
         }
         recorrer = recorrer->siguientes[i];
     }
-    return *(recorrer->definicion);
+    if(recorrer->definicion == nullptr){
+        recorrer->definicion = new T();
+    }
+    return *recorrer->definicion;
 }
 
 template <typename T>
@@ -77,7 +103,11 @@ int string_map<T>::count(const string& clave) const{
             nuevo = nuevo->siguientes[i];
         }
     }
-    return 1;
+    if(nuevo->definicion != nullptr){
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 template <typename T>
@@ -104,7 +134,31 @@ T& string_map<T>::at(const string& clave) {
 
 template <typename T>
 void string_map<T>::erase(const string& clave) {
-    // COMPLETAR
+    //Precondicion: la clave esta definida
+    borrar(raiz, clave, 0);
+}
+
+template<typename T>
+void string_map<T>::borrar(Nodo *n, string clave, int d) {
+    if(clave.length() == d){
+        n->definicion = nullptr;
+        n = nullptr;
+    }else{
+        char c = clave[d];
+        int i = int(c);
+        borrar(n->siguientes[i], clave, d+1);
+        int cant = 0;
+        for(int i = 0 ; i < n->siguientes.size(); i++){
+            if(n->siguientes[i] != nullptr){
+                cant++;
+            }
+        }
+        if(cant == 0){
+            if(n->definicion == nullptr){
+                n = nullptr;
+            }
+        }
+    }
 }
 
 template <typename T>
@@ -116,3 +170,5 @@ template <typename T>
 bool string_map<T>::empty() const{
     return (_size == 0);
 }
+
+
