@@ -37,13 +37,13 @@ string_map<T>::string_map(const string_map<T>& aCopiar) : string_map() {
 
 template<typename T>
 string_map<T>& string_map<T>::operator=(const string_map<T>& d) {
-    if(this != &d){
-        this->~string_map();
-        if(d._size != 0){
-            this->raiz = new Nodo();
-            copiar(this->raiz->siguientes, d.raiz->siguientes);
-        }
+
+    eliminar(raiz);
+    this->raiz = new Nodo();
+    if(d.size() != 0){
+        copiar(this->raiz->siguientes, d.raiz->siguientes);
     }
+    this->_size = d.size();
     return *this;
 }
 
