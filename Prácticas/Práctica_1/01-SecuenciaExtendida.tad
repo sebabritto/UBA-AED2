@@ -20,17 +20,19 @@ TAD SecuenciaExtendida(α)
                   			prim(s) • prim(s) • duplicar(fin(s)) 
                   		fi
 		//--------------------------------------------------------------------------
-		•<=•(s,t) ≡	if ¬(vacia?(s) ∧ vacia?(t)) then 
-                		(prim(s) < prim(t) ∧ prim(s) = prim(t)) ∧  •<=•(fin(s),fin(t)) 
-                	else 
-                		vacia?(s) 
-                	fi
+		s <= t ≡	if ¬(vacía?(s) ∧ vacía?(t)) then
+								(prim(s) = prim(t) ∧ fin(s) <= fin(t)) ∨ prim(s) < prim(t)
+							else
+								vacía?(s)
+							fi
+							
+		s <= t ≡ vacía?(s) ∨L (¬vacía?(t)) ∧L ((prim(s) < prim(t)) ∨ (¬(prim(s) > prim(t))) ∧ fin(s) <= fin(t))
 		//--------------------------------------------------------------------------
-		reverso(s) ≡if vacia?(s) then 
+		reverso(s) ≡	if vacia?(s) then 
                   		s 
               		else 
                   		reverso(fin(s)) ∘ prim(s) 
-                  	fi
+                  fi
 		//--------------------------------------------------------------------------
 		capicua(s) ≡	if ¬(vacia?(s)) then 
                   	prim(s) = ult(s) ∧ capicua(com(fin(s))) 
