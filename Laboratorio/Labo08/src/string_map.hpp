@@ -37,13 +37,13 @@ string_map<T>::string_map(const string_map<T>& aCopiar) : string_map() {
 
 template<typename T>
 string_map<T>& string_map<T>::operator=(const string_map<T>& d) {
-    if(this != &d){
-        this->~string_map();
-        if(d._size != 0){
-            this->raiz = new Nodo();
-            copiar(this->raiz->siguientes, d.raiz->siguientes);
-        }
+
+    eliminar(raiz);
+    this->raiz = new Nodo();
+    if(d.size() != 0){
+        copiar(this->raiz->siguientes, d.raiz->siguientes);
     }
+    this->_size = d.size();
     return *this;
 }
 
@@ -63,7 +63,8 @@ void string_map<T>::copiar(vector<Nodo *>& v1, vector<Nodo*> v2) {
 
 template<typename T>
 void string_map<T>::insert(const pair<string, T>& p) {
-    T *def = new T(p.second);
+
+    //T *def = new T(p.second);
     Nodo* nuevo = raiz;
     for(char c: p.first){
         int i = int(c);
@@ -72,6 +73,10 @@ void string_map<T>::insert(const pair<string, T>& p) {
         }
         nuevo = nuevo->siguientes[i];
     }
+    if(count(p.first)){
+        delete nuevo->definicion;
+    }
+    T *def = new T(p.second);
     nuevo->definicion = def;
     _size++;
 }
@@ -138,11 +143,34 @@ void string_map<T>::erase(const string& clave) {
     borrar(raiz, clave, 0);
 }
 
+//c a s a s
+//- - - o
+//- - - - n a
+/*template<typename T>
+void string_map<T>::borrarBis(string clave) {
+    for(){
+
+    }
+}*/
+
 template<typename T>
 void string_map<T>::borrar(Nodo *n, string clave, int d) {
-    if(clave.length() == d){
+    bool tieneHijos = false;
+    if(clave.length() == d){ //0
+        int cant2 = 0;
+        for(int i = 0 ; i < n->siguientes.size(); i++){ //Recorro los hijos.
+            if(n->siguientes[i] != nullptr){
+                cant2++;
+            }
+        }
+        delete n->definicion;
         n->definicion = nullptr;
-        n = nullptr;
+        if(cant2 == 0){ //No tiene hijos
+            n = nullptr;
+            delete n;
+        }else{          //Tiene hijos
+            tieneHijos = true;
+        }
     }else{
         char c = clave[d];
         int i = int(c);
@@ -153,13 +181,16 @@ void string_map<T>::borrar(Nodo *n, string clave, int d) {
                 cant++;
             }
         }
-        if(cant == 0){
-            if(n->definicion == nullptr){
-                n = nullptr;
-            }
+        if(cant == 0 && n->definicion == nullptr){
+            delete n->definicion;
+            n = nullptr;
+            delete n;
+
         }
     }
 }
+
+
 
 template <typename T>
 int string_map<T>::size() const{
