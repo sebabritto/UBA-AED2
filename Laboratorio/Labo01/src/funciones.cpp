@@ -118,6 +118,17 @@ set<int> interseccion(set<int> a, set<int> b) {
     }
     return res;
 }
+/*
+set<int> interseccion(set<int> a, set<int> b) {
+    set<int> res;
+    for(int i: a){
+        if(b.count(i) == 1){
+            res.insert(i);
+        }
+    }
+    return res;
+}
+*/
 
 // Ejercicio 8
 bool yaPertenece(map<int, set<int>> m, int elem){
@@ -146,7 +157,15 @@ map<int, set<int>> agrupar_por_unidades(vector<int> s) {
     }
     return res;
 }
-
+/*
+map<int, set<int>> agrupar_por_unidades(vector<int> s) {
+    map<int, set<int>> res;
+    for(int i = 0; i < s.size(); i++){
+        res[s[i]%10].insert(s[i]);
+    }
+    return res;
+}
+*/
 // Ejercicio 9
 vector<char> traducir(vector<pair<char, char>> tr, vector<char> str) {
     vector<char> res = str;
@@ -176,7 +195,22 @@ bool integrantes_repetidos(vector<Mail> s) {
     }
     return false;
 }
-
+/*
+bool integrantes_repetidos(vector<Mail> s) {
+    for(int i = 0; i < s.size(); i++){
+        for(int j = i + 1; j < s.size(); j++){
+            for(LU a: s[i].libretas()){
+                for(LU b: s[j].libretas()){
+                    if(a == b && s[i].libretas() != s[j].libretas()){
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+*/
 // Ejercicio 11
 map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
     map<set<LU>, Mail> res;
@@ -196,4 +230,18 @@ map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
     }
     return res;
 }
-
+/*
+map<set<LU>, Mail> entregas_finales(vector<Mail> s) {
+    map<set<LU>, Mail> res;
+    for(int i = 0; i < s.size(); i++){
+        if(res.count(s[i].libretas()) != 1 && s[i].adjunto()){
+            res[s[i].libretas()] = s[i];
+        }else{
+            if(res[s[i].libretas()].fecha() < s[i].fecha() && s[i].adjunto()){
+                res[s[i].libretas()] = s[i];
+            }
+        }
+    }
+    return res;
+}
+*/
