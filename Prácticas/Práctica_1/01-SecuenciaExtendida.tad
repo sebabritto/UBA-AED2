@@ -41,20 +41,25 @@ TAD SecuenciaExtendida(α)
                   fi
 		//--------------------------------------------------------------------------
     esPrefijo?(s,t) ≡ if ¬(vacia?(s) ∨ vacia?(t)) then 
-							s = t ∨ esPrefijo(s, com(t)) 
-						  else 
-							(vacia?(s) ∧ vacia(t)) ∨ (vacia?(s) ∧ ¬vacia?(t)) 
-						  fi
+												s = t ∨ esPrefijo(s, com(t)) 
+											else 
+												(vacia?(s) ∧ vacia(t)) ∨ (vacia?(s) ∧ ¬vacia?(t)) 
+										  fi
+		esPrefijo?(s, t) ≡	if ¬(vacia?(s) ∨ vacia?(t)) then
+													prim(s) = prim(t) ∧ esPrefijo?(fin(s), fin(t))
+												else
+													vacía?(s)
+												fi
 		//--------------------------------------------------------------------------
 		buscar(s, t) ≡	if vacia?(s) then 
-						  0 
-						else 
-							if esPrefijo(s, t) then 
-								0 
-							else 
-								1 + buscar(s, fin(t)) 
-							fi
-						fi
+										  0 
+										else 
+											if esPrefijo(s, t) then 
+												0 
+											else 
+												1 + buscar(s, fin(t)) 
+											fi
+										fi
 		//--------------------------------------------------------------------------
     estaOrdenada?(s) ≡ (long(s) < 2) ∨ (prim(s) < prim(fin(s)) ∧ estaOrdenada?(fin(s)))
 	  //--------------------------------------------------------------------------

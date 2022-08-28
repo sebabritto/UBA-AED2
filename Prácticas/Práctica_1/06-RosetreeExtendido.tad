@@ -17,7 +17,7 @@ TAD RosetreeExtendido(α)
 		devolverNivel: rosetree(α) x nat -> secu(α)
 		nodosEnEseNivel: secu(secu(α)) x nat -> secu(α)
 		devolverNodoEnNivel: secu(α) x nat -> α
-	Axiomas: ∀ r: rosetree, ∀ s: secu(rosetree(α))
+	Axiomas: ∀ r: rosetree, ∀ s: secu(rosetree(α)), ∀ n: nat
 		altura(r) ≡ if hoja?(r) then
 												1
 										else
@@ -61,13 +61,13 @@ TAD RosetreeExtendido(α)
 		ramas(r) ≡  if nil?(r) then
 										<>
 								else
-										agregarATodos(raiz(r), ramasAux(hijos(r)))
+										agregarATodos(ramasAux(hijos(r)), raiz(r))
 								fi
 		//--------------------------------------------------------------------------
 		agregarATodos(s, n) ≡   if vacia?(s) then
 																<>
 														else
-																(n • prim(s)) • agregarATodos(n, fin(s))
+																(s • prim(s)) • agregarATodos(n, fin(s))
 														fi
 		//--------------------------------------------------------------------------
 		ramasAux(s) ≡   if vacia?(s) then
@@ -76,15 +76,15 @@ TAD RosetreeExtendido(α)
 												ramas(prim(s)) & ramasAux(fin(h))
 										fi
 		//--------------------------------------------------------------------------
-		ramasAcotadasAux(s, n) ≡if vacia?(s) then
-																s
-														else
-																if long(prim(s)) <= n then
-																		prim(s) • ramasAcotadasAux(fin(s), n)
-																else
-																		ramasAcotadasAux(fin(s), n)
-																fi
-														fi
+		ramasAcotadasAux(s, n) ≡	if vacia?(s) then
+																	s
+															else
+																	if long(prim(s)) <= n then
+																			prim(s) • ramasAcotadasAux(fin(s), n)
+																	else
+																			ramasAcotadasAux(fin(s), n)
+																	fi
+															fi
 		//--------------------------------------------------------------------------
 		devolverNivel(r, n) ≡   if n = 0 then
 																<>
