@@ -1,0 +1,66 @@
+ 	Representación:
+		Mapa se representa con estr donde
+		estr es tupla ⟨horizontales:	conj(Nat), verticales: conj(Nat) ⟩
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ true
+---
+Función de abstracción:
+	Abs:	estr	->	Mapa	{Rep(e)}
+	(∀e: estr) Abs(e) =obs m: Mapa | (1)∧(2)
+		donde:
+		(1)	≡	horizontales(m) = e.horizontales
+		(2)	≡	verticales(m) = e.verticales
+---
+Interfaz:
+	Se explica con:	Mapa
+	Géneros:		mapa
+	
+	Operaciones básicas:
+		crear(in hs: conj(Nat), in vs: conj(Nat))	-> res: mapa
+		Pre ≡ {true}
+		Post ≡ {res =obs crear(hs, vs)}		
+		Complejidad: O(copy(hs), copy(vs))
+		Descripción: Crea un mapa
+		---
+		horizontales(in m: mapa) -> res: conj(Nat)
+		Pre ≡ {true}
+		Post ≡ {res =obs horizontales(m)}
+		Complejidad:
+		Descripción:
+		---
+		verticales(in m: mapa) -> res: conj(Nat)
+		Pre ≡ {true}
+		Post ≡ {res =obs verticales(m)}
+		Complejidad:
+		Descripción:
+		---
+		unirMapa(in/out m:mapa, m':mapa) -> res: estr
+		Pre ≡ {true}
+		Post ≡ {res =obs <m.horizontales ∪ m'.horizontales, m.verticales ∪ m'.verticales>}
+		Complejidad: O(cardinal(horizontales(m')) + cardinal(verticales(m')))
+		Descripción: 
+		---
+	Algoritmos del módulo:
+		icrear(in hs: conj(Nat), in vs: conj(Nat)) -> res: estr 
+			estr.horizontales ← hs
+			estr.verticales ← vs
+			return estr
+		Complejidad: O(copy(hs) + copy(vs))
+		---
+		ihorizontales(in e: estr) -> res: conj(Nat)
+			res ← e.horizontales
+			return res
+		Complejidad: 
+		---
+		iverticales(in e: estr) -> res: conj(Nat)
+			res ← e.verticales
+			return res
+		Complejidad: 
+		---
+		iunirMapa(in/out m: mapa, in m': mapa) -> res: estr
+			res ← <m.horizontales ∪ m'.horizontales, m.verticales ∪ m'.verticales>
+			return res
+		Complejidad: O(cardinal(horizontales(m')) + cardinal(verticales(m')))
+		---
