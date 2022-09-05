@@ -1,0 +1,16 @@
+TAD DiccionarioExtendido(clave, significado)
+
+	extiende Diccionario(clave, significado)
+	
+	Otras Operaciones:
+		tieneValor:			dicc(α, nat) × nat -> bool
+		tieneValorAux:	dicc(α, nat) × conj(α) × nat -> bool
+	Axiomas:
+		tieneValor(d, k) ≡ tieneValorAux(d, claves(d), k)
+		tieneValorAux(d, c, k) ≡	if vacía?(c) then
+																	false
+															else
+																	obtener(dameUno(c), k) = k ∨ tieneValorAux(d, sinUno(c), k)
+															fi
+	Fin TAD
+	

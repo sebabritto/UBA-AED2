@@ -1,0 +1,71 @@
+TAD Fila
+	Géneros:	fila
+	Observadores Básicos:
+		Esperando: persona × fila -> bool
+		Posicion: persona p × fila -> nat       {Esperando(p, f)}
+		SeColo?: persona p × fila f -> bool
+		
+	Generadores:
+		AbrirVentanilla:  -> fila
+		Llegar: persona p × fila f -> fila      {¬Esperando(p,f)}
+		Atender: fila f -> fila                 {¬Vacia(f)}
+		Retirarse: persona p × fila f -> fila   {Esperando(p, f)}
+		ColarseAdelanteDe: persona p × persona q × fila f -> fila
+		
+	Otras Operaciones:
+		Longitud: fila -> nat
+		Vacia: fila -> bool
+		
+	Axiomas: ∀ p1, p2, p3: persona, ∀ f: fila
+	
+		Esperando(p1, AbrirVentanilla) ≡ false
+		Esperando(p1, Llegar(p2, f)) ≡ (p =obs p2) ∨ (Esperando(p1, f))
+		Esperando(p1, Atender(f)) ≡ (Posicion(p1, f) = 1) ∨ Esperando(p1, f)
+		Esperando(p1, Retirarse(p2, f)) ≡ ¬(p1 =obs p2) ∧ Esperando(p1, f)
+		Esperando(p1, ColarseAdelanteDe(p2, p3, f)) ≡ (p1 =obs p2 ∨ p1 = p3) ∨ Esperando(p1, f)
+		//--------------------------------------------------------------------------
+		Posicion(p1, AbrirVentanilla) ≡ No cumple la restriccion, no se axiomatiza
+		Posicion(p1, Llegar(p2, f)) ≡   if p1 = p2 then
+																				Longitud(f)
+																		else
+																				Posicion(p1, f)
+																		fi
+		Posicion(p1, Atender(f)) ≡ Posicion(p,f) - 1
+		Posicion(p1, Retirarse(p2, f)) ≡ if p1 =obs p2 then
+																				0
+																		else
+																				if(Posicion(p1, f) < Posicion(p2, f))
+																						Posicion(p1, f)
+																				else
+																						Posicion(p1, f) - 1
+																				fi
+																		fi
+		Posicion(p1, ColarseAdelanteDe(p2, p3, f)) ≡ if p1 =obs p2 then
+																										Posicion(p3, f)
+																								else
+																										if p1 =obs p3 then
+																												Posicion(p3, f) + 1
+																										else
+																												if Posicion(p1, f) < Posicion(p3, f) then
+																														Posicion(p1, f)
+																												else
+																														Posicion(p1, f) + 1
+																												fi
+																										fi
+																								fi
+		//--------------------------------------------------------------------------																						
+		SeColo?(p1, AbrirVentanilla) ≡ false
+		SeColo?(p1, Llegar(p2, f)) ≡ ¬(p1 =obs p2) ∨ SeColo?(p1, f)
+		SeColo?(p1, Atender(f)) ≡ SeColo?(p1, f)
+		SeColo?(p1, Retirarse(p2, f)) ≡ SeColo?(p1, f)
+		SeColo?(p1, ColarseAdelanteDe(p2, p3, f)) ≡ (p1 =obs p2) ∨ SeColo?(p1, f)
+    //--------------------------------------------------------------------------
+		Longitud(AbrirVentanilla) ≡ 0
+		Longitud(Llegar(p1, f)) ≡ Longitud(f) + 1
+		Longitud(Atender(f)) ≡ Longitud(f) - 1
+		Longitud(Retirarse(p1, f)) ≡ Longitud(f) - 1
+		Longitud(ColarseAdelanteDe(p1, p2, f)) ≡ Longitud(f) + 1
+    //--------------------------------------------------------------------------
+		Vacia(f) ≡ Longitud(f) =obs 0
+		
+	Fin TAD

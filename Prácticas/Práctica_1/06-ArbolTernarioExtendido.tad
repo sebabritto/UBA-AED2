@@ -1,0 +1,40 @@
+TAD ArbolTernarioExtendido(α)
+	extiende
+		ArbolTernario(α)
+	Otras Operaciones:
+		altura: at(α) → nat
+		nivelNormal: at(α) × nat → bool
+		acotado?: at(α) × nat → bool
+		acotadoPorNivel: at(α) × nat × nat → bool
+		contarNodosEnNivel: at(α) × nat → nat
+	Axiomas: ∀ a: at(α), ∀ k: nat
+		altura(a) ≡ if nil?(a) then
+										0
+								else
+										1 + max(altura(izq(a)), altura(med(a)), altura(der(a)))
+								fi
+		//--------------------------------------------------------------------------
+		nivelNormal(a, k) ≡ if k <= altura(a) then
+														if k = 1 then
+																¬nil?(a) y ¬nil?(izq(a)) ∧ ¬nil?(mid(a)) ∧ ¬nil(der(a))
+														else
+																nivelNormal(izq(a), k-1) ∧
+																nivelNormal(mid(a), k-1) ∧
+																nivelNormal(der(a), k-1)
+														fi
+												else 
+														false
+												fi
+		//--------------------------------------------------------------------------
+		acotado(a,k) ≡ (k = 0 ∨ nil?(a)) ∨ (1 <= k ∧ k <= 3 ∧ acotadoPorNivel(a, k, altura(a)-1))
+		//--------------------------------------------------------------------------
+		acotadoPorNivel(a,k,n) ≡ (n = 0) ∨ (contarNodosEnNivel(a, n) <= k ∧ acotadoPorNivel(a, k, n-1))
+		//--------------------------------------------------------------------------
+		contarNodosEnNivel(a, n) ≡  if n = 0 ∨ nil?(a) then
+																		β(¬nil?(a))
+																else
+																		contarNodosEnNivel(izq(a), n-1) +
+																		contarNodosEnNivel(med(a), n-1) +
+																		contarNodosEnNivel(der(a), n-1)
+																fi
+	Fin TAD

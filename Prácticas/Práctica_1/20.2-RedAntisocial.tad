@@ -1,0 +1,69 @@
+TAD Miembro es String
+
+TAD Red Antisocial
+
+	Igualdad Observacional:	(∀ r₀, r₁: red)(r₀ =obs r₁ ⇐⇒
+		(lider(r₀) = lider(r₁) ∧ expulsados(r₀) = expulsados(r₁) ∧L
+		(∀ m: miembro)(m ∈ miembros(r₀) ⇒L seguidoresTotales(r₀, m) = seguidoresTotales(r₁, m))));
+	
+	Géneros:	red
+	
+	Exporta: observadores, generadores, otras operaciones
+	
+	Usa:	Miembro, Bool, Nat
+	
+	Observadores Básicos:
+		lider: red -> miembro
+		seguidoresTotales: red r × miembro m -> conj(miembro)		{m ∈ miembros(r)}
+		expulsados: red -> conj(miembro)
+		
+	Generadores:
+		crear:	miembro -> red
+		convocar: red r × miembro m × miembro m' -> red				  {m ∈ miembros(r) ∧ m' ∉ {miembros(r) U expulsados(r)}}
+		enjuiciar: red r × miembro m × conj(miembro) cm -> red	{m ∈ miembros(r) ∧ cm ⊆ miembros(r) ∧ #cm = 3}
+		absolver: red r × miembro m -> red											{m ∈ expulsados(r)}
+		
+	Otras Operaciones:
+		miembros: red -> conj(miembro)
+		#seguidores: red × miembro -> nat
+		cuantosSonSeguidores?: conj(miembro) cm × conj(miembro) cm' -> nat	
+		
+	Axiomas: ∀ r: red, ∀ m₀, m₁, m₂: miembro, ∀ cm, cm': conj(miembro)
+		lider(crear(m₀)) 						≡	m₀
+		lider(convocar(r, m₀, m₁))	≡	lider(r)
+		lider(enjuiciar(r, m₀, cm)) 		≡ lider(r)
+		lider(absolver(r,  m₀)) 		≡	lider(r)
+		//--------------------------------------------------------------------------
+		seguidoresTotales(crear(m₀), m₁) 						≡	Ø
+		seguidoresTotales(convocar(r, m₀, m₁), m₂)	≡	if m₀ = m₂ ∨ m₀ ∈ seguidoresTotales(r, m₂) then
+		 																								Ag(m₁, seguidoresTotales(r, m₂))
+																									else
+																										seguidoresTotales(r, m₂)
+																									fi
+		seguidoresTotales(enjuiciar(r, m₀, cm), m₁) ≡	if m₀ = m₁ ∧ cuantosSonSeguidores?(seguidoresTotales(r, m₀), cm) < 2
+																										Ø
+																									else
+																										seguidoresTotales(r, m₁)
+																									fi
+		seguidoresTotales(absolver(r, m₀), m₁) 			≡	seguidoresTotales(r, m₁)																							
+		//--------------------------------------------------------------------------
+		expulsados(crear(m₀)) 						≡	Ø
+		expulsados(convocar(r, m₀, m₁)) 	≡	expulsados(r)
+		expulsados(enjuiciar(r, m₀, cm)) 	≡	if cuantosSonSeguidores?(seguidoresTotales(r, m₀), cm) < 2 then
+																					Ag(m₀, expulsados(r)) U seguidoresTotales(r, m₀)
+																				else
+																					expulsados(r)
+																				fi
+		expulsados(absolver(r,  m₀)) 			≡	expulsados(r) - {m₀}
+		//--------------------------------------------------------------------------
+		miembros(r) ≡	Ag(lider(r), seguidoresTotales(r, lider(r)))
+		//--------------------------------------------------------------------------
+		#seguidores(r, m) ≡ #(seguidoresTotales(r, m))
+		//--------------------------------------------------------------------------
+		cuantosSonSeguidores?(cm, cm') ≡ β(dameUno(cm') ∈ cm) + 
+																				if Ø?(sinUno(cm')) then
+																					0
+																				else
+																					β(cuantosSonSeguidores?(cm, sinUno(cm')))
+																				fi																						
+Fin TAD
