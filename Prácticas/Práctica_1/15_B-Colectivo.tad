@@ -2,17 +2,44 @@ TAD Parada es Nat
 
 TAD Colectivo
 
-	Igualdad Observacional:	();
+	Igualdad Observacional:	(∀ c1, c2: colectivo)(#asientos(c1) = #asientos(c2) ∧ pasajeros(c1) = pasajeros(c2) ∧
+																								parada(c1) = parada(c2) ∧ paradaActual(c1) = paradaActual(c2));
 	
-	Géneros:	
+	Géneros:	colectivo
 	
 	Observadores Básicos:
-		#asientos:
-		pasajeros:
-		parada:
-		paradaActual:
+		#asientos:		colectivo -> nat
+		pasajeros:		colectivo -> multiconj(parada)
+		paradas:				colectivo -> nat
+		paradaActual:	colectivo -> nat
 		
 	Generadores:
 		crearColectivo: nat paradas × nat asientos	-> colectivo	{p > 0 ∧ esPar(a) ∧ a > 0}
 		subirPasajero:	nat parada × colectivo c 		-> colectivo	{p < paradas(c) ∧ p > paradaActual(c)}
 		avanzar:				colectivo c 								-> colectivo	{paradaActual(c) < paradas(c)}
+		
+	Axiomas: ∀ p, a: nat, ∀ c: colectivo
+		#asientos(crearColectivo(p, a))	≡ a
+		#asientos(subirPasajero(p, c)) 	≡ #asientos(c)
+		#asientos(avanzar(c)) 					≡ #asientos(c)
+		//--------------------------------------------------------------------------
+		pasajeros(crearColectivo(p, a)) ≡ Ø
+		pasajeros(subirPasajero(p, c)) 	≡	Ag(p, pasajeros(c))
+		pasajeros(avanzar(c))					 	≡	eliminarATodos(paradaActual(avanzar(c)), pasajeros(c))
+		
+		eliminarATodos: nat  × multiconj(parada) -> multiconj(parada)
+		eliminarATodos(p, mp) ≡	if #(p, mp) = 0 then
+															mp
+														else
+															eliminarATodos(p, mp - (p))
+														fi
+		//--------------------------------------------------------------------------
+		paradas(crearColectivo(p, a)) ≡ p
+		paradas(subirPasajero(p, c)) 	≡	paradas(c)
+		paradas(avanzar(c)) 					≡ paradas(c)
+		//--------------------------------------------------------------------------
+		paradaActual(crearColectivo(p, a))	≡	0
+		paradaActual(subirPasajero(p, c)) 	≡ paradaActual(c)
+		paradaActual(avanzar(c)) 						≡ paradaActual(c) + 1
+		//--------------------------------------------------------------------------
+	Fin TAD
