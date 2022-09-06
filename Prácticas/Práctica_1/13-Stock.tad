@@ -11,6 +11,8 @@ TAD Stock
 		Ventas: producto ⨉ stock -> nat
 		Cantidad: producto ⨉ stock -> nat
 		Minimo: producto p ⨉ stock -> nat		{estaRegistrado?(p)}
+		//Para algunas operaciones necesito saber si un producto tiene un sustituto y obtener tal sustituto,
+		//tal vez se pueda mejorar con un TAD Producto o con una lista(tupla(Producto, Sustituto))
 		esSustituto?: producto p1 ⨉ producto p2 ⨉ stock -> bool
 		
 	Generadores:
