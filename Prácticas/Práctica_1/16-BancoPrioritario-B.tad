@@ -1,0 +1,119 @@
+TAD Persona es Tupla(Nat dni, Bool bien)
+
+TAD Caja es Tupla(Nat id, Bool bien)
+
+TAD Banco
+
+	Igualdad Observacional:	();
+
+	Géneros:	banco
+	
+	Observadores Básicos:
+		cajas: 									banco 						-> conj(caja)
+		clientesEnFila: 				banco 						-> secu(cliente)
+		clientesTotales: 				banco 						-> secu(cliente)
+		clientesAtendidoXCaja:	caja c × banco b	-> secu(cliente)	{c ∈ cajas(b)}
+		
+	Generadores:
+		crear: 																						-> banco
+		agregarCaja:	caja c × banco b 										-> banco		{c ∉ cajas(b)}
+		ingresar: 		cliente cl × banco b 								-> banco  	{cl ∉ clientesEnFila(b)}
+		atender: 			caja c × banco 											-> banco		{c ∈ cajas(b) ∧ ¬vacía?(clientesEnFila(b))}
+		retirarse:    cliente cl × banco b								-> banco		{cl ∈ clientesEnFila(b)}
+		colarse: 			cliente cl × cliente cl' × banco b	-> banco		{cl ∉ clientesEnFila(b) ∧ cl' ∈ clientesEnFila(b) ∧ cl ≠ cl'}
+	Otras Operaciones:
+		agregarColado: cliente × cliente × secu(fila) -> secu(cliente)
+		hayClientesPrioritarios?: secu(cliente) -> bool
+		sacarCliente: cliente × secu(cliente) -> secu(cliente)
+		sacarClientePrioritario: secu(cliente) -> secu(cliente)
+		dameUnClientePrioritario: secu(cliente) -> cliente
+		dameUnClienteProle: secu(cliente) -> cliente
+	Axiomas:
+		cajas(crear()) 							≡ Ø
+		cajas(agregarCaja(cj, b)) 	≡	Ag(cj, cajas(b))
+		cajas(ingresar(cl, b))	 		≡	cajas(b)
+		cajas(atender(cj, b)) 			≡ cajas(b)
+		cajas(retirarse(cl, b)) 		≡ cajas(b)
+		cajas(colarse(cl, cl', b)) 	≡ cajas(b)
+		//--------------------------------------------------------------------------
+		clientesEnFila(crear()) 						≡	<>
+		clientesEnFila(agregarCaja(cj, b)) 	≡ clientesEnFila(b)
+		clientesEnFila(ingresar(cl, b)) 		≡ clientesEnFila(b) ◦ cl
+		clientesEnFila(atender(cj, b)) 			≡	if hayClientesPrioritarios?(clientesEnFila(b)) then
+																						sacarClientePrioritario(clientesEnFila(b))
+																					else
+																							if cj.bien then
+																								clientesEnFila(b)
+																							else
+																								fin(clientesEnFila(b))
+																					fi
+		clientesEnFila(retirarse(cl, b)) 		≡ sacarCliente(cl, clientesEnFila(b))
+		clientesEnFila(colarse(cl, cl', b)) ≡ agregarColado(cl, cl', clientesEnFila(b))
+		//--------------------------------------------------------------------------
+		clientesTotales(crear()) 							≡ <>
+		clientesTotales(agregarCaja(cj, b)) 	≡ clientesTotales(b)
+		clientesTotales(ingresar(cl, b)) 			≡ clientesTotales(b) ◦ cl
+		clientesTotales(atender(cj, b)) 			≡ clientesTotales(b)
+		clientesTotales(retirarse(cl, b)) 		≡ clientesTotales(b)
+		clientesTotales(colarse(cl, cl', b))	≡ clientesTotales(b) ◦ cl
+		//--------------------------------------------------------------------------
+		clientesAtendidoXCaja(cj, agregarCaja(cj', b)) 	≡	if cj = cj' then
+																												<>
+																											else
+																												clientesAtendidoXCaja(cj, b)
+																											fi
+		clientesAtendidoXCaja(cj, ingresar(cl, b)) 			≡	clientesAtendidoXCaja(cj, b)
+		clientesAtendidoXCaja(cj, atender(cj', b)) 			≡ if cj = cj' then
+																												if hayClientesPrioritarios?(b) then
+																													dameUnClientePrioritario(clientesEnFila(b))
+																												else if cj.bien then
+																													clientesAtendidoXCaja(cj, b)
+																												else
+																													dameUnClienteProle(clientesEnFila(b))
+																												fi
+																											else
+																												clientesAtendidoXCaja(cj, b)
+																											fi
+																											
+		clientesAtendidoXCaja(cj, retirarse(cl, b)) 		≡ clientesAtendidoXCaja(cj, b)
+		clientesAtendidoXCaja(cj, colarse(cl, cl', b))	≡ clientesAtendidoXCaja(cj, b)
+		//--------------------------------------------------------------------------
+		agregarColado(cl, cl', fila) ≡ 	if vacía?(fila) then
+																				fila
+																		else if prim(fila) = cl' then
+																				cl' • (cl • fin(fila))
+																		else
+																				prim(fila) • agregarColado(cl, cl', fin(fila))
+																		fi
+		//--------------------------------------------------------------------------
+		hayClientesPrioritarios?(fila) ≡	¬(vacía?(sc)) ∧ (π₂(prim(fila)) ∨ hayClientesPrioritarios?(fin(fila)))
+		//--------------------------------------------------------------------------
+		sacarCliente(cl, fila) ≡	if ¬está?(cl, fila) then
+																fila
+															else if prim(fila) = cl then
+																	sacarCliente(cl, fin(fila))
+															else
+																	prim(fila) • sacarCliente(cl, fin(fila))
+	 														fi
+		//--------------------------------------------------------------------------
+		sacarClientePrioritario(sc) ≡	if vacía?(sc) then
+																		sc
+																	else if π₂(prim(sc)) then
+																		fin(sc)
+																	else
+																		sacarClientePrioritario(fin(sc))
+																	fi
+		//--------------------------------------------------------------------------
+		dameUnClientePrioritario(sc) ≡	if π₂(prim(sc)) then
+																				prim(sc)
+																		else
+																				dameUnClientePrioritario(fin(sc))
+																		fi										
+		//--------------------------------------------------------------------------
+		dameUnClienteProle(sc) ≡	if ¬π₂(prim(sc)) then
+																	prim(sc)
+															else
+																	dameUnClienteProle(fin(sc))
+															fi
+		//--------------------------------------------------------------------------
+Fin TAD
