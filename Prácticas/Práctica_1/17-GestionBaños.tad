@@ -2,13 +2,14 @@ TAD Alumno es Nat
 
 TAD Baño
 	
-	Igualdad Observacional:	();
-	
+	Igualdad Observacional:	(∀ b1, b2: baño)(alumnosEnElBaño(b1) = alumnosEnElBaño(b2) ∧ esperandoAfuera(b1) = esperandoAfuera(b2) ∧
+																					alumnosTotal(b1) = alumnosTotal(b2) ∧ 
+																					(∀ a: alumno)(a ∈ alumnosTotal(b1) ⇒L #idasDeAlumno(a, b1) = #idasDeAlumno(a, b2));
 	Géneros:	baño
 	
-	Exporta: observadores, generadores
-	
 	Usa: Alumno, Bool, Nat
+	
+	Exporta: observadores, generadores
 	
 	Observadores Básicos:
 		alumnosEnElBaño:	baño 							-> conj(alumno)
@@ -74,12 +75,14 @@ TAD Baño
 		alumnosTotal(retirarse(a, b)) 		≡ alumnosTotal(b)
 		alumnosTotal(vuelveAlumno(a, b))	≡ alumnosTotal(b)
 		//--------------------------------------------------------------------------
+		bañoOcupado?(b) ≡ vacía?(alumnosEnElBaño(b))
+		//--------------------------------------------------------------------------
 		retirarAlumno(a, sa) ≡	if prim(sa) = a then
 															fin(sa)
 														else
 															prim(sa) • retirarAlumno(a, fin(sa))
 														fi
-		
+		//--------------------------------------------------------------------------
 		agregarAlumnosABaño(ca, sa) ≡ if vacía?(sa) then
 																		ca
 																	else
