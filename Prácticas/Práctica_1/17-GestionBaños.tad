@@ -1,21 +1,89 @@
+TAD Alumno es Nat
+
 TAD Baño
 	
 	Igualdad Observacional:	();
 	
 	Géneros:	baño
 	
-	Exporta:
+	Exporta: observadores, generadores
 	
-	Usa:
+	Usa: Alumno, Bool, Nat
 	
 	Observadores Básicos:
-	
+		alumnosEnElBaño:	baño 							-> conj(alumno)
+		esperandoAfuera: 	baño 							-> secu(alumno)
+		#idasDeAlumno: 		alumno a × baño b -> nat 						{a ∈ alumnosTotal(b)}
+		alumnosTotal: 		baño 							-> conj(alumno)
+		
 	Generadores:
-		crearBaño: conj(alumno) -> baño
-		 
+		crearBaño: 			conj(alumno) -> baño
+		solicitarBaño: 	alumno a × baño b -> baño {#idasDeAlumno(a, b) < 3 ∧ a ∉ (esperandoAfuera(b) ∪ alumnosEnElBaño(b)) ∧ a ∈ alumnosTotal(b)}
+		retirarse: 			alumno a × baño b -> baño	{a ∈ esperandoAfuera(b)}
+		vuelveAlumno: 	alumno a × baño b -> baño {a ∈ alumnosEnElBaño(b)}
+		
 	Otras Operaciones:
+		bañoOcupado?: baño -> bool
+		retirarAlumno: alumno a × secu(alumno) sa -> secu(alumno)		{a ∈ sa}
+		agregarAlumnosABaño: conj(alumno) × secu(alumnos) -> conj(alumno)
 		
 	Axiomas:
+		alumnosEnElBaño(crearBaño(ca)) 				≡ Ø
+		alumnosEnElBaño(solicitarBaño(a, b))	≡ if bañoOcupado?(b) then
+																							alumnosEnElBaño(b)
+																						else
+																							if vacía?(esperandoAfuera(b)) then
+																								Ag(a, alumnosEnElBaño(b))
+																							else
+																								alumnosEnElBaño(b)
+																							fi
+																						fi
+		alumnosEnElBaño(retirarse(a, b)) 			≡ alumnosEnElBaño(b)
+		alumnosEnElBaño(vuelveAlumno(a, b)) 	≡ if esperandoAfuera(b) ≥ 5 then
+																							agregarAlumnosABaño(alumnosEnElBaño(b) - (a), esperandoAfuera(b))
+																						else if esperandoAfuera(b) > 0 then
+																							Ag(prim(esperandoAfuera(b)), alumnosEnElBaño(b) - (a))
+																						else
+																							alumnosEnElBaño(b) - (a)
+																						fi
+		//--------------------------------------------------------------------------
+		esperandoAfuera(crearBaño(ca)) 				≡ <>
+		esperandoAfuera(solicitarBaño(a, b))	≡	if ¬bañoOcupado?(b)  then
+																							esperandoAfuera(b)
+																						else
+																							esperandoAfuera(b) ◦ a
+																						fi
+		esperandoAfuera(retirarse(a, b)) 			≡ retirarAlumno(a, esperandoAfuera(b))
+		esperandoAfuera(vuelveAlumno(a, b)) 	≡	if esperandoAfuera(b) ≥ 5 then
+																							<>
+																						else
+																							fin(esperandoAfuera(b))
+																						fi
+		//--------------------------------------------------------------------------
+		#idasDeAlumno(a, crearBaño(ca)) 				≡ 0
+		#idasDeAlumno(a, solicitarBaño(a', b)) 	≡ if a = a' then
+																								#idasDeAlumno(a, b) + 1
+																							else
+																								#idasDeAlumno(a, b)
+																							fi
+		#idasDeAlumno(a, retirarse(a', b))			≡ #idasDeAlumno(a, b)
+		#idasDeAlumno(a, vuelveAlumno(a', b)) 	≡ #idasDeAlumno(a, b)
+		//--------------------------------------------------------------------------
+		alumnosTotal(crearBaño(ca)) 			≡ ca
+		alumnosTotal(solicitarBaño(a, b)) ≡ alumnosTotal(b)
+		alumnosTotal(retirarse(a, b)) 		≡ alumnosTotal(b)
+		alumnosTotal(vuelveAlumno(a, b))	≡ alumnosTotal(b)
+		//--------------------------------------------------------------------------
+		retirarAlumno(a, sa) ≡	if prim(sa) = a then
+															fin(sa)
+														else
+															prim(sa) • retirarAlumno(a, fin(sa))
+														fi
 		
+		agregarAlumnosABaño(ca, sa) ≡ if vacía?(sa) then
+																		ca
+																	else
+																		Ag(prim(sa), agregarAlumnosABaño(ca, fin(sa)))
+																	fi
 Fin TAD
 	
