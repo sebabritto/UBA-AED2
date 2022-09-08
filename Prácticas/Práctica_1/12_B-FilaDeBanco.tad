@@ -1,71 +1,93 @@
 TAD Fila
 	Géneros:	fila
 	Observadores Básicos:
-		Esperando: persona × fila -> bool
-		Posicion: persona p × fila -> nat       {Esperando(p, f)}
-		SeColo?: persona p × fila f -> bool
+		Esperando:	persona × fila 			-> bool
+		Posicion:		persona p × fila 		-> nat      {Esperando(p, f)}
+		Longitud:		fila 								-> nat
+		SeColo?:		persona p × fila f	-> bool			{Esperando(p, f)}
 		
 	Generadores:
-		AbrirVentanilla:  -> fila
-		Llegar: persona p × fila f -> fila      {¬Esperando(p,f)}
-		Atender: fila f -> fila                 {¬Vacia(f)}
-		Retirarse: persona p × fila f -> fila   {Esperando(p, f)}
-		ColarseAdelanteDe: persona p × persona q × fila f -> fila
+		AbrirVentanilla:  																	-> fila
+		Llegar: 						persona p × fila f 							-> fila   {¬Esperando(p,f)}
+		//ColarseAdelanteDe podria tambien ser 'otra operacion' si es que no existiese el observador SeColo?.
+		//Si tuviera dos filas que parecen iguales:
+		//f1: llegar(p3, llegar(p2, llegar(p1, f))) = {p1, p2, p3}
+		//f2: ColarseAdelanteDe(p1, p2, llegar(p3, llegar(p2, f))): {p1, p2, p3}
+		//Si no existiese SeColo? no podria diferenciar ambas, pero al incluirlo puedo diferenciar ambas filas.
+		//SeColo?(p1, f1) ≡ false
+		//SeColo?(p1, f2) ≡ true
+		//Entonces ColarseAdelanteDe tiene que ser un generador.
+		ColarseAdelanteDe:	persona p × persona q × fila f	-> fila		{¬Esperando(p, f) ∧ Esperando(q, f)}
 		
 	Otras Operaciones:
-		Longitud: fila -> nat
-		Vacia: fila -> bool
+		//Atender sigue siendo una otra operacion por la justificacion en 12-A
+		Atender:		fila f 							-> fila   {¬Vacia(f)}
+		//Retirarse es una 'otra operacion' ya que podemos llegar a una misma instancia a que nunca hubiese llegado a la fila.
+		//Ejemplo:
+		//f1: retirarse(p2, llegar(p3, llegar(p2, llegar(p1, f)))) = {p1, p3}
+		//f2: llegar(p3, llegar(p1, f)) = {p1, p3}
+		Retirarse:	persona p × fila f	-> fila   {Esperando(p, f)}
+		Vacia: 			fila 								-> bool
 		
 	Axiomas: ∀ p1, p2, p3: persona, ∀ f: fila
 	
-		Esperando(p1, AbrirVentanilla) ≡ false
-		Esperando(p1, Llegar(p2, f)) ≡ (p =obs p2) ∨ (Esperando(p1, f))
-		Esperando(p1, Atender(f)) ≡ (Posicion(p1, f) = 1) ∨ Esperando(p1, f)
-		Esperando(p1, Retirarse(p2, f)) ≡ ¬(p1 =obs p2) ∧ Esperando(p1, f)
-		Esperando(p1, ColarseAdelanteDe(p2, p3, f)) ≡ (p1 =obs p2 ∨ p1 = p3) ∨ Esperando(p1, f)
+		Esperando(p1, AbrirVentanilla())	≡ false
+		Esperando(p1, Llegar(p2, f))			≡ (p1 =obs p2) ∨ (Esperando(p1, f))
+		Esperando(p1, ColarseAdelanteDe(p2, p3, f)) ≡ (p1 = p2 ∨ p1 = p3) ∨ Esperando(p1, f)
 		//--------------------------------------------------------------------------
-		Posicion(p1, AbrirVentanilla) ≡ No cumple la restriccion, no se axiomatiza
-		Posicion(p1, Llegar(p2, f)) ≡   if p1 = p2 then
-																				Longitud(f)
-																		else
-																				Posicion(p1, f)
-																		fi
-		Posicion(p1, Atender(f)) ≡ Posicion(p,f) - 1
-		Posicion(p1, Retirarse(p2, f)) ≡ if p1 =obs p2 then
-																				0
-																		else
-																				if(Posicion(p1, f) < Posicion(p2, f))
-																						Posicion(p1, f)
+		Posicion(p1, AbrirVentanilla())	≡ No cumple la restriccion, no se axiomatiza
+		Posicion(p1, Llegar(p2, f)) 		≡   if p1 = p2 then
+																						Longitud(f)
 																				else
-																						Posicion(p1, f) - 1
+																						Posicion(p1, f)
 																				fi
-																		fi
-		Posicion(p1, ColarseAdelanteDe(p2, p3, f)) ≡ if p1 =obs p2 then
+		//f = {p3, p4, p5}
+		//ColarseAdelanteDe(p2, p3, f) = {p2, p3, p4, p5}
+		Posicion(p1, ColarseAdelanteDe(p2, p3, f)) ≡	if p1 = p2 then
 																										Posicion(p3, f)
-																								else
-																										if p1 =obs p3 then
-																												Posicion(p3, f) + 1
-																										else
-																												if Posicion(p1, f) < Posicion(p3, f) then
-																														Posicion(p1, f)
-																												else
-																														Posicion(p1, f) + 1
-																												fi
-																										fi
-																								fi
+																									else if p1 =obs p3 then
+																										Posicion(p3, f) + 1
+																									else if Posicion(p1, f) < Posicion(p3, f) then
+																										Posicion(p1, f)
+																									else
+																										Posicion(p1, f) + 1
+																									fi
+		//--------------------------------------------------------------------------
+		Longitud(AbrirVentanilla())							≡ 0
+		Longitud(Llegar(p1, f)) 								≡ Longitud(f) + 1
+		Longitud(ColarseAdelanteDe(p1, p2, f))	≡ Longitud(f) + 1
 		//--------------------------------------------------------------------------																						
-		SeColo?(p1, AbrirVentanilla) ≡ false
+		SeColo?(p1, AbrirVentanilla()) ≡ false
 		SeColo?(p1, Llegar(p2, f)) ≡ ¬(p1 =obs p2) ∨ SeColo?(p1, f)
-		SeColo?(p1, Atender(f)) ≡ SeColo?(p1, f)
-		SeColo?(p1, Retirarse(p2, f)) ≡ SeColo?(p1, f)
 		SeColo?(p1, ColarseAdelanteDe(p2, p3, f)) ≡ (p1 =obs p2) ∨ SeColo?(p1, f)
     //--------------------------------------------------------------------------
-		Longitud(AbrirVentanilla) ≡ 0
-		Longitud(Llegar(p1, f)) ≡ Longitud(f) + 1
-		Longitud(Atender(f)) ≡ Longitud(f) - 1
-		Longitud(Retirarse(p1, f)) ≡ Longitud(f) - 1
-		Longitud(ColarseAdelanteDe(p1, p2, f)) ≡ Longitud(f) + 1
-    //--------------------------------------------------------------------------
+		//llegar(p4, ColarseAdelanteDe(p2, p3, llegar(p3, llegar(p1, f)))) ≡ {p1, p2, p3, p4}
+		Atender(AbrirVentanilla()) ≡ No cumple la condicion, no se axiomatiza. Se puede descartar escribir esto.
+		Atender(Llegar(p1, f)) 								≡ if Vacia(f) then
+																							f
+																						else
+																							Llegar(p1, Atender(f)) 
+																						fi
+		Atender(ColarseAdelanteDe(p1, p2, f)) ≡	if Posicion(p2, f) = 1 then
+																							f
+																						else
+																							ColarseAdelanteDe(p1, p2, Atender(f))
+																						fi
+		//--------------------------------------------------------------------------
+		Retirarse(p1, Llegar(p2, f)) 								≡ if p1 = p2 then
+																										f
+																									else
+																										Llegar(p2, Retirarse(p1, f))
+																									fi
+		//{p0, p2, p3, p4}
+		Retirarse(p1, ColarseAdelanteDe(p2, p3, f)) ≡	if p1 = p2 then
+																										f
+																									else if p1 = p3 then
+																										Llegar(p2, f)
+																									else
+																										ColarseAdelanteDe(p2, p3, Retirarse(p1, f))
+																									fi
+		//--------------------------------------------------------------------------
 		Vacia(f) ≡ Longitud(f) =obs 0
 		
 	Fin TAD
