@@ -28,5 +28,5 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
 
 - Trabajo Practico
   
-  - [Parte 1] (Lo subire cuando confirme que nos son los mismos del cuatrimestre anterior)
-  - [Parte 2] (Lo subire cuando confirme que nos son los mismos del cuatrimestre anterior)
+  - [Parte 1] (Lo subire cuando confirme que no son los mismos del cuatrimestre anterior)
+  - [Parte 2] (Lo subire cuando confirme que no son los mismos del cuatrimestre anterior)
