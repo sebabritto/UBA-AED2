@@ -20,11 +20,11 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
   - [2-Definición de Clases](Laboratorio/Labo02)
   - [3-Preprocesamiento y compilacion](Laboratorio/Labo03)
   - [4-Punteros](Laboratorio/Labo04)
-  - [5-Listas Enlazadas](Laboratorio/Labo05)
+  - [5-Listas Enlazadas] (Taller entregable)
   - [6-Templates](Laboratorio/Labo06)
   - [6.2-Algoritmos Genericos sobre Iteradores](Laboratorio/Labo06.2)
-  - [7-Conjunto sobre ABB](Laboratorio/Labo07)
-  - [8-Diccionario Trie](Laboratorio/Labo08)
+  - [7-Conjunto sobre ABB] (Taller entregable)
+  - [8-Diccionario Trie] (Taller entregable)
 
 - Trabajo Practico
   
