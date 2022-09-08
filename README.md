@@ -10,7 +10,7 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
 
 - Prácticas
 
-  - Práctica 1: [Enunciado](Prácticas/Práctica_1/Especificacion.pdf), [Soluciones](Prácticas/Práctica_1)
+  - Práctica 1: [Enunciado](Prácticas/Práctica_1/Especificacion.pdf), [Soluciones](Prácticas/Práctica_1) (Faltan correcciones)
   - Práctica 2: [Enunciado](Prácticas/Práctica_2/Complejidad.pdf), [Soluciones](Prácticas/Práctica_2) (Faltan ejercicios)
   - Práctica 3: [Enunciado](Prácticas/Práctica_3/Diseño.pdf), [Soluciones](Prácticas/Práctica_3) (Faltan ejercicios)
   
