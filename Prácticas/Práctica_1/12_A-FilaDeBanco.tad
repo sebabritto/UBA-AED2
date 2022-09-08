@@ -1,36 +1,48 @@
 TAD Fila
 	Géneros:	fila
-	Generadores:
-		AbrirVentanilla:  -> fila
-		Llegar: persona p × fila f -> fila
-		Atender: fila f -> fila
-		
+	
 	Observadores Básicos:
-		Esperando: persona × fila -> bool
-		Posicion: persona p × fila -> nat
+		Esperando:	persona × fila 		-> bool
+		Posicion:		persona p × fila	-> nat			{Esperando(p, f)}
+		//Si bien podria saber el largo de la fila fijando las personas que estan con Esperando y su posicion, al axiomatizar me encuentro con el problema de que
+		//solo puedo axiomatizar longitud con los generadores, por lo que esta en el borde de ser un observador o otra operacion, en mi caso prefiero que sea un observador.
+		Longitud:		fila 							-> nat
 		
+	Generadores:
+		AbrirVentanilla:  						-> fila
+		Llegar: 	persona p × fila f	-> fila 		{¬Esperando(p, f)}
+		
+			
 	Otras Operaciones:
-		Longitud: fila -> nat
-		Vacia: fila -> bool
+		//Atender es una 'otra operacion' ya que puedo llegar a la misma instancia atendiendo a una persona a que nunca hubiese llegado.
+		//Ejemplo:	fila1 = atender(p2, llegar(p1, llegar(p2, llegar(p3, fila)))) = {p1, p3}
+		//					fila2 = llegar(p1, llegar(p3, fila)) = {p1, p3}
+		//Con mis observadores tanto fila1 como fila2 son iguales, por lo tanto Atender no puede ser un generador.
+		Atender:	fila f 							-> fila			{¬Vacia(f)}
+		Vacia: 		fila 								-> bool
 		
 	Axiomas: ∀ p1, p2: persona, ∀ f: fila
-		Esperando(p1, AbrirVentanilla) ≡ false
-		Esperando(p1, Llegar(p2, f)) ≡ (p =obs p2) ∨ (Esperando(p1, f))
-		Esperando(p1, Atender(f)) ≡ (Posicion(p1, f) = 1) ∨ Esperando(p1, f)
+		Esperando(p1, AbrirVentanilla())	≡ false
+		Esperando(p1, Llegar(p2, f))			≡ (p =obs p2) ∨ (Esperando(p1, f))
 		//--------------------------------------------------------------------------
-		Posicion(p1, AbrirVentanilla) ≡ No cumple la restriccion, no se axiomatiza
-		Posicion(p1, Llegar(p2, f)) ≡   if p1 = p2 then
-							Longitud(f)
-						else
-							Posicion(p1, f)
-						fi
-		Posicion(p1, Atender(f)) ≡ Posicion(p,f) - 1
+		Posicion(p1, AbrirVentanilla()) ≡ No cumple la restriccion, no se axiomatiza
+		Posicion(p1, Llegar(p2, f))			≡	if p1 = p2 then
+																				Longitud(f)
+																			else
+																				Posicion(p1, f)
+																			fi
 		//--------------------------------------------------------------------------
 		Longitud(AbrirVentanilla) ≡ 0
 		Longitud(Llegar(p1, f)) ≡ Longitud(f) + 1
-		Longitud(Atender(f)) ≡ Longitud(f) - 1
 		//--------------------------------------------------------------------------
-		Vacia(AbrirVentanilla) ≡ true
-		Vacia(Llegar(p1, f)) ≡ false
-		Vacia(Atender(p1, f)) ≡ Longitud(f) = 1
+		Atender(AbrirVentanilla())	≡ No cumple la restriccion, no se axiomatiza
+		Atender(Llegar(p2, f))			≡	if Vacia(f) then
+																	//Si la persona que llego es la unica en la fila entonces devuelvo la fila vacia
+																		f
+																	else
+																	//Caso contrario, hago recursion hasta llegar a la primera persona en la fila, la saco y agrego los que llegaron despues de la persona
+																		Llegar(p2, Atender(f)) 
+																	fi
+		//--------------------------------------------------------------------------
+		Vacia(f) ≡ Longitud(f) = 0
 	Fin TAD
