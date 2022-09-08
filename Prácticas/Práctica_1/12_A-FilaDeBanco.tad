@@ -15,8 +15,8 @@ TAD Fila
 			
 	Otras Operaciones:
 		//Atender es una 'otra operacion' ya que puedo llegar a la misma instancia atendiendo a una persona a que nunca hubiese llegado.
-		//Ejemplo:	fila1 = atender(p2, llegar(p1, llegar(p2, llegar(p3, fila)))) = {p1, p3}
-		//					fila2 = llegar(p1, llegar(p3, fila)) = {p1, p3}
+		//Ejemplo:	fila1 = atender(llegar(p3, llegar(p2, llegar(p1, fila)))) = {p2, p3}
+		//					fila2 = llegar(p3, llegar(p2, fila)) = {p2, p3}
 		//Con mis observadores tanto fila1 como fila2 son iguales, por lo tanto Atender no puede ser un generador.
 		Atender:	fila f 							-> fila			{¬Vacia(f)}
 		Vacia: 		fila 								-> bool
