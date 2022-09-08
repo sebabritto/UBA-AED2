@@ -1,7 +1,10 @@
 # Algoritmos y Estructuras de Datos 2
 2do cuatrimestre 2022
 
-Este repositorio esta basado en el de [honi](https://github.com/honi/uba-aed2)
+Este repositorio esta basado en el de [honi](https://github.com/honi/uba-aed2).
+
+Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los profesores.
+
 ## Índice
 
 
