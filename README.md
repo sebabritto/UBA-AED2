@@ -25,3 +25,8 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
   - [6.2-Algoritmos Genericos sobre Iteradores](Laboratorio/Labo06.2)
   - [7-Conjunto sobre ABB](Laboratorio/Labo07)
   - [8-Diccionario Trie](Laboratorio/Labo08)
+
+- Trabajo Practico
+  
+  - [Parte 1] (Lo subire cuando confirme que nos son los mismos del cuatrimestre anterior)
+  - [Parte 2] (Lo subire cuando confirme que nos son los mismos del cuatrimestre anterior)
