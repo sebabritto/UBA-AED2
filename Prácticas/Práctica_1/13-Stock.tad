@@ -1,156 +1,147 @@
+TAD Producto es Nat
+
 TAD Stock
-	Igualdad Observacional:	(∀ s1, s2: stock)(s1 =obs s2 ⟺ ( 
-		(∀ p1, p2: producto)((estaRegistrado?(p1, s1) ∧ estaRegistrado?(p2, s1)) ⟹L 
-        (Compras(p, s1) = Compras(p, s2) ∧ Ventas(p, s1) = Ventas(p, s2) ∧ 
-        Cantidad(p, s1) = Cantidad(p, s2) ∧ Minimo(p, s1) = Minimo(p ,s2) ∧ 
-        (esSustituto?(p1, p2, s1) = esSustituto?(p1, p2, s2) ∨ esSustituto?(p2, p1, s1) = esSustituto?(p2, p1, s2))))));
+	Igualdad Observacional:	(∀ s1, s2: stock)(s1 =obs s2 ⇐⇒ (productos(s1) = productos(s2) ∧ sustitutos(s1) = sustitutos(s2) ∧
+													(∀ p: producto)(p ∈ productos(s1) ⇒L (compras(p, s1) = compras(p, s2) ∧ ventas(p, s1) = ventas(p, s2) ∧ minimo(p, s1) = minimo(p, s2)))));
+	
 	Géneros:	stock
 	
+	Usa: Conjunto, Producto, Tupla, Bool, Nat
+	
+	Exporta: observadores, generadores, cantidad, tieneSustituto?, obtenerSustituto, devolverProductos
+	
 	Observadores Básicos:
-		Compras: producto ⨉ stock -> nat
-		Ventas: producto ⨉ stock -> nat
-		Cantidad: producto ⨉ stock -> nat
-		Minimo: producto p ⨉ stock -> nat		{estaRegistrado?(p)}
-		//Para algunas operaciones necesito saber si un producto tiene un sustituto y obtener tal sustituto,
-		//tal vez se pueda mejorar con un TAD Producto o con una lista(tupla(Producto, Sustituto))
-		esSustituto?: producto p1 ⨉ producto p2 ⨉ stock -> bool
+		compras:		producto p × stock s	-> nat	{estaRegistrado?(p, s)}
+		ventas:			producto p × stock s	-> nat	{estaRegistrado?(p, s)}
+		minimo:			producto p × stock s	-> nat	{estaRegistrado?(p, s)}
+		productos:	stock s 							-> conj(producto)
+		sustitutos:	stock s 							-> conj(tupla(producto, producto))
 		
 	Generadores:
-		Generar:    -> stock
-		Registrar: producto p ⨉ nat minimo ⨉ stock -> stock 	{¬estaRegistrado(p)}
-		Comprar: producto ⨉ nat cantidad ⨉ stock -> stock 
-		Vender: producto p ⨉ nat cant ⨉ stock -> stock 				{cant <= Cantidad(p)}
-		//Lo sustituye un producto ya en stock? O uno nuevo? Asumo que uno nuevo.
-		Sustituir: producto p1 ⨉ producto p2 ⨉ stock -> stock {estaRegistrado?(p2)}
-		
+		crear: 																				-> stock		
+		registrar:	producto p × nat min × stock s		-> stock	{¬(estaRegistrado?(p, s))}
+		//Si sustitui un producto p por un producto q, no puedo seguir comprando o vendiendo el producto p
+		//Esto es lo que supongo no lo deja muy en claro el enunciado.
+		compras:		producto p × nat cant × stock s		-> stock	{estaRegistrado?(p, s) ∧ ¬(tieneSustituto?(p, s)) ∧ (n > 0)}
+		vender:			producto p × nat cant × stock s		-> stock	{estaRegistrado?(p, s) ∧ ¬(tieneSustituto?(p, s)) ∧ (0 < n ≤ Cantidad(p, s))}
+		//Asumo que el stock minimo del sustituto va a ser el mismo del que va a sustituir
+		sustituir:	producto p × producto q × stock s	-> stock	{¬(estaRegistrado?(p, s)) ∧ estaRegistrado?(q, s)}
+			
 	Otras Operaciones:
-		estaRegistrado?: producto ⨉ stock -> bool
-		listaDeProductos: stock -> conj(producto)
-		devolverProductos: stock -> conj(producto)
-		tieneSustituto?: producto p ⨉ stock s -> bool       {estaRegistrado?(p, s)}
-		obtenerSustituto: producto p ⨉ stock s -> producto	{estaRegistrado?(p, s) ∧ tieneSustituto?(p, s)}
+		estaRegistrado?:			producto p × stock s												-> nat
+		cantidad:							producto p × stock s												-> nat		{estaRegistrado?(p, s)}
+		tieneSustituto?:			producto p × stock s												-> nat		{estaRegistrado?(p, s)}
+		tieneSustitutoAux:		producto × conj(tupla(producto, producto))	-> bool	
+		obtenerSustituto:			producto p × stock s												-> nat		{tieneSustituto?(p, s)}
+		obtenerSustitutoAux:	producto × conj(tupla(producto, producto))	-> producto
+		devolverProductos:		stock																				-> conj(producto)
+		productosDebajoDelMinimoSinSustituto: conj(producto) × stock			-> conj(producto)
+		productoYSustitutoDebajoDelMinimo:		conj(producto) × stock			-> conj(producto)
+	Axiomas: ∀ p, q, r: producto, ∀ s: stock, ∀ n: nat
+		compras(p, registrar(q, n, s))	≡	if p = q then
+																				0
+																			else
+																				compras(p, s)
+																			fi
+		compras(p, comprar(q, n, s))		≡ if p = q then
+			 																	compras(p, s) + n
+																			else
+																				compras(p, s)
+																			fi
+																		
+		compras(p, vender(q, n, s))			≡ compras(p, s) 
+		compras(p, sustituir(q, r, s))	≡ if q = p then
+																				0
+																			else
+																				compras(p, s)
+																			fi
+		//--------------------------------------------------------------------------
+		ventas(p, registrar(q, n, s))	≡	if p = q then
+																			0
+																		else
+																			ventas(p, s)
+																		fi
+		ventas(p, comprar(q, n, s))		≡	ventas(p, s)
+		ventas(p, vender(q, n, s))		≡	if p = q then
+																			ventas(p, s) + n
+																		else
+																			ventas(p, s)
+																		fi
+		ventas(p, sustituir(q, r, s)) ≡	if p = q then
+																			0
+																		else
+																			ventas(p, s)
+																		fi
+		//--------------------------------------------------------------------------
+		minimo(p, registrar(q, n, s))	≡ if p = q then
+																			n
+																		else
+																			minimo(p, s)
+																		fi
+																		
+		minimo(p, comprar(q, n, s))		≡	minimo(p, s)
+		minimo(p, vender(q, n, s))		≡	minimo(p, s)
+		minimo(p, sustituir(q, r, s))	≡ if p ∈ (q, r) then
+																			minimo(r, s)
+																		else
+																			minimo(p, s)
+																		fi
+		//--------------------------------------------------------------------------
+		productos(crear())						≡ Ø
+		productos(registrar(q, n, s))	≡	Ag(q, productos(s))
+		productos(comprar(q, n, s))		≡	productos(s)
+		productos(vender(q, n, s))		≡ productos(s)
+		productos(sustituir(q, r, s))	≡ Ag(q, productos(s))
+		//--------------------------------------------------------------------------
+		sustitutos(crear()) 						≡ Ø
+		sustitutos(registrar(q, n, s))	≡	sustitutos(s)
+		sustitutos(comprar(q, n, s))		≡ sustitutos(s)
+		sustitutos(vender(q, n, s))			≡	sustitutos(s)
+		sustitutos(sustituir(q, r, s))	≡	Ag(⟨r, q⟩, sustitutos(s))
+		//--------------------------------------------------------------------------
+		estaRegistrado?(p, s) ≡ p ∈ productos(s)
+		//--------------------------------------------------------------------------
+		cantidad(p, s) ≡ compras(p, s) - ventas(p, s)
+		//--------------------------------------------------------------------------
+		tieneSustituto?(p, s) ≡ tieneSustitutoAux(p, sustitutos(s))
 		
-	Axiomas: ∀ s: stock, ∀ p1, p2, p3, p4: producto
-		Compras(p1, Generar) ≡ 0
-		Compras(p1, Registrar(p2, n, s)) ≡ if p1 =obs p2 then
-																				0
-																		else
-																				Compras(p1, s)
-																		fi
-		Compras(p1, Comprar(p2, n, s)) ≡ if p1 =obs p2 then
-																				Compras(p1, s) + n
-																		else
-																				Compras(p1, s)
-																		fi
-		Compras(p1, Vender(p2, n, s)) ≡ Compras(p1 ,s)
-		Compras(p1, Sustituir(p2, p3, s)) ≡ if p1 =obs p3 then
-																					 0
-																				else
-																						Compras(p1 ,s)
-																				fi
+		
+		tieneSustitutoAux(p, cp) ≡	if vacía?(cp) then
+																	false
+																else
+																	π₁(dameUno(cp)) = p ∨ tieneSustitutoAux(p, sinUno(cp))
+																fi
 		//--------------------------------------------------------------------------
-		Ventas(p1, Generar) ≡ 0
-		Ventas(p1, Registrar(p2, n, s)) ≡ if p1 =obs p2 then
-																				0
-																		else
-																				Ventas(p1, s)
-																		fi
-		Ventas(p1, Comprar(p2, n, s)) ≡ Ventas(p1, s)
-		Ventas(p1, Vender(p2, n, s)) ≡ if p1 =obs p2 then
-																				Ventas(p1, s) + n
-																		else
-																				Ventas(p1, s)
-																		fi
-		Ventas(p1, Sustituir(p2, p3, s)) ≡ if p1 =obs p3 then
-																				0
-																		else
-																				Ventas(p1, s)
-																		fi
+		obtenerSustituto(p, cp) ≡ obtenerSustitutoAux(p, sustitutos(s))
+		
+		
+		obtenerSustitutoAux(p, cp) ≡	if π₁(dameUno(cp)) = p then
+																		π₂(dameUno(cp))
+																	else
+																		obtenerSustitutoAux(p, sinUno(cp))
+																	fi
 		//--------------------------------------------------------------------------
-		Cantidad(p1, Generar) ≡ 0
-		Cantidad(p1, Registrar(p2, n, s)) ≡ if p1 =obs p2 then
-																						n
-																				else
-																						Cantidad(p1, s)
-																				fi
-		Cantidad(p1, Comprar(p2, n, s)) ≡ if p1 =obs p2 then
-																				Cantidad(p1, s) + n
-																		else
-																				Cantidad(p1, s)
-																		fi
-		Cantidad(p1, Vender(p2, n, s)) ≡ if p1 =obs p2 then
-																				Cantidad(p1) - n
-																		else
-																				Cantidad(p1)
-																		fi
-		Cantidad(p1, Sustituir(p2, p3, s)) ≡ if p1 =obs p3 then
-																						0
-																				else
-																						Cantidad
-																				fi
-		//--------------------------------------------------------------------------
-		Minimo(p1, Generar) ≡ No cumple la condicion
-		Minimo(p1, Registrar(p2, n, s)) ≡ if p1 =obs p2 then
-																				n 
-																		else
-																				Minimo(p1, s)
-																		fi
-		Minimo(p1, Comprar(p2, n, s)) ≡ Minimo(p1, s)
-		Minimo(p1, Vender(p2, n, s)) ≡ Minimo(p1, s)
-		//--------------------------------------------------------------------------
-		esSustituto?(p1, p2, Generar) ≡ false
-		esSustituto?(p1, p2, Registrar(p3, n, s)) ≡ esSustituto?(p1, p2, s)
-		esSustituto?(p1, p2, Comprar(p3, n, s)) ≡ esSustituto?(p1, p2, s)
-		esSustituto?(p1, p2, Vender(p3, n, s)) ≡ esSustituto?(p1, p2, s)
-		esSustituto?(p1, p2, Sustituir(p3, p4, s)) ≡ (p1 =obs p3 ∧ p2 =obs p4) ∨ esSustituto?(p1, p2, s)
-		//--------------------------------------------------------------------------
-		estaRegistrado?(p1, Generar) ≡ false
-		estaRegistrado?(p1, Registrar(p2, n, s)) ≡ (p1 =obs p2) ∨ estaRegistrado?(p1 ,s)
-		estaRegistrado?(p1, Comprar(p2, n, s)) ≡ estaRegistrado?(p1, s)
-		estaRegistrado?(p1, Vender(p2, n, s)) ≡ estaRegistrado?(p1, s)
-		estaRegistrado?(p1, Sustituir(p2, p3, s)) ≡ ((p1 =obs p2) ∧ ¬(p1 =obs p3)) ∨ estaRegistrado?(p1, s)
-		//--------------------------------------------------------------------------
-		listaDeProductos(Generar) ≡ ∅
-		listaDeProductos(Registrar(p2, n, s)) ≡ listaDeProductos(s) + 1
-		listaDeProductos(Comprar(p2, n, s)) ≡ listaDeProductos(s)
-		listaDeProductos(Vender(p2, n, s)) ≡ listaDeProductos(s)
-		listaDeProductos(Sustituir(p2, p3, s)) ≡ listaDeProductos(s)
-		//--------------------------------------------------------------------------
-		tieneSustituto?(p1, Generar) ≡ false
-		tieneSustituto?(p1, Registrar(p2, n, s)) ≡ ¬(p1 =obs p2) ∨ tieneSustituto?(p1, s)
-		tieneSustituto?(p1, Comprar(p2, n, s)) ≡ tieneSustituto?(p1, s)
-		tieneSustituto?(p1, Vender(p2, n, s)) ≡ tieneSustituto?(p1, s)
-		tieneSustituto?(p1, Sustituir(p2, p3, s)) ≡ if p1 =obs p3 then
-																										true
+		devolverProductos(s) ≡ productosDebajoDelMinimoSinSustituto(productos(s), s) U productoYSustitutoDebajoDelMinimo(productos(s), s)
+		
+		productosDebajoDelMinimoSinSustituto(cp, s) ≡	if vacio?(cp) then
+																										cp
+																									else if (cantidad(dameUno(cp), s) < minimo(dameUno(cp), s)) ∧ ¬(tieneSustituto?(dameUno(cp), s)) then
+																										Ag(dameUno(cp), productosDebajoDelMinimoSinSustituto(sinUno(cp), s))
+																									else
+																										productosDebajoDelMinimoSinSustituto(sinUno(cp), s)
+																									fi
+																									
+		productoYSustitutoDebajoDelMinimo(cp, s)	≡	if vacio?(cp) then
+																									cp
+																								else if tieneSustituto?(dameUno(cp), s) then
+																									if (cantidad(dameUno(cp), s) + cantidad(obtenerSustituto(dameUno(cp), s), s)) < minimo(dameUno(cp), s) then
+																										Ag(dameUno(cp), productoYSustitutoDebajoDelMinimo(sinUno(cp), s))
+																									else
+																										productoYSustitutoDebajoDelMinimo(sinUno(cp), s)
+																									fi
 																								else
-																										¬(p1 =obs p2) ∧ tieneSustituto?(p1, s)
+																									productoYSustitutoDebajoDelMinimo(sinUno(cp), s)
 																								fi
-		//--------------------------------------------------------------------------																						
-		obtenerSustituto(p1, Generar) ≡ No cumple la condicion
-		obtenerSustituto(p1, Registrar(p2, n, s)) ≡ obtenerSustituto(p1, s)
-		obtenerSustituto(p1, Comprar(p2, n, s)) ≡ obtenerSustituto(p1, s)
-		obtenerSustituto(p1, Vender(p2, n, s)) ≡ obtenerSustituto(p1, s)
-		obtenerSustitutop(p1, Sustituir(p2, p3, s)) ≡ if p1 =obs p3 then
-																										p2
-																								else
-																										obtenerSustituto(p1, s)
-																								fi
-		//--------------------------------------------------------------------------
-		devolverProductos(s) ≡ productosConStockMenosQueMinimo(s) U productosYSustitutosMenosQueMinimo(s);
-
-		productosConStockMenosQueMinimo(s) ≡ if Minimo((dameUno(listaDeProductos(s)), s)) > Cantidad((dameUno(listaDeProductos(s)), s)) ∧ ¬(tieneSustituto?(dameUno(listaDeProductos(s)), s)) then
-																						Ag(dameUno(listaDeProductos(s), productosConStockMenosQueMinimo(fin(s)))
-																				else
-																						productosConStockMenosQueMinimo(fin(s))
-																				fi
-
-		productosYSustitutosMenosQueMinimo(s) ≡ if tieneSustituto?(dameUno(listaDeProductos(s)), s) then
-																								if (Cantidad(obtenerSustituto(dameUno(listaDeProductos(s)), s), s) + Cantidad(dameUno(listaDeProductos(s)), s)) < Minimo(dameUno(listaDeProductos(s)), s) then
-																										Ag(dameUno(listaDeProductos(s)), productosYSustitutosMenosQueMinimo(fin(s)))
-																								else 
-																										productosYSustitutosMenosQueMinimo(fin(s))
-																								fi
-																						else
-																								productosYSustitutosMenosQueMinimo(fin(s))
-																						fi
+																									
+		
 Fin TAD
