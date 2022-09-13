@@ -81,6 +81,7 @@ TAD Fila
 		//llegar(p4, ColarseAdelanteDe(p2, p3, llegar(p3, llegar(p1, f)))) ≡ {p1, p2, p3, p4}
 		//llegar(p4, ColarseAdelanteDe(p2, p1, llegar(p3, llegar(p1, f)))) ≡ {p2, p1, p3 ,p4}
 		//Retirarse(p1, f2) ≡ {p2, p3, p4} No da, tengo que ver como arreglar esto, tal vez Retirarse sea un observador.
+		///ARREGLAR/CONSULTAR ESTO
 		Retirarse(p1, ColarseAdelanteDe(p2, p3, f)) ≡	if p1 = p2 then
 																										f
 																									else if p1 = p3 then
