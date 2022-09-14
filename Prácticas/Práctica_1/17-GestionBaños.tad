@@ -2,9 +2,9 @@ TAD Alumno es Nat
 
 TAD Baño
 	
-	Igualdad Observacional:	(∀ b1, b2: baño)(alumnosEnElBaño(b1) = alumnosEnElBaño(b2) ∧ esperandoAfuera(b1) = esperandoAfuera(b2) ∧
+	Igualdad Observacional:	(∀ b1, b2: baño)(b1 =obs b2 ⇐⇒ (alumnosEnElBaño(b1) = alumnosEnElBaño(b2) ∧ esperandoAfuera(b1) = esperandoAfuera(b2) ∧
 																					alumnosTotal(b1) = alumnosTotal(b2) ∧ 
-																					(∀ a: alumno)(a ∈ alumnosTotal(b1) ⇒L #idasDeAlumno(a, b1) = #idasDeAlumno(a, b2));
+																					(∀ a: alumno)(a ∈ alumnosTotal(b1) ⇒L #idasDeAlumno(a, b1) = #idasDeAlumno(a, b2)));
 	Géneros:	baño
 	
 	Usa: Alumno, Bool, Nat

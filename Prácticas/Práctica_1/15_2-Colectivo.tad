@@ -2,8 +2,8 @@ TAD Parada es Nat
 
 TAD Colectivo
 
-	Igualdad Observacional:	(∀ c1, c2: colectivo)(#asientos(c1) = #asientos(c2) ∧ pasajeros(c1) = pasajeros(c2) ∧
-																								parada(c1) = parada(c2) ∧ paradaActual(c1) = paradaActual(c2));
+	Igualdad Observacional:	(∀ c1, c2: colectivo)( c1 =obs c2 ⇐⇒ (#asientos(c1) = #asientos(c2) ∧ pasajeros(c1) = pasajeros(c2) ∧
+																								 parada(c1) = parada(c2) ∧ paradaActual(c1) = paradaActual(c2)));
 	
 	Géneros:	colectivo
 	

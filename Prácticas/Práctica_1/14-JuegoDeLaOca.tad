@@ -1,17 +1,19 @@
 TAD Jugador es Nat
 
 TAD JuegoDeLaOca
-	Igualdad Observacional:	();
+	Igualdad Observacional:	(∀ o1, o2: oca)(o1 =obs o2 ⇐⇒ (tablero(o1) = tablero(o2) ∧ #turno(o1)=#turno(o2) ∧L
+													(∀ n: nat)(0 ≤ n < #turno(o1) ⇒L dado(n, o1) = dado(n, o2)) ∧L
+													(∀ j: jugador)(0 ≤ j ≤ 1 ⇐⇒ trayecto(j, o1) = trayecto(j, o2))));
 	
 	Géneros:	oca
 	
 	Usa: Nat, Bool, Tablero
 	
 	Observadores Básicos:
-		tablero: 			oca 					-> tablero
-		dado: 				nat t × oca o -> nat							{t < #turno(o)}
-		#turno: 			oca 					-> nat
-		trayecto:			jugador × oca o -> secu(baldosa)	{j ≤ 1}
+		tablero: 			oca 							-> tablero
+		dado: 				nat t × oca o 		-> nat							{t < #turno(o)}
+		#turno: 			oca 							-> nat
+		trayecto:			jugador j × oca o -> secu(baldosa)	{j ≤ 1}
 		
 	Generadores:
 		crearJuego: tablero 			-> oca
