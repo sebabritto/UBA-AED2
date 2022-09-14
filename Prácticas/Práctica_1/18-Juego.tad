@@ -1,134 +1,133 @@
-TAD Juego
-	Igualdad Observacional:	(∀ g1, g2: juego)(g1 =obs g2 ⟺ 
-		(tablero(g1) =obs tablero(g2) ∧ Empezo?(g1) =obs Empezo?(g2) ∧L 
-		(∀ j: jugador)(j ∈ jugadoresVivos(g1) ⟹L 
-        posicionJugador(j, g1) =obs posicionJugador(j, g2) ∧ direccionJugador(j, g1) = direccion(j,g2) ∧
-        puntajeJugador(j, g1) =obs puntajeJugador(j, g2) ∧ esTurnoDe?(j, g1) = esTurnoDe?(j, g2))
-      ));
-			
-	Géneros:	juego
-	Exporta: observadores, generadores, otras operaciones
-	Usa: Bool, Nat, Posicion, Jugador, Direccion, Tablero
-	
-	Observadores Básicos:
-		tablero: juego -> tablero
-		posicionJugador: jugador j × juego g -> posicion    {j ∈ jugadoresVivos(g)}
-		direccionJugador: jugador j × juego g -> direccion  {j ∈ jugadoresVivos(g)}
-		puntajeJugador: jugador j × juego g -> nat  {j ∈ jugadoresVivos(g)}
-		jugadoresVivos: juego -> conj(jugadores)
-		//Redundante, con jugadoresVivos puedo saber tambien los jugadores muertos
-		//jugadoresMuertos: juego -> conj(jugadores)  
-		Empezo?: juego -> bool //Todos los jugadores ya estan posicionados
-	
-	Generadores:
-		nuevoJuego: tablero -> juego
-		agregarJugador: jugador j × posicion p × direccion × juego g -> juego {¬(Empezo?(g)) ∧ j ∉ jugadoresVivos(g) ∧ posicionVacia(p)}
-		avanzarJugador: jugador j × juego g -> juego    {Empezo?(g) ∧ j ∈ jugadoresVivos(g) ∧ ¬hayGanador(g)}
-		cambiarDireccion: direccion × jugador j × juego g -> juego {Empezo??(g) ∧ j ∈ jugadoresVivos(g) ∧ ¬hayGanador(g)}
-	
-	Otras Operaciones:
-		#jugadores: juego -> nat
-		posicionVacia: posicion p × juego g -> bool {posicionValida(p, tablero(g))}
-		hayGanador: juego g -> bool   {Empezo?(g)}
-		siguientePosicion: jugador j × juego g -> posicion   {j ∈ jugadoresVivos(g)}
-		jugadorEnPosicion: posicion p × juego g -> jugador  {¬posicionVacia(p, g)}
-	
-	Axiomas: ∀ g1: juego, ∀ j1, j2: jugador, ∀ p1: posicion, ∀ d1: direccion
-		tablero(nuevoJuego(t)) ≡ t
-		tablero(agregarJugador(j1, p1, d1, g1)) ≡ tablero(g1)
-		tablero(avanzarJugador(j1, g1)) ≡ tablero(g1)
-		tablero(cambiarDireccion(d1, j1, g1)) ≡ tablero(g1)
-		//--------------------------------------------------------------------------
-		posicionJugador(j1, nuevoJuego(t)) ≡ no cumple el axioma
-		posicionJugador(j1, agregarJugador(j2, p1, d1, g1)) ≡   if j1 =obs j2 then
-																																p1
-																														else
-																																posicionJugador(j1, g1)
-																														fi
-		posicionJugador(j1, avanzarJugador(j2, g1)) ≡   if j1 =obs j2 then
-																												siguientePosicion(j1, g1)
-																										else
-																												posicion(j1, g1)
-																										fi
-		posicionJugador(j1, cambiarDireccion(d1, j2, g1)) ≡ posicionJugador(j1, g1)
-		//--------------------------------------------------------------------------
-		direccionJugador(j1, nuevoJuego(t)) ≡ No cumple la condicion
-		direccionJugador(j1, agregarJugador(j2, p1, d1, g1)) ≡  if j1 =obs j2 then
-																																d1
-																														else
-																																direccionJugador(j1, g1)
-																														fi
-		direccionJugador(j1, avanzarJugador(j2, g1)) ≡  direccionJugador(j1, g1)
-		direccionJugador(j1, cambiarDireccion(d1, j2, g1)) ≡ if j1 =obs j2 then
-																														d1
-																												else
-																														direccionJugador(j1)
-																												fi
-		//--------------------------------------------------------------------------																										
-		puntajeJugador(j1, nuevoJuego(t)) ≡ No cumple el axioma
-		puntajeJugador(j1, agregarJugador(j2, p1, d1, g1)) ≡ if j1 =obs j2 then
-																														0
-																												else
-																														puntajeJugador(j1, g1)
-																												fi
-		puntajeJugador(j1, avanzarJugador(j2, g1)) ≡ if j1 =obs j2 ∧ ¬(posicionVacia(siguientePosicion(j2, g1))) then
-																										puntajeJugador(j1, g1) + puntajeJugador(jugadorEnPosicion(siguientePosicion(j2, g1), g1), g1) + 1
-																								else 
-																										puntajeJugador(j1, g1)
-																								fi             
-		puntajeJugador(j1, cambiarDireccion(d1, j2, g1)) ≡ puntajeJugador(j1, g1)
-		//--------------------------------------------------------------------------
-		jugadoresVivos(nuevoJuego(t)) ≡ ∅
-		jugadoresVivos(agregarJugador(j1, p1, d1, g1)) ≡ Ag(j1, jugadoresVivos(g1))
-		jugadoresVivos(avanzarJugador(j1, g1)) ≡ jugadoresVivos(g1)
-		jugadoresVivos(cambiarDireccion(d1, j1, g1)) ≡ jugadoresVivos(g1)
-		//--------------------------------------------------------------------------
-		Empezo?(g1) ≡ #jugadores(g1) = 64
-		//--------------------------------------------------------------------------
-		#jugadores(nuevoJuego(t)) ≡ 0
-		#jugadores(agregarJugador(j1, p1, d1, g1)) ≡ #jugadores(g1) + 1
-		#jugadores(avanzarJugador(j1, g1)) ≡ #jugadores(g1)
-		#jugadores(cambiarDireccion(d1, j1, g1)) ≡ #jugadores(g1)
-		//--------------------------------------------------------------------------
-		posicionVacia(p1, nuevoJuego(t)) ≡ true
-		posicionVacia(p1, agregarJugador(j1, p2, d1, g1)) ≡ ¬(p1 =obs p2) ∧ posicionVacia(p1, g1)
-		posicionVacia(p1, avanzarJugador(j1, g1)) ≡ ¬(p1 = siguientePosicion(j1, g1)) ∧ posicionVacia(p1, g1)
-		posicionVacia(p1, cambiarDireccion(d1, j1, g1)) ≡ posicionVacia(p1, g1)
-		//--------------------------------------------------------------------------
-		hayGanador?(nuevoJuego(t)) ≡ false
-		hayGanador?(agregarJugador(j1, p1, d1, g1)) ≡ hayGanador?(g1)
-		hayGanador?(avanzarJugador(j1, g1)) ≡ if ¬posicionVacia(siguientePosicion(j1, g1)) then
-																								(puntajeJugador(j1, g1) + puntajeJugador(jugadorEnPosicion(siguientePosicion(j1, g1) , g1), g1) + 1) > 32
-																						else
-																								hayGanador?(g1)
-																						fi 
-		hayGanador?(cambiarDireccion(d1, j1, g1)) ≡ hayGanador?(g1)
-		//--------------------------------------------------------------------------
-		siguientePosicion(j1, g1) ≡ siguiente(posicionJugador(j1), direccionJugador(j1), tablero(g1))
-		//--------------------------------------------------------------------------
-		jugadorEnPosicion(p1, nuevoJuego(t)) ≡ No cumple la condicion
-		jugadorEnPosicion(p1, agregarJugador(j1, p2, d1, g1)) ≡ if p1 =obs p2 then
-																																j1
-																														else
-																																jugadorEnPosicion(p1, g1)
-																														fi
-		jugadorEnPosicion(p1, avanzarJugador(j1, g1)) ≡ if siguientePosicion(posicionJugador(j1, g1)) = p1 then
-																												j1
-																										else
-																												jugadorEnPosicion(p1, g1)
-																										fi
-		jugadorEnPosicion(p1, cambiarDireccion(d1, j1, g1)) ≡ jugadorEnPosicion(p1, g1)
-		
-Fin TAD
+TAD Jugador es Nat
 
 TAD Tablero(Extracto)
-	Géneros:	tablero
-	Generadores:
-		nuevo:	-> tablero
-	Otras Operaciones:
-		siguiente: posicion p × direccion × tablero t -> posicion	{posicionValida(p, t)}
-		posicionVacia: posicion × tablero -> bool
-Fin TAD
 
-TAD Jugador es Nat
-	Géneros:	jugador
+	Géneros:	tablero
+	
+	Generadores:
+		nuevo: -> tablero
+	
+	Otras Operaciones:
+		siguiente: 			posicion p × direccion × tablero t -> posicion {posicionValida(p, t)}
+		posicionValida: posicion × tablero -> bool
+
+TAD Juego
+
+	Igualdad Observacional:	(∀ g1, g2: juego)(g1 =obs g2 ⇐⇒(tablero(g1) = tablero(g2) ∧ jugadoresVivos(g1) = jugadoresVivos(g2) ∧ #jugadores(g1) = #jugadores(g2) ∧L
+													(∀ j: jugador)(j ∈ jugadoresVivos(g1) ⇒L (puntajeJugador(j, g1) = puntajeJugador(j, g2) ∧ posicionJugador(j, g1) = posicionJugador(j, g2) ∧ direccionJugador(j, g1) = direccionJugador(j, g2))) 
+													));
+	
+	Géneros:	juego
+	
+	Usa: Tablero, Posicion, Direccion, Jugador, Bool, Nat
+	
+	Exporta:	observadores, generadores, empezo?, posicionVacia, siguientePosicion, jugadorEnPosicion
+	
+	Observadores Básicos:
+		tablero:					juego 							-> tablero
+		jugadoresVivos:		juego 							-> conj(jugador)
+		#jugadores:				juego 							-> nat
+		puntajeJugador:		jugador j × juego g -> nat							{j ∈ jugadoresVivos(g)}
+		posicionJugador:	jugador j × juego g -> posicion					{j ∈ jugadoresVivos(g)}
+		direccionJugador:	jugador j × juego	g -> direccion				{j ∈ jugadoresVivos(g)}
+		
+	Generadores:
+		nuevo: 						tablero																					-> juego
+		agregarJugador:		jugador j × posicion p × direccion d × juego g	-> juego	{j ∉ jugadoresVivos(g) ∧ posicionVacia(p, t) ∧ ¬empezo?(g)}
+		avanzarJugador:		jugador j × juego g 														-> juego	{j ∈ jugadoresVivos(g) ∧ empezo?(g) ∧ ¬hayGanador?(g)}
+		cambiarDireccion: jugador j × direccion d ×	juego g 							-> juego 	{j ∈ jugadoresVivos(g) ∧ empezo?(g) ∧ ¬hayGanador?(g)}
+		
+	Otras Operaciones:
+		//puedo saber si empezo con el observador #jugadores
+		empezo?:							juego 														-> bool 
+		hayGanador?: 					juego g														-> jugador		{empezo?(g)}
+		hayGanadorAux:				conj(jugador) × juego 						-> bool
+		posicionVacia:				posicion p × juego g 							-> bool				{posicionValida(p, tablero(g))}
+		posicionVaciaAux:			posicion × conj(jugador) × juego	-> bool				
+		siguientePosicion:		jugador j × juego g								-> posicion 	{j ∈ jugadoresVivos(g)}
+		vaAPisarAAlguien:			jugador j × juego g								-> bool				{j ∈ jugadores(g)}
+		jugadorEnPosicion:		posicion p × juego g							-> jugador		{posicionValida(p, tablero(g)) ∧ ¬(posicionVacia(p, g))}
+		jugadorEnPosicionAux:	posicion × conj(jugador) × juego 	-> jugador
+	Axiomas: ∀ j, j': jugador, ∀ p: posicion, ∀ d: direccion, ∀ g: juego, ∀ t: tablero
+		tablero(nuevo(t)) 									≡ t
+		tablero(agregarJugador(j, p, d, g))	≡	tablero(g)
+		tablero(avanzarJugador(j, g))				≡ tablero(g)
+		tablero(cambiarDireccion(j, d, g))	≡ tablero(g)
+		//--------------------------------------------------------------------------
+		jugadoresVivos(nuevo(t)) 										≡	Ø
+		jugadoresVivos(agregarJugador(j, p, d, g))	≡	Ag(j, jugadoresVivos(g))
+		jugadoresVivos(avanzarJugador(j, g)) 				≡	if vaAPisarAAlguien(j, g) then
+		//lo que hago aca es lo siguiente: Si la posicion a la que va a avanzar hay un jugador entonces tengo que sacar ese jugador de los vivos.
+																										jugadoresVivos(j, g) - {jugadorEnPosicion(siguientePosicion(j, g), g)}
+																									else
+																										jugadoresVivos(j, g)
+																									fi
+		jugadoresVivos(cambiarDireccion(j, d, g))		≡	jugadoresVivos(j, g)
+		//--------------------------------------------------------------------------
+		#jugadores(nuevo(t))										≡	0
+		#jugadores(agregarJugador(j, p, d, g))	≡	#jugadores(g) + 1 
+		#jugadores(avanzarJugador(j, g))				≡	#jugadores(g)
+		#jugadores(cambiarDireccion(j, d, g))		≡ #jugadores(g)
+		//--------------------------------------------------------------------------
+		puntajeJugador(j, agregarJugador(j', p, d, g))	≡	if j = j' then
+																												0
+																											else
+																												puntajeJugador(j, g)
+																											fi
+		puntajeJugador(j, avanzarJugador(j', g))	≡	if j = j' then
+																									if vaAPisarAAlguien(j, g) then
+																										puntajeJugador(j, g) + puntajeJugador(jugadorEnPosicion(siguientePosicion(j, g), g) + 1
+																									else
+																										puntajeJugadorJugador(j, g)
+																									fi
+																								else
+																									puntajeJugadorJugador(j, g)
+																								fi
+		puntajeJugador(j, cambiarDireccion(j', d, g))	≡ puntajeJugador(j, g)
+		//--------------------------------------------------------------------------
+		posicionJugador(j, agregarJugador(j', p, d, g))	≡	if j = j' then
+																												d
+																											else
+																												posicionJugador(j, g)
+																											fi
+		posicionJugador(j, avanzarJugador(j', g))				≡	if j = j' then
+																												siguientePosicion(j, g)
+																											else
+																												posicionJugador(j, g)
+																											fi
+		posicionJugador(j, cambiarDireccion(j', d, g))	≡	posicionJugador(j, g)
+		//--------------------------------------------------------------------------
+		direccionJugador(j, agregarJugador(j', p, d, g))	≡	d
+		direccionJugador(j, avanzarJugador(j', g))				≡	direccionJugador(j, g)
+		direccionJugador(j, cambiarDireccion(j', d, g))		≡ if j = j' then
+																													d
+																												else
+																													direccionJugador(j, g)
+																												fi
+		//--------------------------------------------------------------------------
+		empezo?(g) ≡ #jugadores(g) = 64
+		//--------------------------------------------------------------------------
+		hayGanador?(g) ≡ hayGanadorAux(jugadoresVivos(g), g)
+		
+		hayGanadorAux(cj, g) ≡	(puntajeJugador(dameUno(cj), g) > 32) ∨L hayGanadorAux(sinUno(cj), g)
+		//--------------------------------------------------------------------------
+		posicionVacia(p, g) ≡ posicionVaciaAux(p, jugadoresVivos(g), g) 
+		posicionVaciaAux(p, cj, g)	≡	if vacio?(cj) then
+																		true
+																	else
+																		¬(posicionJugador(dameUno(cj), g) = p) ∧ posicionJugador(p, sinUno(cj), g)
+																	fi
+		//--------------------------------------------------------------------------
+		siguientePosicion(j, g) ≡ siguiente(posicion(j, g), direccion(j, g), tablero(g))
+		//--------------------------------------------------------------------------
+		vaAPisarAAlguien(j, g) ≡ ¬(posicionVacia(siguientePosicion(j, g), g))
+		//--------------------------------------------------------------------------
+		jugadorEnPosicion(p, g) ≡ jugadorEnPosicionAux(p, jugadoresVivos(g), g)
+		
+		jugadorEnPosicionAux(p, cj, g) ≡	if posicion(dameUno(cj), g) = p then
+																				dameUno(cj)
+																			else
+																				jugadorEnPosicionAux(p, sinUno(cj), g)
+																			fi
+		
+Fin TAD
