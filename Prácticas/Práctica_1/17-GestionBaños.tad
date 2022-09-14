@@ -15,7 +15,6 @@ TAD Baño
 		alumnosEnElBaño:	baño 							-> conj(alumno)
 		esperandoAfuera: 	baño 							-> secu(alumno)
 		#idasDeAlumno: 		alumno a × baño b -> nat 						{a ∈ alumnosTotal(b)}
-		alumnosTotal: 		baño 							-> conj(alumno)
 		
 	Generadores:
 		crearBaño: 			conj(alumno) -> baño
@@ -24,9 +23,11 @@ TAD Baño
 		vuelveAlumno: 	alumno a × baño b -> baño {a ∈ alumnosEnElBaño(b)}
 		
 	Otras Operaciones:
-		bañoOcupado?: baño -> bool
-		retirarAlumno: alumno a × secu(alumno) sa -> secu(alumno)		{a ∈ sa}
-		agregarAlumnosABaño: conj(alumno) × secu(alumnos) -> conj(alumno)
+		alumnosTotal: 				baño 													-> conj(alumno)
+		bañoOcupado?:					baño 													-> bool
+		retirarAlumno:				alumno a × secu(alumno) sa 		-> secu(alumno)		{a ∈ sa}
+		//Agrega los alumnos que estaban esperando afuero a el conjunto de alumnos dentro del baño
+		agSecuenciaAConjunto:	conj(alumno) × secu(alumnos)	-> conj(alumno)
 		
 	Axiomas:
 		alumnosEnElBaño(crearBaño(ca)) 				≡ Ø
@@ -41,7 +42,7 @@ TAD Baño
 																						fi
 		alumnosEnElBaño(retirarse(a, b)) 			≡ alumnosEnElBaño(b)
 		alumnosEnElBaño(vuelveAlumno(a, b)) 	≡ if esperandoAfuera(b) ≥ 5 then
-																							agregarAlumnosABaño(alumnosEnElBaño(b) - (a), esperandoAfuera(b))
+																							agSecuenciaAConjunto(alumnosEnElBaño(b) - (a), esperandoAfuera(b))
 																						else if esperandoAfuera(b) > 0 then
 																							Ag(prim(esperandoAfuera(b)), alumnosEnElBaño(b) - (a))
 																						else
@@ -70,10 +71,7 @@ TAD Baño
 		#idasDeAlumno(a, retirarse(a', b))			≡ #idasDeAlumno(a, b)
 		#idasDeAlumno(a, vuelveAlumno(a', b)) 	≡ #idasDeAlumno(a, b)
 		//--------------------------------------------------------------------------
-		alumnosTotal(crearBaño(ca)) 			≡ ca
-		alumnosTotal(solicitarBaño(a, b)) ≡ alumnosTotal(b)
-		alumnosTotal(retirarse(a, b)) 		≡ alumnosTotal(b)
-		alumnosTotal(vuelveAlumno(a, b))	≡ alumnosTotal(b)
+		alumnosTotal(b) ≡ agSecuenciaAConjunto(alumnosEnElBaño(b), esperandoAfuera(b))
 		//--------------------------------------------------------------------------
 		bañoOcupado?(b) ≡ vacía?(alumnosEnElBaño(b))
 		//--------------------------------------------------------------------------
@@ -83,10 +81,10 @@ TAD Baño
 															prim(sa) • retirarAlumno(a, fin(sa))
 														fi
 		//--------------------------------------------------------------------------
-		agregarAlumnosABaño(ca, sa) ≡ if vacía?(sa) then
-																		ca
-																	else
-																		Ag(prim(sa), agregarAlumnosABaño(ca, fin(sa)))
-																	fi
+		agSecuenciaAConjunto(ca, sa) ≡	if vacía?(sa) then
+																			ca
+																		else
+																			Ag(prim(sa), agSecuenciaAConjunto(ca, fin(sa)))
+																		fi
 Fin TAD
 	
