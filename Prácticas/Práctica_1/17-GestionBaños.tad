@@ -13,6 +13,7 @@ TAD Baño
 	
 	Observadores Básicos:
 		alumnosEnElBaño:	baño 							-> conj(alumno)
+		//Es secuencia ya que necesito poder sacar el primer alumno de la lista
 		esperandoAfuera: 	baño 							-> secu(alumno)
 		#idasDeAlumno: 		alumno a × baño b -> nat 						{a ∈ alumnosTotal(b)}
 		
