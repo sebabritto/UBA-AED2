@@ -1,3 +1,5 @@
+TAD Jugador es Nat
+
 TAD JuegoDeLaOca
 	Igualdad Observacional:	();
 	
@@ -7,23 +9,26 @@ TAD JuegoDeLaOca
 	
 	Observadores Básicos:
 		tablero: 			oca 					-> tablero
-		dado: 				nat t × oca o -> nat					{t < #turno(o)}
+		dado: 				nat t × oca o -> nat							{t < #turno(o)}
 		#turno: 			oca 					-> nat
-		trayecto:			nat j × oca o -> secu(baldosa) {j ≤ 1}
+		trayecto:			jugador × oca o -> secu(baldosa)	{j ≤ 1}
 		
 	Generadores:
 		crearJuego: tablero 			-> oca
 		avanzar: 		nat d × oca o -> oca	{(∀ j: nat)(j ≤ 1 ⇒L ¬esGanador(j, o)) ∧ (1 ≤ n ≤ 6)}
 		
 	Otras Operaciones:
-		pasoPorBaldoza?: 	nat j × baldosa b × oca o -> bool							{j ≤ 1 ∧ b ∈ baldozas(tablero(o))}
-		esTurnoDe?:				nat j × oca o 						-> bool							{j ≤ 1}
-		dondeEsta?: 			nat j × oca o 						-> baldosa 					{j ≤ 1}
-		esGanador?: 			nat j × oca o 						-> bool							{j ≤ 1}
+		pasoPorBaldosa?: 	jugador × baldosa b × oca o -> bool							{j ≤ 1 ∧ b ∈ baldosas(tablero(o))}
+		esTurnoDe?:				jugador × oca o 						-> bool							{j ≤ 1}
+		dondeEsta?: 			jugador × oca o 						-> baldosa 					{j ≤ 1}
+		esGanador?: 			jugador × oca o 						-> bool							{j ≤ 1}
+		posicionBaldosa:	baldosa b × oca o						-> nat							{b ∈ baldosas(o)}
+		baldosas:					oca 												-> secu(baldosa)
+		caeEnPosicion:		jugador × nat dado × oca -> nat
 		
-	Axiomas: ∀ tab: tablero, ∀ d, t: nat, ∀ o: oca, ∀ b: baldosa
-		tablero(crearJuego(tab)) 		≡ t
-		tablero(avanzar(d, o)) ≡ tablero(o)
+	Axiomas: ∀ t: tablero, ∀ d, t: nat, ∀ o: oca, ∀ b: baldosa
+		tablero(crearJuego(t))	≡ t
+		tablero(avanzar(d, o))	≡ tablero(o)
 		//--------------------------------------------------------------------------
 		dado(t, avanzar(d, o)) ≡	if #turno(o) = t then
 																d
@@ -31,71 +36,75 @@ TAD JuegoDeLaOca
 																dado(t, o)
 															fi
 		//--------------------------------------------------------------------------
-		#turno(crearJuego(tab)) ≡ 0
-		#turno(avanzar(d, o)) 	≡ #turno(o) + 1
+		#turno(crearJuego(t))	≡ 0
+		#turno(avanzar(d, o)) ≡ #turno(o) + 1
 		//--------------------------------------------------------------------------
-		trayecto(j, crearJuego(t)) 	≡ prim(baldozas(t)) • <>
+		trayecto(j, crearJuego(t)) 	≡ prim(baldosas(t)) • <>
 		trayecto(j, avanzar(d, o))	≡	if esTurnoDe?(j, o) then
-																		baldozas(t)[efectoBaldosa(dondeEsta(j, o) + d, tablero(o))] ◦ trayecto(j, o)
+		//posicionBaldosa me devuelve el indice de la baldosa a eso le sumo el valor del dado
+																			moverseA(baldosas(o)[caeEnPosicion(j, d, o)], tablero(o)) ◦ trayecto(j, o)
 																	else
 																		trayecto(j, o)
-																	fi
+																	fi 
+		caeEnPosicion(j, d, o) ≡	if posicionBaldosa(dondeEsta(j, o), o) + d ≥ long(baldosas(o)) then
+																long(baldosas(o)) - 1 //Ultima posicion
+															else
+																posicionBaldosa(dondeEsta(j, o), o) + d
+															fi
 		//--------------------------------------------------------------------------
-		pasoPorBaldoza?(j, b, o) ≡ b ∈ trayecto(j, o)
+		pasoPorbaldosa?(j, b, o) ≡ b ∈ trayecto(j, o)
 		//--------------------------------------------------------------------------
-		esTurnoDe?(j, crearJuego(tab)) ≡ #turnos(o) % 2 = j
+		esTurnoDe?(j, t) ≡ #turnos(o) % 2 = j
 		//--------------------------------------------------------------------------
 		dondeEsta?(j, o) ≡ ult(trayecto(j, o))
 		//--------------------------------------------------------------------------
-		esGanador?(j, o) ≡ ult(trayecto(j, o)) = ult(baldozas(tablero(o)))
-																		
+		esGanador?(j, o) ≡ ult(trayecto(j, o)) = ult(baldosas(o))
+		//--------------------------------------------------------------------------
+		posicionBaldosa(b, o) ≡ posicionBaldosa(b, tablero(o))
+		//--------------------------------------------------------------------------
+		baldosas(o) ≡ baldosas(tablero(o))
+		
 	Fin TAD
+
+TAD Baldosa es Tupla(Bool avanza, Nat cant)
 
 TAD Tablero
 	Géneros:	tablero
 	
 	Observadores Básicos:
-		baldozas: 			tablero -> secu(baldosa)
-		efectoBaldosa: 	nat b × tablero -> nat
+		baldosas: tablero -> secu(baldosa)
 		
 	Generadores:
 		//Con esta restriccion asumo que los efectos de cada baldosa no permiten irse del rango.
-		crearTablero: secu(baldosa) sb -> tablero {long(sb) > 2 ∧ (∀ n: nat)(n < long(sb) ⇒  (0 ≤ aplicarEfecto(n, sb[n]) < long(sb))}
+		crearTablero: secu(baldosa) sb -> tablero {long(sb) > 2 ∧ (∀ n: nat)(n < long(sb) ⇒  (0 ≤ n (if π₁(sb[n]).avanza then + π₂(sb[n]).cant else - π₂(sb[n]).cant fi)  < long(sb))}
 		
 	Otras Operaciones:
-		aplicarEfecto:	nat b × baldosa -> nat 
-		#baldozas: 			tablero 				-> nat
+		#baldosas: 			tablero 							-> nat
+		posicion: 			baldosa b × tablero t -> nat			{b ∈ baldosas(t)}
+		moverseA: 			baldosa b × tablero t -> baldosa	{b ∈ baldosas(t)}
 		
 	Axiomas: ∀ sb: secu(baldosa), ∀ n: nat, ∀ b: baldosa
-		baldozas(crearTablero(sb)) ≡ sb
+		baldosas(crearTablero(sb)) ≡ sb
 		//--------------------------------------------------------------------------
-		efectoBaldosa(b, t) ≡ if b > #baldozas(t) then
-														 aplicarEfecto(#baldozas(t) - 1 , ult(baldozas(t))) 
+		#baldosas(t) ≡ long(baldosas(t))
+		//--------------------------------------------------------------------------
+		posicion(b, t) ≡ posicionAux(b, baldosas(t))
+		
+		posicionAux: baldosa × secu(baldosa) -> nat
+		posicionAux(b, bs) ≡	if prim(bs) = b then
+														0
 													else
-														aplicarEfecto(b, baldozas(t)[b])
+														1 + posicionAux(b, fin(bs))
 													fi
 		//--------------------------------------------------------------------------
-		aplicarEfecto(n, b) ≡ if avanza?(b) then
-														 n + efecto(b)
-													else
-													   n - efecto(n)
-													fi
+		moverseA(b, t) ≡ moverseAux(b, baldosas(t), t)
+		moverseAux: baldosa × secu(baldosa) × tablero -> baldosa
+		moverseAux(b, bs, t) ≡	if b.avanza then
+															bs[(posicion(b, t) + b.cant)]
+														else
+															bs[(posicion(b, t) - b.cant)]
+														fi
 		//--------------------------------------------------------------------------
-		#baldozas(t) ≡ long(baldozas(t))
-	Fin TAD
-TAD Baldoza
-	Géneros:	baldoza
-	
-	Observadores Básicos:
-		avanza?: baldosa -> bool
-		efecto: baldosa -> nat
 		
-	Generadores:
-		crear: nat efecto × bool avanza -> baldosa
-		
-	Axiomas:
-		avanza?(crear(e, a)) ≡ a
-		
-		efecto(crear(e, a)) ≡ e 
 	Fin TAD
 		
