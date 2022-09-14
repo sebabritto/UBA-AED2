@@ -1,0 +1,108 @@
+TAD PeajeDelZar
+
+	Igualdad Observacional:	(∀ p1, p2: peaje)(p1 =obs p2 ⇐⇒ (limite(p1) = limite(p2) ∧ cabinas(p1) = cabinas(p2) ∧ precios(p1) = precios(p2) ∧L
+													(∀ c: cabina)(c ∈ cabinas(p1) ⇒L (fila(c, p1) = fila(c, p2) ∧ facturacion(c, p1) = facturacion(c, p2) ∧ pasaronPor(c, p1) = pasaronPor(c, p2)))
+													));
+	
+	Géneros:	peaje
+	
+	Usa:	Cabina, Vehiculo, Dicc(clave, significado), Cola(α), Nat, Multiconj(α), Conj(α), Bool
+	
+	Exporta:	observadores, generadores
+	
+	Observadores Básicos:
+		limite:				peaje 							-> nat
+		cabinas:			peaje 							-> conj(cabina)
+		precios:			peaje 							-> dicc(vehiculo, nat)
+		fila:					cabina c × peaje p	-> cola(vehiculo)				{c ∈ cabinas(p)}
+		facturacion:	cabina c × peaje p	-> nat									{c ∈ cabinas(p)}
+		pasaronPor:		cabina c × peaje p	-> multiconj(vehiculo)	{c ∈ cabinas(p)}
+		
+	Generadores:
+		abrir:			conj(cabina) cs × dicc(vehiculo, nat) × nat -> peaje	{¬vacio?(cs)}
+		llegaAuto:	vehiculo v × cabina c × peaje p							-> peaje	{c in cabinas(p) ∧ def?(v, precios(p))}
+		cobrar: 		cabina c × peaje p 													-> peaje	{c ∈ cabinas(p) ∧ ¬vacía?(fila(c, p))}
+		
+	Otras Operaciones:
+		desencolarMitad:		cola(vehiculo) -> cola(vehiculo)
+		desencolarMitadAux: cola(vehiculo) × nat -> cola(vehiculo)
+		valorDelProximo:		cola(vehiculo) × dicc(vehiculo, nat) -> nat
+		agregarMitad: multiconj(vehiculo) × cola(vehiculo) -> multiconj(vehiculo)
+		agregarHasta: nat × nat × multiconj(vehiculo) × cola(vehiculo) -> multiconj(vehiculo)
+		
+	Axiomas: ∀ p: peaje, ∀ cs: conj(cabina), ∀ c: cabina, ∀ v: vehiculo, ∀ dc: dicc(vehiculo, nat), ∀ n: nat, ∀ mv: multiconj(vehiculo), ∀ cv: cola(vehiculo)
+		limite(abrir(cs, dc, n))		≡	n
+		limite(llegaAuto(v, c, p))	≡	limite(p)
+		limite(cobrar(c, p))				≡ limite(p)
+		//--------------------------------------------------------------------------
+		cabinas(abrir(cs, dc, n))		≡ cs
+		cabinas(llegaAuto(v, c, p)) ≡ cabinas(p)
+		cabinas(cobrar(c, p))				≡ cabinas(p)
+		//--------------------------------------------------------------------------
+		precios(abrir(cs, dc, n))		≡	dc
+		precios(llegaAuto(v, c, p)) ≡	precios(p)
+		precios(cobrar(c, p)) 			≡ precios(p)
+		//--------------------------------------------------------------------------
+		fila(c, abrir(cs, dc, n))		≡	vacía()
+		fila(c, llegaAuto(v, c', p)) ≡	if tamaño(fila(c', p)) + 1 = limite(p) then
+																			if c = c' then
+																				desencolarMitad(encolar(v, fila(c', p)))
+																			else
+																				desencolarMitad(fila(c, p))
+																			fi
+																		else
+																			if c = c' then
+																				encolar(v, fila(c', p))
+																			else
+																				fila(c, p)
+																			fi
+																		fi
+		fila(c, cobrar(c', p))				≡	if c = c' then
+																			desencolar(fila(c, p))
+																		else
+																			fila(c, p)
+																		fi
+		//--------------------------------------------------------------------------
+		facturacion(c, abrir(cs, dc, n))		≡	0
+		facturacion(c, llegaAuto(v, c', p))	≡	facturacion(c, p)
+		facturacion(c, cobrar(c', p))				≡ if c = c' then
+																						facturacion(c, p) + valorDelProximo(fila(c, p), precios(p))
+																					else
+																						facturacion(c, p)
+																					fi
+		//--------------------------------------------------------------------------
+		pasaronPor(c, abrir(cs, dc, n))			≡	Ø
+		pasaronPor(c, llegaAuto(v, c', p))	≡	if tamaño(fila(c', p)) + 1 = limite(p) then
+																						if c = c' then
+																							agregarMitad(pasaronPor(c, p), encolar(v, fila(c, p)))
+																						else
+																							agregarMitad(pasaronPor(c, p), fila(c, p))
+																						fi
+																					else
+																						pasaronPor(p, c2)
+																					fi
+		pasaronPor(c, cobrar(c', p))				≡	if c = c' then
+																						Ag(proximo(fila(c, p)), pasaronPor(c, p))
+																					else
+																						pasaronPor(c, p)
+																					fi
+		//--------------------------------------------------------------------------
+		desencolarMitad(cv) ≡ desencolarMitadAux(cv, tamaño(cv)/2)
+	
+		desencolarMitadAux(cv, n) ≡	if tamaño(cv) = n then
+																	cv
+																else
+																	desencolarMitadAux(desencolar(cv), n)
+																fi
+		//--------------------------------------------------------------------------
+		valorDelProximo(cv, dc) ≡ obtener(proximo(cv), v)
+		//--------------------------------------------------------------------------
+		agregarMitad(mv, cv) ≡ agregarHasta(0, tamaño(cv), mv, cv)
+		
+		agregarHasta(izq, der, mv, cv) ≡	if izq ≥ der then
+																					mv
+																			else
+																				agregarHasta(izq + 1, der - 1, Ag(proximo(cv), mv), desencolar(cv))
+																			fi
+		//--------------------------------------------------------------------------
+Fin TAD
