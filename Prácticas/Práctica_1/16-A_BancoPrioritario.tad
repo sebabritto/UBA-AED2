@@ -3,10 +3,15 @@ TAD Caja es Bool
 TAD Cliente es Tupla(Nat dni, Bool prioritario)
 
 TAD Banco
-	Igualdad Observacional:	();
-
+	Igualdad Observacional:	(∀ b1, b2: banco)(b1 =obs b2 ⇐⇒ (cajas(b1) = cajas(b2) ∧ clientesEnFila(b1) = clientesEnFila(b2) ∧ clientesTotales(b1) = clientesTotales(b2) ∧L
+													(∀ c: caja)(c ∈ cajas(b1) ⇒L clientesAtendidoXCaja(c, b1) = clientesAtendidoXCaja(c, b2))));
+	
 	Géneros:	banco
 
+	Usa: Caja, Nat, Cliente, Bool, Secu(α), Conj(α)
+	
+	Exporta: observadores, generadores 
+	
 	Observadores Básicos:
 		cajas: 									banco 						-> conj(caja)
 		clientesEnFila: 				banco 						-> secu(cliente)
@@ -19,11 +24,11 @@ TAD Banco
 		atender: 		caja c × banco b			-> banco	{c ∈ cajas(b) ∧ ¬vacía?(clientesEnFila(b))}
 		
 	Otras Operaciones:
-		hayClientesPrioritarios?: secu(cliente) -> bool
-		sacarCliente: cliente × secu(cliente) -> secu(cliente)
-		sacarClientePrioritario: secu(cliente) -> secu(cliente)
-		dameUnClientePrioritario: secu(cliente) -> cliente
-		dameUnClienteProle: secu(cliente) -> cliente
+		hayClientesPrioritarios?:	secu(cliente)						-> bool
+		sacarCliente:							cliente × secu(cliente) -> secu(cliente)
+		sacarClientePrioritario:	secu(cliente)						-> secu(cliente)
+		dameUnClientePrioritario:	secu(cliente) 					-> cliente
+		dameUnClienteProle:				secu(cliente) 					-> cliente
 		
 	Axiomas: ∀ cj, cj', cj'': caja, ∀ cl: cliente, ∀ b: banco
 		cajas(crear(cj, cj')) 	≡	{cj, cj'}

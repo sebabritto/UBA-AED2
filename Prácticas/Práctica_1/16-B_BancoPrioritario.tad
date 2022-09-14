@@ -4,7 +4,8 @@ TAD Caja es Tupla(Nat id, Bool bien)
 
 TAD Banco
 
-	Igualdad Observacional:	();
+	Igualdad Observacional:	(∀ b1, b2: banco)(b1 =obs b2 ⇐⇒ (cajas(b1) = cajas(b2) ∧ clientesEnFila(b1) = clientesEnFila(b2) ∧ clientesTotales(b1) = clientesTotales(b2) ∧L
+													(∀ c: caja)(c ∈ cajas(b1) ⇒L clientesAtendidoXCaja(c, b1) = clientesAtendidoXCaja(c, b2))));
 
 	Géneros:	banco
 	
@@ -22,12 +23,12 @@ TAD Banco
 		retirarse:    cliente cl × banco b								-> banco		{cl ∈ clientesEnFila(b)}
 		colarse: 			cliente cl × cliente cl' × banco b	-> banco		{cl ∉ clientesEnFila(b) ∧ cl' ∈ clientesEnFila(b) ∧ cl ≠ cl'}
 	Otras Operaciones:
-		agregarColado: cliente × cliente × secu(fila) -> secu(cliente)
-		hayClientesPrioritarios?: secu(cliente) -> bool
-		sacarCliente: cliente × secu(cliente) -> secu(cliente)
-		sacarClientePrioritario: secu(cliente) -> secu(cliente)
-		dameUnClientePrioritario: secu(cliente) -> cliente
-		dameUnClienteProle: secu(cliente) -> cliente
+		agregarColado:						cliente × cliente × secu(fila)	-> secu(cliente)
+		hayClientesPrioritarios?: secu(cliente) 									-> bool
+		sacarCliente:							cliente × secu(cliente)					-> secu(cliente)
+		sacarClientePrioritario:	secu(cliente)										-> secu(cliente)
+		dameUnClientePrioritario:	secu(cliente)										-> cliente
+		dameUnClienteProle:				secu(cliente)										-> cliente
 	Axiomas:
 		cajas(crear()) 							≡ Ø
 		cajas(agregarCaja(cj, b)) 	≡	Ag(cj, cajas(b))
