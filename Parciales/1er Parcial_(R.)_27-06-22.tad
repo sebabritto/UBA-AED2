@@ -94,7 +94,6 @@ TAD Calamar43
 Fin TAD
 
 //Ejercicio 2 Bis
-
 TAD Calamar43
 
 	Géneros:	c43
@@ -155,8 +154,6 @@ TAD Calamar43
 		hayGanador?(c) ≡ #(calamares(c)) = 1 ∨ maxPosicion(calamares(c), c) = llegada(c) 
 		//--------------------------------------------------------------------------
 Fin TAD
-
-
 
 //Ejercicio 3
 TAD Parada es String
