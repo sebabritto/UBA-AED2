@@ -1,0 +1,242 @@
+//Ejercicio 1
+TAD DiccionarioExtendido(α)
+
+	Otras Operaciones:
+		clavesMayoresA: dicc(α, nat) × nat -> conj(α)
+		clavesMayoresAux: dicc(α, nat) × conj(α) × nat -> conj(α)
+		 
+	Axiomas: ∀ d: dicc(α, nat), ∀ c: conj(α), ∀ n: nat
+		clavesMayoresA(d, n) ≡ clavesMayoresAux(d, claves(d), n)
+		
+		clavesMayoresAux(d, c, n) ≡	if vacío?(c) then
+		 															c
+																else
+																	if obtener(dameUno(c), d) ≥ n then
+																		Ag(dameUno(c), clavesMayoresAux(d, sinUno(c), n))
+																	else
+																		clavesMayoresAux(d, sinUno(c), n)
+																	fi
+																fi
+Fin TAD
+//Ejercicio 2
+//a) para diferenciar dos Calamar43.
+// • Tengo que poder diferenciar entre dos conjuntos de calamares, al igual que sus posiciones.
+// • El punto de llegada puede variar para distintos Calamar43.
+// • Tambien tengo que poder ver los que llevan la delantera. 
+TAD Calamar es nat
+
+TAD Calamar43
+
+	Igualdad Observacional:	(∀ c1, c2: c43)(c1 =obs c2 ⇐⇒ (llegada(c1) = llegada(c2) ∧ calamares(c1) = calamares(c2)));
+	
+	Géneros:	c43
+	
+	Observadores Básicos:
+		llegada:		c43 -> nat
+		//Como calamares siempre tiene las posiciones de los calamares puedo saber quienes llevan la delantera y si alguno gano
+		calamares:	c43 -> dicc(calamar, nat)
+	
+	Generadores:
+		empezar:	dicc(calamar, nat) d × nat l 					-> c43		{l > 0 ∧L (∀ cl: calamar)(cl ∈ claves(d) ⇒L obtener(cl, d) = 0)}
+		avanzar:	dicc(calamar, nat) d × nat m × c43 c	-> c43		{m > 0 ∧ ∧ claves(d) = claves(calamares(c)) ∧ ¬hayGanador?(c) ∧L (∀ cl: calamar)(cl ∈ claves(d) ⇒L obtener(cl, d) > 0)}
+		
+	Otras Operaciones:
+		delantera:		c43 -> conj(calamar)
+		hayGanador?:	c43 -> bool
+		
+	Axiomas:	∀ d, d': dicc(calamar, nat), ∀ l, m: nat, ∀ c: c43, ∀ cc: conj(calamar)
+		llegada(empezar(d, l))		≡ l
+		llegada(avanzar(d, m, c))	≡ llegada(c)
+		//--------------------------------------------------------------------------
+		calamares(empezar(d, l))		≡ d
+		//Le pongo m + 1 ya que un calamar puede avanzar m ≥ #posiciones, si le pongo solo m quedaria m > #posiciones.
+		calamares(avanzar(d, m, c))	≡ actualizarCalamares(calamaresQueNoSePasaron(d, clavesMayoresA(d, m + 1)), calamares(c))
+		
+		//Esto me devuelve los calamares que no se pasaron del maximo junto con la cantidad de posiciones que avanzan.
+		calamaresQueNoSePasaron: dicc(calamar, nat) × conj(calamar) -> dicc(calamar, nat)
+		calamaresQueNoSePasaron(d, cc) ≡	if vacio?(cc) then
+																					d
+																			else
+																					calamaresQueNoSePasaron(borrar(dameUno(cc), d), sinUno(cc))
+																			fi
+		//Ahora tengo que actualizar los calamares sumandoles la cantidad de posiciones que avanzaron								
+		actualizarCalamares: dicc(calamar, nat) × dicc(calamar, nat) -> dicc(calamar, nat)
+		actualizarCalamares(d, d') ≡ actualizarAux(claves(d), d, d')
+		
+		//Contexto: recibe el conjunto y el diccionario de los calamares que quedaron, tambien le paso los calamares totales.
+		//Tengo que actualizar sus posiciones asi que para los calamares que quedaron le sumo la cantidad de posiciones que avanzaron.
+		//Ejemplo: 
+		// calamares: 							{(c1, 3),(c2, 1),(c3, 4),(c4, 5),(c5, 1)}
+		// calamaresQueNoSePasaron:	{(c2, 3), (c5, 2)}
+		// actualizarAux:						{(c2, 4), (c5, 3)}
+		actualizarAux: conj(calamar) × dicc(calamar, nat) × dicc(calamar, nat) -> dicc(calamar, nat)
+		actualizarAux(cc, d, d') ≡	if vacio?(cc) then
+																		d
+																else
+																		actualizarAux(sinUno(cc), definir(dameUno(cc), obtener(dameUno(cc), d) + obtener(dameUno(cc), d'), d), d')
+																fi
+		//--------------------------------------------------------------------------
+		delantera(c) ≡ clavesMayoresA(calamares(c), maxPosicionAlcanzada(calamares(c), claves(calamares(c))))
+		
+		maxPosicionAlcanzada: dicc(calamar, nat) × conj(calamar) -> nat
+		maxPosicionAlcanzada(d, cc) ≡	if #(cc) = 1 then
+																			obtener(dameUno(cc), d)
+																	else
+																			if obtener(dameUno(cc), d) ≥ maxPosicionAlcanzada(d, sinUno(cc)) then
+																					obtener(dameUno(cc), d)
+																			else
+																					maxPosicionAlcanzada(d, sinUno(cc))
+																			fi
+																	fi
+		//--------------------------------------------------------------------------
+		hayGanador?(c) ≡ claves(calamares(c)) = 1 ∨ #(clavesMayoresA(calamares(c), llegada(c))) > 0
+		//--------------------------------------------------------------------------
+Fin TAD
+
+//Ejercicio 2 Bis
+
+TAD Calamar43
+
+	Géneros:	c43
+	
+	Observadores Básicos:
+		llegada:		c43									-> nat
+		calamares:	c43 								-> conj(calamar)
+		posicion:		calamar cl × c43 c	-> nat						{cl ∈ calamares(c)}
+		
+	Generadores:
+		empezar: conj(calamar) × nat l -> c43
+		avanzar: dicc(calamar, nat) d × nat m × c43 c -> c43 	{m > 0 ∧ claves(d) = calamares(c)  ¬hayGanador?(c43) ∧L (∀ cl: calamar)(cl ∈ claves(d) ⇒L obtener(cl, d) > 0)}
+		
+	Otras Operaciones:
+		delantera:		c43 -> conj(calamar)
+		hayGanador?:	c43 -> bool
+	Axiomas: ∀ cc: conj(calamar), ∀ l, m: nat, ∀ c: c43, ∀ cl: calamar
+		llegada(empezar(cc, l))		≡ l
+		llegada(avanzar(d, m, c))	≡ llegada(c)
+		//--------------------------------------------------------------------------
+		calamares(empezar(cc, l))		≡	cc
+		calamares(avanzar(d, m, c))	≡ claves(calamaresQueNoSePasaron(d, clavesMayoresA(d, m + 1)))
+		
+		calamaresQueNoSePasaron: dicc(calamar, nat) × conj(calamar) -> dicc(calamar, nat)
+		calamaresQueNoSePasaron(d, cc) ≡	if vacio?(cc) then
+																					d
+																			else
+																					calamaresQueNoSePasaron(borrar(dameUno(cc), d), sinUno(cc))
+																			fi
+		//--------------------------------------------------------------------------
+		posicion(cl, empezar(cc, l))		≡ 0
+		posicion(cl, avanzar(d, m, c))	≡	posicion(cl, c) + obtener(cl, d) //Por precondicion tiene que cl ∈ calamares(c), entonces al avanzar solo puedo pedir las posiciones de los calamares que quedaron.
+		//--------------------------------------------------------------------------
+		delantera(c) ≡ calamaresAdelantados(calamares(c), maxPosicion(calamares(c), c), c)
+		
+		calamaresAdelantados: conj(calamar) × nat × c43 -> conj(calamar)
+		calamaresAdelantados(cc, n, c)	≡	if vacio?(cc) then
+																					cc
+																			else
+																					if posicion(dameUno(cc), c) = n then
+																						Ag(dameUno(cc), calamaresAdelantados(sinUno(cc), n, c))
+																					else
+																						calamaresAdelantados(sinUno(cc), n, m)
+																					fi
+																			fi
+		
+		maxPosicion: conj(calamar) × c43 -> nat
+		maxPosicion(cc, c) ≡	if #(cc) = 1 then
+														posicion(dameUno(cc), c)
+													else
+														if posicion(dameUno(cc), c) ≥ maxPosicion(sinUno(cc), c) then
+															posicion(dameUno(cc), c)
+														else
+															maxPosicion(sinUno(cc), c)
+														fi
+													fi
+		//--------------------------------------------------------------------------
+		hayGanador?(c) ≡ #(calamares(c)) = 1 ∨ maxPosicion(calamares(c), c) = llegada(c) 
+		//--------------------------------------------------------------------------
+Fin TAD
+
+
+
+//Ejercicio 3
+TAD Parada es String
+
+TAD Subte Circular
+	Géneros:	subte
+	
+	Observadores Básicos:
+		paradas:			subte								-> secu(parada)
+		bajanEn:			subte sc × parada p	-> nat					{está?(p, paradas(sc))}
+		maxPasajeros:	subte								-> nat
+		
+	Generadores:
+		inaugurarSC:		secu(parada) ps × nat m -> subte	{longitud(ps) ≥ 2 ∧ m ≥ 1}
+		abordar:				subte sc × parada p			-> subte	{está?(p, paradas(sc)) ∧ p ≠ paradaActual(sc)}
+		avanzarParada:	subte sc								-> subte
+		
+	Otras Operaciones:
+		rotarParada:		secu(parada)								-> secu(parada)
+		paradaActual:		subte												-> parada
+		cantPasajeros:	secu(parada) ps × subte sc	-> nat
+		
+	Axiomas:	∀ sc: subte, ∀ ps: secu(parada), ∀ p, p': parada, ∀ m: nat
+		paradas(inaugurarSC(ps, m))	≡ ps
+		paradas(abordar(sc, p))			≡	if cantPasajeros(paradas(sc), sc) + 1 = maxPasajeros(sc) then //Me fijo si cuando el pasajero aborda alcanza la capacidad maxima
+																		if p = prim(fin(paradas(sc))) then //Si la parada a la que se baja el que recien subio es la siguiente solo tengo que rotar las paradas
+																			rotarParada(paradas(sc))
+																		else	//Caso contrario, tengo que rotar hasta llegar a la parada en la que alguno se baje
+																			rotarHastaQueBajeUno(paradas(sc), sc)
+																		fi
+		
+		rotarHastaQueBajeUno: secu(parada) × subte -> secu(parada)
+		rotarHastaQueBajeUno(ps, sc) ≡ 	if bajanEn(sc, prim(ps)) > 0 then
+																			ps
+																		else
+																			rotarHastaQueBajeUno(rotarParada(ps), sc)
+																		fi
+																		
+		paradas(avanzarParada(sc))	≡	rotarParada(paradas(sc))
+		//--------------------------------------------------------------------------
+		bajanEn(inaugurarSC(ps, m), p')	≡	0 
+		bajanEn(abordar(sc, p), p')			≡	if cantPasajeros(paradas(sc), sc) + 1 = maxPasajeros(sc) then //Si alcanza la capacidad maxima
+		//Ya tengo axiomatizado el paradas(abordar(sc, p)), lo que me devuelve las paradas siendo la primera de la secuencia en la que alguien se baje
+		//Si la primera parada es la misma por la que estoy consultando entonces el resultado debe ser 0, ya que se supone que una vez llegan a la parada actual,
+		//todos se bajan automaticamente.
+																					if prim(paradas(abordar(sc, p))) = p' then
+																							0
+																					else
+		//Si la primera parada luego de rotar no es por la que pregunto entonces me fijo si a la que abordo es la misma por la que estoy preguntando.
+																							if p = p' then
+																									bajanEn(sc, p') + 1 //De ser asi le sumo 1
+																							else
+																									bajanEn(sc, p') //Caso contrario son paradas distintas, entonces queda igual la cantidad.
+																							fi
+																					fi
+																			else
+																					if p = p' then	//Si no alcanza la capacidad maxima solo tengo que preguntar si son iguales o no las paradas.
+																							bajanEn(sc, p') + 1
+																					else
+																							bajanEn(sc, p')
+																					fi
+																			fi
+																					
+		//Esto ayuda bastante para la axiomatizacion de paradas, al avanzar a la siguiente parada todos se bajan automaticamente.
+		bajanEn(avanzarParada(sc), p')	≡	if p' = prim(fin(paradas(sc))) then 
+																				0
+																			else
+																				bajanEn(sc, p')
+																			fi
+		//--------------------------------------------------------------------------
+		maxPasajeros(inaugurarSC(ps, m)) ≡ m
+		//--------------------------------------------------------------------------
+		rotarParada(ps) ≡ fin(ps) ◦ prim(sc)
+		//--------------------------------------------------------------------------
+		paradaActual(sc) ≡ prim(paradas(sc))
+		//--------------------------------------------------------------------------
+		cantPasajeros(ps, sc) ≡	if vacía?(ps) then
+															0
+														else
+															bajanEn(sc, prim(sc)) + cantPasajeros(fin(ps), sc)
+														fi
+		//--------------------------------------------------------------------------
+Fin TAD
