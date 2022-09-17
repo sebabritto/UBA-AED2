@@ -1,0 +1,161 @@
+Representación:
+	Servidor se representa con estr donde 
+		estr es tupla ⟨	partidas:	diccTrie(string,	SimCity), modificables: diccTrie(string, bool), hijos: diccTrie(string,conj(string))⟩  // listasYaFiltradas: diccTrie(string, dicc(string, listaEnlazada))
+//donde diccTrie es un diccionario implementado con Tries y sus respectivos algoritmos
+
+Solución Informal:
+	- e.partidas es un diccinario trie, siendo las claves los nombres de los simcitys.
+	- e.modificables es un diccionario trie, tambien tiene como clave los nombres de los simcities, al consultar un nombre, te devuelve si el simCity asociado a ese nombre es modificable.
+	- e.hijos es un diccionaio trie que tiene como clave el nombre de un SimCity y como significado todos sus hijos, es decir, todos los SimCitys que fueron unidos a el.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1) ∧ 
+		donde: 
+		(1)	≡	claves(e.partidas) = claves(e.modificables)		//que las claves para los 3 diccionarios sean las mismas
+		(2) ≡ claves(e.partidas) = claves(e.hijos)
+		(3) ≡ (∀ nom1:string)(def?(nom1, e.partidas) ⇒L ¬(∃ nom2:string)(def?(nom2, e.partidas) ∧L pertenece(nom1, Significado(nom2, e.hijos))))  //que cada simcity no sea "hijo" del que a la vez es "padre"
+		(4) ≡ (∀ nom1:string)((∃ nom2:string)(def?(nom2, e.partidas) ∧L pertenece(nom1, Significado(nom2, e.hijos))) ⇒L ¬Significado(nom1, e.modificables))		//si un simcity es hijo de cualquier otro, tiene que ser no modificable
+---
+Función de abstracción:
+	Abs:	estr	->	Servidor	{Rep(e)}
+	(∀e: estr) Abs(e) =obs s: Servidor | (∀ n, n2:string) ((1) ∧ ( estaEnElServidor?(s, n) ∧ estaEnElServidor?(s, n2) ∧L (2)∧(3)))
+		donde:
+		(1) ≡ Todos los simcities que esten en el servidor deben estar tanto en e.partidas como e.modificables
+		(2) ≡ Si un nombre esta en las claves de e.partidas entonces su valor (SimCity) debe ser el mismo para el nombre asociado en el Servidor.
+		(3) ≡ Si el nombre esta tanto en e.partidas como e.modificables, el valor en e.modificables debe ser el mismo valor booleano que devuelve la operacion estaUnido? de Servidor
+		donde: 
+		(1)	≡	estaEnElServidor?(s,n) =obs def?(e.patidas) =obs def?(e.modificables) =obs def?(e.hijos)
+		(2) ≡ obtener(s, n) =obs Significado(e.partidas, n)
+		(3)	≡ estaunido?(s, n) =obs pertenece(def?(e.hijos, n2), n)
+---
+Interfaz:
+	
+	Se explica con:	Servidor
+	Géneros:		servidor, simcity, nombre, bool
+	
+	Operaciones básicas:
+		_iniciarServidor(out sv:servidor) -> res: servidor
+		Pre ≡ {true}
+		Post ≡ {sv =obs iniciarServidor()}
+		Complejidad: Θ(1)
+		Descripción: Crea un servidor.
+		Aliasing: No presenta aliasing.
+		---
+		agregarSimCity(in/out sv: servidor, in sc: simcity, in nom: nombre)
+		Pre ≡ {sv =obs sv1 ∧L (nom ∉ nombres(sv)) ∧L (∀ n: nombre)(estaEnElServidor?(sv, n) ⇒L Significado(n, sv.partidas) ≠ sc)}
+		Post ≡ {sv =obs agregarSimCity(sv1, sc, nom)}
+		Complejidad: Θ(|nom|)
+		Descripción: Agrega un SimCity al Servidor, siempre y cuando este no exista en el servidor anteriormente.
+		Aliasing: Presenta aliasing, ya que el Servidor se lo pasa por referencia.
+		---		
+		pasarTurnoSV(in/out sv: servidor, in nom: nombre)
+		Pre ≡ {sv =obs sv0}
+		Post ≡ {sv =obs pasarTurnoSV(sv0, nom)}
+		Post ≡ {(∀ sc: nombre)(estaEnElServidor?(sv, sc) ⇒L (sc = nom ⇒ obtener(sv, nom) = avanzarTurno(obtener(sv0, sc))) ∧ (sc ≠ nom ⇒ obtener(sv, sc) = obtener(sv0, sc)))} //avanzarTurno de la interfaz de SimCity
+		Complejidad: Θ(|nom|)
+		Descripción: Pasa al siguiente turno, actualizando las casas y comercios.
+		Aliasing: Presenta aliasing, ya que se pasa el Servidor por referencia.
+		---		
+		unirSV(in/out sv: servidor, in nom1: nombre, in nom2: nombre)
+		Pre ≡ {sv =obs sv1 ∧ ¬(estaUnido?(sv, nom1)) ∧ unionValida?(obtener(sv, nom1), obtener(sv, nom2))} 
+		Post ≡ {res =obs unir(sv, nom1, nom2)}
+		Complejidad: Θ(|nom1| + |nom2|)
+		Descripción: Une dos SimCities.
+		Aliasing: Presenta aliasing, ya que se pasa el Servidor por referencia.
+		---		
+		estaEnElServidor?(in sv: servidor, in nom: nombre)	-> res: bool
+		Pre ≡ {true}
+		Post ≡ {res =obs estaEnElServidor?(sv, nom)}
+		Complejidad: Θ(|nom|)
+		Descripción: Devuelve un booleano, el valor del bool depende de si un nombre asociado a un simcity existe en el servidor.
+		Aliasing: No presenta aliasing.
+		---
+		obtenerSV(in sv: servidor, in nom: nombre)	-> res: simCity
+		Pre ≡ {estaEnElServidor?(sv, nom)}
+		Post ≡ {res =obs obtener(sv, nom)}
+		Complejidad: Θ(|nom|)
+		Descripción: Dado un nombre devuelve el SimCity al cual esta asociado.
+		Aliasing: No presenta aliasing.
+		---
+		estaUnido?(in sv: servidor, in nom: nombre)	-> res: bool
+		Pre ≡ {estaEnElServidor?(sv, nom)}
+		Post ≡ {res =obs estaUnido?(sv, nom)}
+		Complejidad: Θ(|nom|)
+		Descripción: Devuelve un booleano, el valor del bool depende de si, dado un nombre, el SimCity asociado a este esta unido a otro SimCity.
+		Aliasing: No presenta aliasing.
+		---
+		agregarCasasSV(in/out sv: servidor, in n: nombre, in casas: Lista(Tupla(Pos, Nivel))
+		Pre ≡ {sv =obs sv0 ∧ estaEnElServidor?(sv, n) ∧L (∀ cs: Lista(Tupla(Pos, Nivel))(definidoEnLista?(cs, casas) ⇒L cosntValida?(obtener(sv,nom), cs))}
+		Post ≡ {sv =obs sv0}
+		Complejidad: O(|n|)
+		Descripción: Agrega en el SimCity las casas pasadas como parametro.
+		Aliasing: Presenta aliasing, ya que se lo pasa por referencia al servidor, que va a modificar al simcit con ese nombre. Se pasa por referencia las casas
+	
+		---
+		agregarComerciosSV(in/out sv: servidor, in n: nombre,in comercios: Lista(Tupla(Pos, Nivel)))
+		Pre ≡ {sv =obs sv0 ∧ estaEnElServidor?(sv, n) ∧L (∀ cs: Lista(Tupla(Pos, Nivel))(definidoEnLista?(cs, comercios ⇒L cosntValida?(obtener(sv,nom), cs))}
+		Post ≡ {sv =obs sv0}
+		Complejidad: O(|n|)
+		Descripción: Agrega en el SimCity los comercios pasados como parametro.
+		Aliasing:	Presenta aliasing, ya que se lo pasa por referencia al servidor, que va a modificar al simcit con ese nombre. Se pasa por referencia las casas
+		---
+		//Usamos el DiccTrie::Definir y DiccTrie::Significado
+	Algoritmos del módulo:
+		iiniciarServidor()	-> res: servidor
+			sv.partidas ← vacio()
+			sv.modificables ← vacio()
+			sv.hijos ← vacio()
+			return sv
+			
+			Complejidad: Θ(1)
+		---
+		iagregarSimCity(in/out sv: servidor, in sc: simCity, in nom: nombre)
+			Definir(sv.partidas, nom, sc)	                                    
+			Definir(sv.modificables, nom, true)
+			Definir(sv.hijos, nom, vacio())
+			
+			Complejidad: O(|nom|)
+		---
+		ipasarTurnoSV(in/out sv: servidor, in nom: nombre)
+			avanzarTurno(Significado(sv.partidas, nom))
+			
+			Complejidad: O(|nom|)
+		---
+		iunirSV(in/out sv: servidor, in nom1: nombre, in nom2: nombre)
+			definir(sv.partidas, nom1, unir(Significado(nom1, sv.partidas), Significado(nom2, sv.partidas)))
+			definir(sv.modificables, nom2, false)
+			definir(sv.hijos, nom1, Agregar(Significado(sv.hijos, nom1), nom2))
+			Complejidad: Θ(|nom1| + |nom2|)		//esto obviamente puede acotarse con la longitud de la clave más larga
+		---
+		iestaEnElServidor?(in sv: servidor, in nom: nombre)	-> res: bool
+			res ← false
+				if def?(nom, sv.partidas) ∧ def?(nom, sv.modificables) then
+					res ← true
+				else
+					skip
+				end if
+			return res
+			
+			Complejidad: Θ(|nom|)
+		---
+		iobtenerSV(in sv: servidor, in nom: nombre)	-> res: simcity
+			res ← Significado(nom, sv.partidas)
+			
+			Complejidad: Θ(|nom|)
+		---
+		iestaUnido?(in sv: servidor, in nom: nombre)	-> res: bool
+			res ← Significado(nom, sv.modificables)
+			
+			Complejidad: Θ(|nom|)
+		---	
+		iagregarCasasSV(in sv: servidor, in nom: nombre, in casas: Lista(Tupla(Pos, Nivel))
+		 		agregarCasa(Significado(sv, nom), casas) //SimCity::agregarCasa
+		
+			Complejidad: O(|nom|)
+		---
+		iagregarComerciosSV(in sv: servidor, in nom: nombre,in comercios: Lista(Tupla(Pos, Nivel))
+				agregarComercio(Significado(sv, nom), comercios) //SimCity::agregarComercio
+				
+				Complejidad: O(|nom|)
+		---//fin interfaz

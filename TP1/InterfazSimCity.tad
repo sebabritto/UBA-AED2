@@ -1,0 +1,595 @@
+TAD Pos es Tupla⟨Nat	x,	Nat	y⟩
+---
+Fin TAD
+---
+TAD Nivel es Nat
+---
+Fin TAD
+---
+Representación:
+	SimCity se representa con estr donde
+		estr es tupla ( mapa: Mapa, casas: lista(Tupla(Pos,	Nivel)), comercios: lista(Tupla(Pos,	Nivel)), casasPendientes: lista(PunteroALista(Tupla(Pos, Nivel))), 
+		comerciosPendientes: lista(PunteroALista(Tupla(Pos, Nivel))), uniones: lista(punteroAEstr), popularidad:	Nat, turno: Nat)		
+---
+Solucion Informal:
+	- Las posiciones de e.casas no pueden chocar con las posiciones de e.comercios ni viceversa, ni tampoco casas o comercios repetidos.
+	- Las posiciones de e.casas ni e.comercios pueden chocar con los ríos del mapa.
+	- Para todo comercio, si existe al menos una casa a distancia manhattan <= 3 de ese comercio, el comercio debe tener un valor igual al de la casa de nivel máximo a esta distancia.
+	- Si una de las construcciones a agregar pisa a una del SimCity, toma prioridad la estructura de mayor nivel.
+	- Al unir dos SimCity, no pueden pisarse las construcciones de nivel máximo de cada instancia.
+	- Para lograr las complejidades requeridas, se hace uso de componentes adicionales en la estructura que guardan las construcciones que luego son añadidas acorde a los criterios con un método separado de los''agregar'' y la unión.
+	- e.casasPendientes son las casas agregadas a ese SimCity, no hay que incluir a las de las uniones, lo mismo con e.comerciosPendientes
+	- e.uniones son los simcities unidos al simcity actual	
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)∧(4)
+		donde:
+		(1)	≡	(∀ pos: Pos)(definidoEnLista?(pos, e.casas) ⇒L (¬definidoEnLista?(pos, e.comercios)))	//Una casa no puede estar en la misma posicion que un comercio, y viceversa.
+		(2)	≡	(∀ pos: Pos)(definidoEnLista?(pos, e.casas) ∨ definidoEnLista?(pos, e.comercios) ⇒L ¬(pertenece?(horizontales(e.mapa), pos.y) ∨ pertenece?(verticales(e.mapa), pos.x)) //Las casas y comercios no pisan rios.
+		(3) ≡ (∀ p1: Pos)(definidoEnLista?(p1, e.comercios) ∧ #conjNiveles(e.casas, p1) > 0 ⇒L obtenerNivelEnLista(p1, e.casas) = maxConj(conjNiveles(e.casas,p1))	//que los comercios tengan el nivel máximo de las casas a dist. Manhattan
+		(4) ≡ (∀ pos: Pos)((definidoEnLista?(pos, e.casas) ⇒L obtenerNivelEnLista(pos, e.casas) <= e.turno) ∧ (definidoEnLista?(pos, e.comercios) ⇒L obtenerNivelEnLista(pos, e.casas) <= e.turno))	//toda estructura tiene nivel menor o igual a la cantidad de turnos 
+		
+		
+		maxConj: conj(Nat) -> Nat
+		maxConj(n, cn) ≡	if #(cn) = 0 then
+												0
+											else
+												max(dameUno(cn),maxConj(sinUno(cn)))
+											fi
+											
+		conjNiveles: lista(Tupla(Pos,	Nat)) casas × Tupla(Nat x, Nat y) pos1 -> conj(Nat)
+		conjNiveles(casas, p1) ≡	if EsVacía?(casas) then
+																	Ø
+															else
+																	if estaADistanciaManhattan(p1, Primero(casas).Pos) then
+																			Ag(Primero(casas).Nivel, conjNiveles(Fin(casas), p1))
+																	else
+																			conjNiveles(Fin(casas), p1)
+																	fi
+															fi
+		
+		estaADistanciaManhattan: Tupla(Nat x, Nat y) pos1 × Tupla(Nat x, Nat y) pos2 -> Bool
+		estaADistanciaManhattan(p1, p2) ≡ |p1.x - p2.x| + |p1.y - p2.y| <= 3
+													
+		definidoEnLista?: Pos x lista(Tupla(Pos,	Nat)) → bool
+		definidoEnLista?(pos, list) ≡ if(EsVacía?(list)) then
+																			false
+																	else
+																			if Primero(list).Pos = pos  then
+																					true 
+																			else 
+																					definidoEnLista?(pos, Fin(list))
+																			fi
+																	fi
+																	
+		obtenerNivelEnLista: Pos x lista(Tupla(Pos,	Nat)) → Nat 
+		obtenerNivelEnLista(pos, list) ≡	if Primero(list) = pos then
+																					Primero(list).Nivel 
+																			else 
+																					obtenerNivelEnLista(pos, Fin(list))
+																			fi
+---     
+Función de abstracción:
+	Abs:	estr	->	SimCity	{Rep(e)}
+	(∀e: estr) Abs(e) =obs sc: SimCity | (1)∧(2)∧(3)∧(4)
+		donde:
+		
+		(1) ≡ mapa(sc) =obs unionDeMapa(e, e.uniones)   
+		(2)	≡	casas(sc) =obs ObservadorCasas(e, e.uniones)
+		(3)	≡	comercios(sc) =obs ObservadorComercios(e, e.uniones)
+		(4) ≡ popularidad(sc) =obs e.popularidad
+
+
+		unionDeMapa: estr x lista(punteroAestr) → Mapa
+		unionDeMapa(sc, uniones) ≡
+			unionDeRios(sc.mapa, uniones) 
+			
+		unionDeRios: Mapa x lista(punteroAestr) → Mapa
+		unionDeRios(mapa, uniones) ≡
+				if EsVacia?(uniones) then
+					mapa
+				else
+					unionDeRiosAux(unionDeRios(mapa, Fin(uniones)), *(Primero(uniones)).mapa)
+				fi
+		//Resolvimos el problema de la función de abstracción por medio de los observadores.
+		//Haciendo uso de la lista de simcity unidos, sc.uniones, devolvemos ya sea el mapa, las casas o los comercios pedidos, actualizados en base a dichas uniones.
+		//En el caso del mapa,  hacemos las uniones de los conjuntos los cuales indican los rios de los mapas de los Simcitys.
+		//Tanto para casas como para comercios, debemos tomar en consideración las condiciones establecidas por el enunciado. La función que se encarga de esto es FiltrarConstrucciones, la cual decide si una construcción de un Simcity perteneciente va a sobrevivir la unión. El problema de esto es que obtenemos únicamente las construcciones de los Simcitys de sc.uniones que sobreviven la unión, pero no las del Simcity original. Es por esto que tenemos que usar la funcion AgregarFaltantes para agregar las construcciones del Simcity original que sobreviven la unión, de modo que los observadores devuelvan las listas correspondientes.
+		//Para casas, debemos usar la lista de comercios ya actualizada. Lo mismo para comercios pero viceversa. Por último, antes de devolver la lista de comercios tenemos que actualizar los niveles de los mismos en base a la propiedad de disancia Manhattan.
+		unionDeRiosAux: Mapa x Mapa → Mapa
+		unionDeRiosAux(mapa1, mapa2) ≡
+			tupla(mapa1.horizontales ∪ mapa2.horizontales, mapa1.verticales ∪ mapa2.verticales)
+		
+		ObservadorCasas: estr x lista(punteroAestr) → lista(Tupla(Pos,	Nivel))
+		ObservadorCasas(sc, uniones) ≡
+				//la idea ahora es para casas, primero unir la lista de comercios con una listaPivote de casas "sin unir" y despues hacer la union de casas, usando esta nueva lista de comercios
+				unionDeCasas(sc.casas, unionDeComercios(sc.comercios, sc.casas, sc.turno, sc.uniones), sc.turno, sc.uniones)
+		
+		ObservadorComercios: estr x lista(punteroAestr) → lista(Tupla(Pos,	Nivel))
+		ObservadorComercios(sc, uniones) ≡
+				//la idea ahora es para comercios, primero unir la lista de casas con una listaPivote de comercios "sin unir" y despues hacer la union de comercios, usando esta nueva lista de casas
+				actualizarManhattan(unionDeComercios(sc.comercios, unionDeCasas(sc.casas, sc.comercios, sc.turno, sc.uniones), sc.turno, sc.uniones), unionDeCasas(sc.casas, sc.comercios, sc.turno, sc.uniones)) 
+		
+	
+		
+		unionDeCasas: lista(Tupla(Pos,	Nivel)) x lista(Tupla(Pos,	Nivel)) x Nivel x lista(punteroAestr) → lista(Tupla(Pos,	Nivel))
+		unionDeCasas(casasDeSc, comerciosDeSc, turnoDeSc, uniones) ≡ 
+				if EsVacia?(uniones) then
+							casasDeSc
+				else
+							AgregarFaltantes(UnionDeConstrucciones(unionDeCasas(casasDeSc, comerciosDeSc, turnoDeSc, Fin(lista)), comerciosDeSc, *(Primero(uniones)).casas, *(Primero(lista)).turno), casasDeSc, turnoDeSc)//Se le pasan tantos parametro a esta funcion porque de esta manera puedo usar un unico auxiliar para ambos casas y comercios
+				fi
+		
+		ObservadorComercios: estr x lista(punteroAestr) → lista(Tupla(Pos,	Nivel))
+		ObservadorComercios(sc, uniones) ≡
+				//la idea ahora es para comercios, primero unir la lista de casas con una listaPivote de comercios "sin unir" y despues hacer la union de comercios, usando esta nueva lista de casas
+				actualizarManhattan(unionDeComercios(sc.comercios, unionDeCasas(sc.casas, sc.comercios, sc.turno, sc.uniones), sc.turno, sc.uniones), unionDeCasas(sc.casas, sc.comercios, sc.turno, sc.uniones)) 
+		
+		unionDeComercios: lista(Tupla(Pos,	Nivel)) x lista(Tupla(Pos,	Nivel)) x Nivel x lista(punteroAestr) → lista(Tupla(Pos,	Nivel))
+		unionDeComercios(comerciosDeSc, casasDeSc, turnoDeSc, uniones) ≡ 
+				if EsVacia?(uniones) then
+							comerciosDeSc
+				else
+							AgregarFaltantes(UnionDeConstrucciones(unionDeComercios(comerciosDeSc, casasDeSc, turnoDeSc, Fin(lista)), casasDeSc, *(Primero(uniones)).comercios, *(Primero(lista)).turno), comerciosDeSc, turnoDeSc)//Se le pasan tantos parametro a esta funcion porque de esta manera puedo usar un unico auxiliar para ambos casas y comercios
+				fi
+		
+		AgregarFaltantes: lista(Tupla(Pos,	Nivel) x lista(Tupla(Pos,	Nivel) x Nivel → lista(Tupla(Pos,	Nivel)
+		AgregarFaltantes(lista, Faltantes, maxlvl) ≡ // Esta funcion agrega todas las construcciones del SimCity original que sobreviven la union, al rersultado. Sin ella, unionDeCasas o unionDeComercios solo devolverían las construcciones del SimCity perteneciente a sc.uniones, que sobreviven la union, pero no las construcciones del SimCity original.
+				if EsVacia?(Faltantes) then
+								lista //Ya sabemos que en lista estan todas las construcciones que van a pisar a las originales, por lo que las podemos usar como caso base porque estamos seguros que no va a haber duplicados. Esto se debe a que lista ya fue filtrado.
+				else
+								AgregarAtras( AgregarFaltantes(lista, Fin(Faltantes)), FiltarConstruccion(lista, Vacia(), Primero(Faltantes), maxlvl) //FiltrarConstrucciones en este caso nos va a devolver las construcciones del SimCity original que sobrevivan la union.
+				fi
+							
+		UnionDeConstrucciones: lista(Tupla(Pos,	Nivel) x lista(Tupla(Pos,	Nivel) x lista(Tupla(Pos,	Nivel) x Nivel → lista(Tupla(Pos,	Nivel) 
+		UnionDeConstrucciones(litaAModificar, listaPivote, listaAAgregar, maxlvl) ≡ //Esta funciones se encarga de devolver las construcciones de listaAAgregar que sobrevivan la union con listaAModificar		. listaPivote se usa para ver si en la lista con el otro tipo de construcciones, se esta pisando.
+			if EsVacia?(lista) then
+				Vacia()
+			else
+				AgregarAtras(UnionDeConstrucciones(litaAModificar, listaPivote, Fin(listaAAgregar), maxlvl), FiltarConstruccion(listaAModificar, listaPivote, Primero(listaAAgregar), maxlvl))
+			fi
+		
+		FiltarConstruccion: lista(Tupla(Pos,	Nivel) x lista(Tupla(Pos,	Nivel) x Tupla(Pos, Nivel) x Nivel → Tupla(Pos,	Nivel)
+		FiltarConstruccion(listaAModificar, listaPivote, ConstAAgregar, maxlvl) ≡ 
+			if ¬definidoEnLista?(ConstAAgregar.Pos, listaAModificar) ∧ ¬definidoEnLista?(ConstAAgregar.Pos, sc.comercios) then //caso donde la construcción no pisa a ninguna otra
+					ConstAAgregar					
+			else  if definidoEnLista?(ConstAAgregar.Pos, listaAModificar) then	//Caso donde la casaAAgregar pisa una casa de s1.
+					if ConstAAgregar.Nivel = maxlvl then	//caso donde la construcción era del nivel máximo del simcity unido
+							ConstAAgregar																		
+					else if obtenerNivelEnLista(ConstAAgregar.Pos, listaAModificar) < ConstAAgregar.Nivel then
+							ConstAAgregar				//caso donde sobrevive la de mayor nivel, siendo que no es de maximo nivel ni de s1 ni de s2
+					else 
+							Vacia() //caso donde la casa que pisa 																				
+			else  if ConstAAgregar.Nivel = maxlvl then	//caso donde la casaAAgregar es del nivel máximo del simcity unido y pisa a un comercio																																												 
+					ConstAAgregar
+			else  if obtenerNivelEnLista(ConstAAgregar.Pos, sc.comercios) < ConstAAgregar.Nivel then //caso donde ninguna de las constr. conflictivas es de nivel máximo y sobrevive la de mayor nivel
+					ConstAAgregar					
+			else
+					Vacia() //caso donde el comercio qes de maximo nivel s1, pero nunca pasa por la precondicion
+					end if																																								
+			else  if ConstAAgregar.Nivel = maxlvl then	//caso donde la casaAAgregar es del nivel máximo del simcity unido y pisa a un comercio																																												 
+					ConstAAgregar
+			else  if obtenerNivelEnLista(ConstAAgregar.Pos, sc.comercios) < ConstAAgregar.Nivel then //caso donde ninguna de las constr. conflictivas es de nivel máximo y sobrevive la de mayor nivel
+					ConstAAgregar					
+			else
+					Vacia() //caso donde el comercio que pisa es de maximo nivel s1, pero nunca pasa por la precondicion
+			end if
+																	
+---
+Interfaz:
+	Se explica con:	SimCity
+	
+	Géneros:		simcity, mapa, dicc(Pos, Nivel), Nat
+	
+	Operaciones básicas:
+		_iniciar(in m: mapa)	-> res: SimCity
+		Pre ≡ {true}
+		Post ≡ {res =obs iniciar(m)}
+		Complejidad: Θ(1)  
+		Descripción: Genera un SimCity con el mapa pasado como parámetro.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		avanzarTurno(in/out sc: simcity) -> res: simcity
+		Pre ≡ {(sc = sc0)}
+		Post ≡ {casas(sc) =obs sumarUnoATodos(UnirListas(casas(sc0), sc0.casasPendientes)) ∧ comercios(sc) =obs sumarUnoATodos(UnirListas(comercios(sc0), sc0.comerciosPendientes))}
+													 
+		
+		UnirListas: lista(Tupla(Pos,	Nivel) x lista(PunteroALista(Tupla(Pos, Nivel))) → lista(Tupla(Pos,	Nivel)
+		UnirListas(listaOg, listaDePendientes) ≡ 
+				if(EsVacia?(ConstruccionesPendientes)) then
+						listaOg
+				else
+						UnirListas(UnirListasAux(listaOG, *(Primero(ConstruccionesPendientes))), Fin(ConstruccionesPendientes))
+				fi
+					
+		UnirListasAux: lista(Tupla(Pos,	Nivel) x Lista(Tupla(Pos, Nivel)) → lista(Tupla(Pos,	Nivel)
+		UnirListasAux(listaOG, AAgregar) ≡
+				if (EsVacia?(AAgregar)) then
+						listaOg
+				else
+						AgregarAtras(UnirListas(listaOg, Fin(AAgregar)), Primero(AAgregar))
+				fi
+
+		Complejidad: O(max(claves(e.casas),claves(e.comercios)))
+		Aliasing: Presenta aliasing. El simcity se pasa por referencia y se modifica.
+		---
+		unir(in/out sc: simcity, in sc2: simcity)  	
+		Pre ≡ {(sc = sc0) ∧ unionValida?(sc, sc2)} 
+		Post ≡ {sc =obs unir(s0,s2)}
+		Complejidad: O(1)
+		Descripción: Devuelve el SimCity sc luego de que se le haya unido sc2.
+		Aliasing: Presenta aliasing. El primer simcity al que se une se pasa por referencia y se modifica
+		---
+		mapa(in sc: simcity) -> res: mapa
+		Pre ≡ {true}
+		Post ≡ {res	=obs mapa(sc)}
+		Complejidad:	O(n * m)	
+		Descripción:	Devuelve el mapa del SimCity.
+		Aliasing:	No presenta aspectos de aliasing.
+		---
+		casas(in sc: simcity) -> res: lista(Tupla(Pos, Nivel))
+		Pre ≡ {true}
+		Post ≡ {res =obs casas(sc)}
+		Complejidad:	O(n³)
+		Descripción: Devuelve las casas de un SimCity, con su posición y nivel. Llama a actualizarSC.
+		Aliasing:	No presenta aspectos de aliasing.
+		---
+		comercios(in sc: simcity) -> res: lista(Tupla(Pos, Nivel))
+		Pre ≡ {true}
+		Post ≡ {res =obs comercios(sc)}
+		Complejidad:	O(n³)
+		Descripción:	Devuelve los comercios de un SimCity, con su posición y nivel. Llama a actualizarSC.
+		Aliasing:	No presenta aspectos de aliasing.
+		---
+		agregarCasas(in/out sc: simcity, in lista: lista(Tupla(Pos,Nivel)))
+		Pre ≡ {sc =obs sc0 ∧L (∀ t: Tupla(Pos, Nivel))(definidoEnLista?(t.pos, lista) ⇒L t.nivel = 0) ∧ (∀ p1 : Pos)(definidoEnLista(p1, lista) ⇒L (p1 ¬(∈ (claves(casas(sc)) ∪ claves(comercios(sc))) ∧ p1.x ¬(∈ verticales(mapa(sc))) ∧ p1.y ¬(∈ horizontales(mapa(sc))))))}	
+		Post ≡ {sc =obs sc0}
+		Complejidad:O(1)
+		Descripción:	Agrega una lista de casas a las estructuras pendientes en tiempo constante, para que luego se actualizarán llamando a otro método. Por una cuestión de tipado pedimos que el nivel sea 0 por más que sea trivial. Notar que sabiendo que el nivel de las estructuras agregadas es 0, se deduce que la lista de estructuras proviene de un agregar y no de una unión, ya que la antigüedad de cualquier SimCity que se una debe ser al menos de 1.
+		Aliasing: Presenta aspectos de aliasing, se pasa por referencia el SimCity al que se le agrega la casa y la lista de casas a agregar.
+		//en el tp1 agregarCasa no significa que la casa esté agregada hasta que uno avance el turno. Esto cambia en el tp2.
+		---
+		agregarComercios(in/out sc: simcity, in lista: lista(Tupla(Pos, Nivel)))
+		Pre ≡ {sc =obs sc0 ∧L (∀ t: Tupla(Pos, Nivel))(definidoEnLista?(t.pos, lista) ⇒L t.nivel = 0) ∧ (∀ p1 : Pos)(definidoEnLista(p1, lista) ⇒L (p1 ¬(∈ (claves(casas(sc)) ∪ claves(comercios(sc))) ∧ p1.x ¬(∈ verticales(mapa(sc))) ∧ p1.y ¬(∈ horizontales(mapa(sc))))))}
+		Post ≡ {sc =obs sc0} 
+		Complejidad:O(1)
+		Descripción:	Agrega una lista de comercios a las estructuras pendientes, con la misma lógica que agregarCasas.
+		Aliasing: Presenta aspectos de aliasing, se pasa por referencia el SimCity al que se le agrega el comercio y la lista de comercios a agregar
+		---
+		popularidad(in sc: simcity) -> res: Nat
+		Pre ≡ {true}
+		Post ≡ {res =obs popularidad(sc)}
+		Complejidad:	O(1)
+		Descripción:	Devuelve la cantidad de veces que a este SimCity se le unió otro.
+		Aliasing:	No presenta aspectos de aliasing.
+		---
+		turnos(in sc: simcity) -> res: Nat
+		Pre ≡ {true}
+		Post ≡ {res =obs turnos(sc)}
+		Complejidad: O(1)
+		Descripción: Devuelve la cantidad de turnos que se llevan jugados en el simcity, es decir, el nivel de la construccion con nivel mas alto 
+		Aliasing:	No presenta aspectos de aliasing.
+		---
+		actualizarManhattan(in/out sc: simcity)
+		Pre ≡ {sc =obs sc0}
+		Post ≡ {sc =obs actualizarManhattan(sc0)}
+		Complejidad: O(n²)
+		Descripción: Se fija si, luego de realizar una union, no quedaron comercios con un nivel no acorde a la propiedad Manhattan. Si es el caso, modifica el nivel de estos comercios 
+		Aliasing: Modifica el parámetro sc ya que actualiza los niveles de los comercios en la instancia.
+		---
+		maxNivelAManhattan(in p1: Pos, in sc: simcity ) -> res: Nat
+		Pre ≡ {true}
+		Post ≡ {res =obs maxNivelAManhattan(p1, sc)}
+		Complejidad: O(n)
+		Descripción: Devuelve el nivel mas alto de la casas que estan a distancia Manhattan de la posicion p1																		
+		Aliasing:	No presenta aliasing.
+		---
+		actualizarSC(in/out sc: estr)
+		Pre ≡ {sc =obs sc0}
+		Post ≡ {sc =obs sc0} //La postcondición es trivial en este caso porque desde el paradigma funcional no se ve un cambio en el TAD. Las construcciones agregadas se verán reflejadas una vez que se aplique avanzarTurno. 
+		Complejidad: O(n³)
+		Descripción: Agrega las construcciones pendientes a su lista correspondiente de construcciones. Esto tambien implica actualizar el nivel de los comercios donde entra en efecto la propiedad de distancia Manhattan = 3.
+		Aliasing: Presenta aspectos de aliasing, se pasa por referencia el SimCity al que se actualiza.
+		---
+		AgregarPendientes(in/out sc: simcity)
+		Pre ≡ {sc =obs sc0}
+		Post ≡ {casas(sc) =obs UnirListas(casas(sc0), sc0.casasPendientes) ∧ comercios(sc) =obs UnirListas(comercios(sc0), sc0.comerciosPendientes)}}
+		Complejidad: O(n³)
+		Descripción: Agrega a la lista de casas y comercios del SimCity, las casas y comercios que fueron agregadas a las listas de pendientes por agregarCasas o agregarComercios. Esta funcion solo emplea cuando se avanza el turno. Por lo tanto, todas las construcciones que se agregen de esta forma van a parar a una posicion la cual no esta ocupada ni por otra construccion o por un rio, ay que sto es precondicion del agregarCasas y agregarComercios.
+
+		Aliasing: Presenta aspectos de aliasing, se pasa por referencia el SimCity al que se unen las listas de construcciones con sus respectivas pendientes
+
+		---
+	Algoritmos del módulo:
+		---
+		iiniciar(in m: mapa) → res: estr
+			estr.mapa ← m
+			estr.casas ← vacia()
+			estr.comercio ← vacia()
+			estr.casasPendientes ← vacia()
+			estr.comerciosPendientes ← vacia()
+			estr.popularidad ← 0
+			estr.turnos ← 0
+			return estr
+		Complejidad: Θ(1)  
+		---
+		iagregarCasas(in/out sc: simcity, in lista: lista(Tupla(Pos,Nivel))) 
+			sc.casasPendientes ← agregarAtras(sc.casasPendientes, &lista)					//se agrega un puntero a la lista de casas pendientes que apunta a la lista pasada de construcciones por añadir.
+			return sc
+		Complejidad:O(1)
+		---
+		iagregarComercios(in/out sc: simcity, in lista: lista(Tupla(Pos, Nivel)) )
+			sc.comerciosPendientes ← agregarAtras(sc.comerciosPendientes, &lista)		//ídem con comercios. Notar que al ser sólo una referencia la complejidad es O(1).
+			return sc
+		Complejidad:O(1)
+		---
+		imapa(in sc: simcity) → res: mapa
+			res ← sc.mapa
+			for(estr* sc' : sc.uniones)
+				res ← iunirMapa(res, sc'.mapa)
+			return res
+		Complejidad:	O(n * m)		//donde n es la longitud de uniones y m es la suma de los cardinales horizontales y verticales del sc unido con más ríos
+		---
+		iunirMapa(in mapa1: mapa, in mapa2: mapa) → res : mapa
+			res.horizontales ← mapa1.horizontales ∪ mapa2.horizontales
+			res.verticales ← mapa1.verticales ∪ mapa2.verticales
+			return res
+		Complejidad: O(1)
+		---
+		icasas(in sc: simcity) → res: lista(Tupla(Pos, Nivel)) 
+			res ← iunionDeCasas(sc, sc.uniones)
+			return res
+		Complejidad:O(n³)
+		---
+		iunionDeCasas(in sc: estr, in uniones: lista(punteroAestr)) → res: lista(Tupla(Pos, Nivel))
+			res ← sc.casas 
+			for(punteroAestr i : uniones)
+				imergeConstrucciones(res, icomercios(sc), sc.turno, *(i).casas, *(i).turno)
+			return res
+		Complejidad: O(k) siendo k la suma de la cantidad de casas dentro de todos los SimCitys en sc.uniones
+		---
+		imergeConstrucciones(in listaAModificar :lista(Tupla(Pos, Nivel)), in listaPivote: lista(Tupla(Pos, Nivel)), in max1: Nat, in listaAAgregar: lista(Tupla(Pos, Nivel)), in max2: lista(Tupla(Pos, Nivel))) → res: lista(Tupla(Pos, Nivel))
+		//Precondicion: las construcciones maximas no se pisan
+		res ← listaAModificar **falta considerar como cambia la lista pivote cuando se hace la union 
+		for i ← 0, i < longitud(listaAAgregar), i++
+			casaAAgregar ← listaAAgregar[i]
+			if ¬definidoEnLista?(casaAAgregar.Pos, listaAModificar) ∧ ¬definidoEnLista?(casaAAgregar.Pos, listaPivote) then //caso donde la construcción no pisa a ninguna otra
+				definirEnLista(casaAAgregar, res)					
+			else  
+				if definidoEnLista?(casaAAgregar.Pos, listaAModificar) then	//Caso donde la casaAAgregar pisa una casa de s1.
+					if casaAAgregar.Nivel = max2 then	//caso donde la construcción era del nivel máximo del simcity unido
+						definirEnLista(casaAAgregar, res)																		
+					else 
+						if obtenerNivelEnLista(casaAAgregar.Pos, listaAModificar) < casaAAgregar.Nivel then
+							definirEnLista(casaAAgregar, res)				//caso donde sobrevive la de mayor nivel, siendo que no es de maximo nivel ni de s1 ni de s2
+						else 
+							skip //caso donde la casa que pisa es de maximo nivel s1, pero nunca pasa por la precondicion
+						end if
+					endif																																								
+				else  
+					if casaAAgregar.Nivel = max2 then	//caso donde la casaAAgregar es del nivel máximo del simcity unido y pisa a un comercio																																												 
+						definirEnLista(casaAAgregar, res)						
+					else  
+						if obtenerNivelEnLista(casaAAgregar.Pos, listaPivote) < casaAAgregar.Nivel then //caso donde ninguna de las constr. conflictivas es de nivel máximo y sobrevive la de mayor nivel
+							definirEnLista(casaAAgregar, res)			
+						else
+							skip //caso donde el comercio que pisa es de maximo nivel s1, pero nunca pasa por la precondicion
+						end if
+					endif
+				endif
+			endif
+		end for	
+		Complejidad:O(n²) // Tenemos un ciclo, por lo que hasta ahí tenemos O(n), y dentro del ciclo for hay un llamado a una función recursiva de complejidad O(n). Juntando todo, queda O(n²).
+		---
+		icomercios(in sc: simcity) → res: lista(Tupla(Pos, Nivel))
+			//sc ← actualizarSC(sc) //esto no, no debe aparecer una casa que esta en pendientes 
+			res ← iunionDeComercios(sc, sc.uniones)
+			res ← iactualizarManhattan(res, iunionDeCasas(sc, sc.uniones))
+			return res
+		Complejidad:O(n³) 
+		---
+		iunionDeComercios(in sc: estr, in uniones: lista(punteroAestr)) → res: lista(Tupla(Pos, Nivel))
+			res ← sc.comercios 
+			for(punteroAestr i : uniones)
+				MergeConstrucciones(res, icasas(sc), sc.turno, *(i).comercios, *(i).turno)
+			return res
+		Complejidad: O(k) siendo k la suma de la cantidad de comercios dentro de todos los SimCitys en sc.uniones
+		---
+		iactualizarUnionManhattan(in comercios: lista(Tupla(Pos, Nivel)), in casas: lista(Tupla(Pos, Nivel)), )
+			for	i ← 0, i < longitud(comercios), i++
+		iunircomercios.Nivel[i] ← (max(comercios[i].Nivel, maxNivelAManhattan(comercios[i].Pos, casas)))
+			end for
+		Complejidad: O(n²)
+		---
+		ipopularidad(in sc: simcity) → res: Nat
+			res ← e.popularidad
+			return res	
+		Complejidad: O(1)
+		---
+		iturnos(in sc: simcity) → res: Nat 
+			res ← e.turno
+			return res 
+		Complejidad:	O(1)
+		---
+		iunir(in/out sc: simcity, in sc2: simcity) → sc
+			sc.uniones ← AgregarAtras(sc.uniones, &sc2)
+			sc.popularidad ← sc.popularidad++			//el enunciado es un tanto ambiguo respecto a cómo resolver esta línea. Ya que habla de las uniones que conforman a la instancia, lo resolvemos así.
+			sc.turnos ← max(sc.turnos, sc2.turno)
+			return sc
+		Complejidad: O(1)
+		---
+		iavanzarturno(in/out sc: simcity)
+			sc ← iactualizarSC(sc)
+			sc ← isumarNivel(sc)
+			sc.turno ← sc.turno++
+			return sc
+		Complejidad: O(n³) 
+		---
+		isumarNivel(in/out lst: Lista(Tupla(Pos, Nivel))) //Se cambio el parametro de Lista(Tupla(Pos, Nivel)) a SimCity
+			for i ← 0, i < Longitud(sc.casas), i++
+				sc.casas[i].Nivel++
+			end for
+			
+			for i ← 0, i < Longitud(sc.comercios), i++
+				sc.comercios[i].Nivel++
+			end for
+		---
+		iactualizarSC(in/out sc: SimCity) 	//llama a unirCasas, unirComercios, actualizarComercios
+			sc ← imergeRios(sc)
+			if ¬(EsVacía?(sc.casasPendientes) ∧ EsVacía?(sc.comerciosPendientes)) then
+					sc ← imergePendientes(sc)
+					sc ← iactualizarManhattan(sc)
+			fi
+		Complejidad:O(n³)
+		---
+		imergeRios(in/out sc: SimCity) 
+			horiz ← horizontales(sc.mapa)
+			vert ← verticales(sc.mapa)
+			for i ← 0, i < #(sc.riosPendientes), i++
+				h ← (*(sc.riosPendientes[i]).first) //h = conj(Nat)
+				v ← (*(sc.riosPendientes[i]).second)
+				horiz ← horiz ∪ h
+				vert ← vert ∪ v
+			end for
+			sc.riosPendientes ← Vacia()
+			sc.mapa = crear(horiz, vert)
+		---
+		iAgregarPendientes(in/out sc: simcity)	
+			for(i ← 0, i < longitud(sc.casasPendientes), i++)
+					for(k ← 0, k < longitud(*i), k++)
+							AgregarAtras(sc.casas, k)
+					endfor
+			endfor
+			for(i ← 0, i < longitud(sc.comerciosPendientes), i++)
+					for(k ← 0, k < longitud(*i), k++)
+							AgregarAtras(sc.comercios, k)
+					endfor
+			endfor
+		Complejidad:O(n), siendo n el maximo entre la cantidad de casas o comercios en la lista de casasPendientes o comerciosPendientes respectivamente.
+		---
+		idefinidoEnLista?( in pos: Pos, in list: lista(Tupla(Pos, Nivel)) ) → res: bool
+				res ← false
+				if EsVacía?(list) then
+						res ← false
+				else
+						if Primero(list) = pos then
+								res ← true 
+						else 
+								definidoEnLista?(pos, Fin(list))
+						end if
+				end if
+				return res
+		---	
+		idefinirEnLista(in construccion: Tupla(Pos, Nivel), in/out construcciones: lista(Tupla(Pos, Nivel)) ) 
+			if definidoEnLista?(construccion.first, construcciones) then
+					borrarEnLista(construccion.first, construcciones)
+			else
+					skip
+			end if
+			construcciones ← AgregarAtras(construccion, construcciones)
+		
+		---
+		iborrarEnLista(in pos: Pos, in/out construcciones: lista(Tupla(Pos, Nivel)) ) 
+				it ← CrearIt(construcciones)  													// esta funcion elimina un elemento de la lista de construcciones, que pueden ser casas o comercios. Como las listas enlazadas solo tienen la funcion eliminar siguiente
+				for i ← 0, i < longitud(construcciones), i++						// necesito primero crear el puntero, luego llevarlo a la posicion que quiero eliminar+1, y recien ahi utilizarla
+						if construcciones[i] = pos then 
+								Avanzar(it)
+								EliminarAnterior(it)
+								i ← longitud(construcciones)
+						else 
+								Avanzar(it)
+						end if
+				end for
+		---
+		iobtenerNivelEnLista(in pos: Pos, in construcciones: lista(Tupla(Pos, Nivel)) ) → res: Nivel 
+				res ← 0																									// esta funcion devuleve el nivel vinculado a la posicon en la lista pasada como segundo parametro
+				for i ← 0, i < longitud(construcciones), i++	
+						if construcciones[i] = pos  then 
+								res ← construcciones[i].Nivel
+								i ← longitud(construcciones)
+						else 
+								skip
+						end if
+				end for
+				return res
+		---
+		iactualizarManhattan(in/out sc: simcity)
+			for	i ← 0, i < longitud(sc.comercios), i++
+				sc.comercios.Nivel[i] ← (max(sc.comercios[i].Nivel, maxNivelAManhattan(sc.comercios[i].Pos, sc.casas)))
+			end for
+		Complejidad: O(n²)
+		---
+		imaxNivelAManhattan(in pos: Pos, in casas: lista(Tupla(Pos, Nivel))) → Nat
+			res ← 0
+			for i ← 0, i < Longitud(casas), i++
+					if estaADistanciaManhattan(Pos, casas[i].Pos) then
+							if casas[i].Nivel > res then
+									res ← casas[i].Nivel
+							else	
+									skip
+							end if
+					else
+							skip
+					end if
+			end for
+			return res
+		---
+		iestaADistanciaManhattan(in p1: Pos, in p2: Pos ) → res: Bool
+				res ← false
+				if(p1.x < p2.x) then
+						if(p1.y < p2.y) then
+								if((p2.x - p1.x) + (p2.y - p1.y) ≤ 3) then
+										res ← true
+								else
+										res ← false
+						else
+								if((p2.x - p1.x) + (p1.y - p2.y) ≤ 3) then
+										res ← true
+								else 
+										res ← false 
+				else
+							if(p1.y < p2.y) then
+									if((p1.x - p2.x) + (p2.y - p1.y) ≤ 3) then
+											res ← true 
+									else 
+											res ← false
+							else	
+									if((p1.x - p2.x) + (p1.y - p2.y) ≤ 3) then
+											res ← true
+									else 
+											res ← false
+				return res
+		---
+		imaxConj (in cn: conj(Nat)) → res: Nat
+				res ← 0
+				for(nat i: cn)
+						if(i > res)
+								res ← i
+						else 
+								skip
+				return res
+		---	
+		iconjNiveles (in casas: lista(Tupla(Pos, Nivel)), in p1: Tupla((Nat x, Nat y) pos1) ) → res: conj(Nat)
+				res ← Vacio()
+				if EsVacía?(casas) then
+						res ← Vacio()
+				else
+						if estaADistanciaManhattan(p1, Primero(casas)) then
+								res ← Agregar( nivel(Primero(casas)), conjNiveles(Fin(casas), p1))
+						else
+								res ← conjNiveles(Fin(casas), p1)
+				return res	
+		---																																																							no esta en el. Mucho menos queriendo ver en base al primer elemento de una tupla.
+		iextraerRios(in sc: simcity) → res: conj(Tupla(conj(Nat), conj(Nat)))		//arma una tupla con los conj(Nat) del mapa en O(1) y devuelve el resultado.
+			res ← Tupla<horizontales(sc.mapa), verticales(sc.mapa)>
+			return res
+---	//fin interfaz
+
+//Comentarios para el corrector:
+Notamos que los algoritmos de otras interfaces que usamos de ejemplo usan como dato de salida res: estr en vez de por ejemplo res: simcity. 
+Sin embargo, ya que SimCity se ve representado con estr en nuestro caso, nos parece que sigue siendo correcto dejarlo como tal y que ayuda a la legibilidad del documento.
+Entendemos que las listas no son las estructuras más eficientes a la hora de implementar diccionarios, para nada. Sin embargo, en el momento en que intentamos lograr que 
+agregar n construcciones se hiciera con complejidad O(1), consideramos que usar listas enlazadas era la única opción (no consideramos que el uso de punteros era un tipo válido también). 
+Luego nos enteramos de que no era posible unir dos listas en O(1), y corregir todo en un día era más de lo que podíamos.  
+Desde ya perdón por las cosas que puedan estar raras/incompletas/inconsistentes, nos quedamos sin tiempo.
