@@ -28,8 +28,8 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
 
 - Trabajo Practico
   
-  - [Parte 1] (TP1)
-  - [Parte 2] (TP2)
+  - [Parte 1](TP1)
+  - [Parte 2](TP2)
 
 ## TADs en ATOM
 Para resolver los ejercicios en el formato .tad segui los pasos que se encuentran en este [repo](https://github.com/luisbustamante097/language-tad-aed2).
