@@ -1,101 +1,143 @@
 TAD ColaAcotada
 	Observadores Básicos:
-		verCola:	cacotada -> cola(nat)
+		verCola:		cacotada -> cola(nat)
 		capacidad:	cacotada -> nat
 	Generadores:
-		vacia: nat -> cacotada
-		encolar: nat × cacotada c -> cacotada	{(tamaño(verCola(c)) < capacidad(c))}
+		vacia:		nat 							-> cacotada
+		encolar:	nat × cacotada c	-> cacotada	{(tamaño(verCola(c)) < capacidad(c))}
 	Axiomas:
-		verCola(vacia(c)) 			≡	vacia
-		verCola(encolar(a, c))	≡	encolar(a, verCola(c))
-		
-		capacidad(vacia(n)) 			≡	n
+		verCola(vacia(c))					≡	vacia
+		verCola(encolar(a, c))		≡	encolar(a, verCola(c))
+		capacidad(vacia(n))				≡	n
 		capacidad(encolar(a, c))	≡	capacidad(c)
-Fin TAD
-
+	Fin TAD
+//a)
 Representación:
 	cacotada se representa con estr donde
 		estr es tupla ⟨inicio: nat, fin: nat, elem: array[0...n] de nat⟩
-
+---
 Solución Informal:
-	- inicio y fin deben estar entre 0 y n
-	- Entre inicio y fin no debe haber valores de 0
-	- Si no tiene 0s inicio debe ser la posicion siguiente de fin.
+	- e.inicio y e.fin tienen que estar dentro del rango de e.elem
+	- Entre e.inicio y e.fin no puede haber 0s, y fuera del rango de estos todos deben ser 0.
 ---
 Invariante de Representación:
 	Rep:	estr	->	boolean
 	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
 		donde:
-		(1)	≡	0 <= e.inicio <= tam(e.elem) ∧ 0 <= e.fin <= tam(e.elem)
-		(2)	≡	(∀k: nat)((e.inicio <= k <= e.fin) ⇒ e.elem[k] ≠ 0) //No existe elementos entre inicio y fin que sean 0, en este caso es si inicio es menor que fin, algo asi: {0,0,1,2,3,4,0,0}
-					∨L (∀i: nat)(e.fin < i < e.inicio ⇒L (e.elem[i] = 0 ∧L ¬(∃j: nat)((0 <= j <= e.fin ∨ e.inicio <= j < tam(e.elem)) ∧ e.elem[j] = 0)))	//Lo mismo de antes pero considerando inicio mayor que fin: {3,4,0,0,0,1,2}
-		(3) ≡ ¬(def?(e.elem, 0)) ∧L (∀i: nat)(0 <= i < tam(e.elem) ⇒L ((inicio = fin + 1) ∨ (inicio = 0 ∧ fin = tam(e.elem) - 1)))
+		(1)	≡	0 ≤ e.inicio < tam(e.elem) ∧ 0 ≤ e.fin < tam(e.elem)
+		(2)	≡	(∀ i: nat)((e.inicio ≤ i ≤ e.fin ⇒L e.elem[i] ≠ 0) ∧L (0 ≤ i < e.inicio ∨ e.fin < i < tam(e.elem) ⇒L e.elem[i] = 0)) ∨L
+					(∀ i: nat)((0 ≤ i < e.fin ∨ e.inicio  < i < tam(e.elem) ⇒L e.elem[i] ≠ 0) ∧ (e.fin < i < e.inc ⇒L e.elem[i] = 0))
 ---
 Función de abstracción:
 	Abs:	estr	->	cacotada	{Rep(e)}
 	(∀e: estr) Abs(e) =obs ca: cacotada | (1)∧(2)
 		donde:
-		(1)	≡	verCola(ca) = arregloACola(e.elem, e.inicio, e.fin)
-		(2)	≡	capacidad(ca) = tam(e.elem)
-
-		arregloACola: ad(nat) × nat inicio × nat fin -> cola(nat)
-		arregloACola(arr, inicio, fin) ≡	if (definido?(arr, inicio)) then
-																					if (inicio = fin) then
-																							encolar(arr[inicio], vacia)
+		(1)	≡	capacidad(ca) = tam(e.elem)
+		(2)	≡	verCola(ca) = arregloACola(e.elem, e.inicio, e.fin)
+		
+		arregloACola: nat × nat × array[0...n] -> cola(nat)
+		arregloACola(inicio, fin, arreglo) ≡	if inicio = fin then
+																						encolar(arreglo[inicio], vacia)
 																					else
-																							if (inicio = tam(arr)-1) then
-																									encolar(arr[inicio], arregloACola(arr, 0, fin))
-																							else
-																									encolar(arr[inicio], arregloACola(arr, inicio + 1, fin))
-																							fi
+																						if fin = 0 then
+																							encolar(arreglo[fin], arregloACola(inicio, tam(arreglo) - 1, arreglo))
+																						else
+																							encolar(arreglo[fin], arregloACola(inicio, fin - 1, arreglo))
+																						fi
 																					fi
-																			else
-																					vacia
-																			fi
 ---
+//b)
 Interfaz:
-	Se explica con:	ColaAcotada, Cola(α)
+	Parámetros formales:
+		Géneros:	α
+	Se explica con:	ColaAcotada
 	Géneros:		cacotada
 	
 	Operaciones básicas:
-		vacia(in n: nat)	-> res: cacotada
+		Vacia(in n: nat)	-> res: cacotada 
 		Pre ≡ {true}
-		Post ≡ {res =obs vacia}
+		Post ≡ {res =obs vacia(n)}
 		Complejidad: Θ(1)
-		Descripción: Genera una cola acotada vacia
-		---
-		encolar(in n: nat, in/out ca: cacotada)
-		Pre ≡ {ca = ca₀ ∧ tamaño(verCola(ca)) < capacidad(c)}
-		Post ≡ {ca = encolar(n, ca₀)}
-		Complejidad: Θ(1)
-		Descripción: Encola un valor a la cola.
+		Descripción: Genera una cola acotada con capacidad n.
 		Aliasing: No presenta aspectos de aliasing.
 		---
-		verCola(in ca: cacotada)	-> res: cola(nat)
-		Pre ≡ {true}
-		Post ≡ {res =obs arregloACola(ca)}
-		Complejidad: Θ(1)
-		Descripción: Devuelve la cola acotada.
-		Aliasing: No presenta aspectos de aliasing.
+		Encolar(in n: nat, in/out ca: cacotada)
+		Pre ≡ {tamaño(verCola(ca)) < capacidad(ca)}
+		Post ≡ {res =obs Encolar(n, ca)}
+		Complejidad: Θ(copy(n))
+		Descripción: Agrega el elemento n como ultimo elemento de la cola acotada.
+		Aliasing: El elemento n se agrega por copia.
 		---
-		capacidad(in ca: cacotada) -> res: nat
+		VerCola(in ca: cacotada)	-> res: cola(nat)
+		Pre ≡ {true}
+		Post ≡ {res =obs verCola(ca)}
+		Complejidad: Θ(1)
+		Descripción: Genera una cola a partir de cacotada
+		Aliasing: res es modificable si y solo si ca es modificable.
+		---
+		Capacidad(in ca: cacotada)	-> res: nat
 		Pre ≡ {true}
 		Post ≡ {res =obs capacidad(ca)}
 		Complejidad: Θ(1)
-		Descripción: Devuelve la capacidad maxima de elementos en la cola acotada.
+		Descripción: Devuelve la capacidad de cacotada.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		ArregloACola(in inicio: nat, in fin: nat, in arreglo: ad(nat)) -> res: cola(nat)
+		Pre ≡ {0 ≤ inicio < tam(arreglo) ∧ 0 ≤ fin < tam(arreglo)}
+		Post ≡ {res = arregloACola(inicio, fin, arreglo)}
+		Complejidad: O(tam(arreglo))
+		Descripción: Genera una cola a partir de un arreglo.
+		Aliasing: No presenta aspectos de aliasing.
 		---
 	Algoritmos del módulo:
-		ivacia(in n: nat) -> res: cacotada
-			res ← vacia(n)
+		//Es confuso esta parte, por un lado necesito valores para los indices e.inicio y e.fin,
+		//pero esos valores los deberia definir el usuario. CONSULTAR.
+		iVacia(in n: nat) -> res: estr
+			res.inicio <- 0
+			res.fin  <- 0
+			res.elem <- crearArreglo(n)
 		---
-		iencolar(in n: nat, in ca: cacotada) -> res: cacotada
-			c ← ca
-			encolar(n, ca)
-			res ← c
+		//Esto lo hice asumiendo lo de arriba, es decir, que e.inicio ≤ e.fin
+		//Ademas como precondicion tengo que la cola no alcanzo su capacidad maxima.
+		iEncolar(in n: nat, in/out ca: estr)
+			j <- copy(n)
+			if Tam(ca.elem) = 0 then
+				i <- ca.inicio
+				ca.elem[i] <- j
+			else
+			 	i <- ca.fin + 1
+				ca.elem[i] <- j
+			fi
 		---
-		iverCola(in ca: estr)	-> res: cola(nat)
-			res ← arregloACola(ca.elem, ca.inicio, ca.fin)	// Ejemplo
+		iVerCola(in ca: estr) -> res: cola(nat)
+			res <- ArregloACola(ca.inicio, ca.fin, ca.elem)
 		---
-		icapacidad(in ca: estr) -> res: nat
-			res ← tam(ca.elem)
+		iCapacidad(in ca: estr) -> res: nat
+			res <- Tamaño(ca.elem)
 		---
+		iArregloACola(in inicio: nat, in fin: nat, in arr: ad(α)) -> res: cola(nat)
+			res <- Vacia()
+			while inicio != fin do
+				if fin = 0 then
+					Encolar(res, arr[fin])
+					fin <- Tamaño(arr) - 1
+				else
+					Encolar(res, arr[fin])
+					fin <- fin - 1
+				end if
+			end while
+			
+			if 	Tamaño(arr) != 0 then
+			 	Encolar(res, arr[fin])
+			end if
+			//if inicio = fin then
+			//	res <- Encolar(arr[inicio], Vacia())
+			//else if fin = 0  then
+			//	res <- Encolar(arr[fin], ArregloACola(inicio, tam(arr) - 1, arr))
+			//else
+			//	res <- encolar(arr[fin], ArregloACola(inicio, fin - 1, arr))
+			//fi
+		---
+		
+			
+				
