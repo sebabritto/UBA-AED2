@@ -21,7 +21,7 @@ Representación:
 ---
 Solución Informal:
 	- e.long debe ser igual a la longitud de la palabra
-	- la tupla de palindromo no permite crear un palindromo vacio, por lo que la longitud no puede ser 0
+	- el TAD palindromo no permite crear un palindromo vacio, por lo que la longitud no puede ser 0
 	- tengo que verificar que la palabra es un palindromo
 ---
 Invariante de Representación:
