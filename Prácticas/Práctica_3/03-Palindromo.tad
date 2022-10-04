@@ -3,137 +3,112 @@ TAD Palindromo(α)
 		ver: palindromo(α) -> secu(α)
 		
 	Generadores:
-		medio: α -> palindromo(α)
-		medioDoble: α -> palindromo(α)
-		agregar: α × palindromo(α) -> palindromo(α)
-	
-	Axiomas:
-			ver(medio(α)) 			≡ a • <>
-			ver(medioDoble(α)) 	≡ a • a • <>
-			ver(agregar(a, p)) 	≡	a • (ver(p) ◦ a)
-Fin TAD
-
-Representación:
-	palindromo se representa con estr donde
-		estr es tupla ⟨long: nat, palabra: secu(α) ⟩
-
-Solución Informal:
-	- e.long debe ser la longitud de e.palabra
-	- debe de haber por lo menos un valor, ya que no tiene generadores vacios.
-	- e.palabra debe ser un palindromo
----
-Invariante de Representación:
-	Rep:	estr	->	boolean
-	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)
-		donde:
-		(1)	≡	e.long = long(e.palabra)
-		(2)	≡	e.long > 0
-		(3) ≡ (∀i: nat)(0 <= i < e.long/2 ⇒L e.palabra[i] = e.palabra[e.long - 1 - i])
----
-Función de abstracción:
-	Abs:	estr	->	palindromo	{Rep(e)}
-	(∀e: estr) Abs(e) =obs pal: palindromo | (1)
-		donde:
-		(1)	≡	ver(pal) = e.palabra
----
-Interfaz:
-	Se explica con:	Palindromo
-	Géneros:	palindromo
-	
-	Operaciones básicas:
-		medio(in a: α)	-> res: palindromo(α)
-		Pre ≡ {true}
-		Post ≡ {res =obs medio(a)}
-		---
-		medioDoble(in a: α) -> res: palindromo(α)
-		Pre ≡ {true}
-		Post ≡ {res =obs medioDoble(a)}
-		---
-		agregar(in a: α, in/out p: palindromo(α))
-		Pre ≡ {p = p₀}
-		Post ≡ {p =obs agregar(a, p₀)}
-		---
-		ver(in p: palindromo(α)) -> res: secu(α)
-		Pre ≡ {true}
-		Post ≡ {res = ver(p)}
-		---
-	Algoritmos del módulo:
-		iver(in p: estr) -> res: secu(α)
-			res ← p.palabra
-		---
+		medio:			α ×								-> palindromo(α)
+		medioDoble:	α 								-> palindromo(α)
+		agregar:		α × palindromo(α) -> palindromo(α)
 		
-Problema Modificado
+	Axiomas: ∀ a: α, ∀ p: palindromo(α)
+		ver(medio(a))				≡ a • <>
+		ver(medioDoble(a))	≡ a • a • <>
+		ver(agregar(a, p))	≡ a • (ver(p) ◦ a)
+		
+	Fin TAD
 
+//a)
 Representación:
 	palindromo se representa con estr donde
-		estr es tupla ⟨long: nat, palabra: secu(α) ⟩
-
+		estr es tupla ⟨long: nat, palabra: secu(α)⟩
+---
 Solución Informal:
-	- La longitud debe ser mayor a 0
-	- e.long debe ser el doble de la longitud de e.palabra si la longitud del palindromo es par,
-	 	o e.long debe ser el doble meenos de la longitud de e.palabra si la longitud del palindromo es impar
+	- e.long debe ser igual a la longitud de la palabra
+	- la tupla de palindromo no permite crear un palindromo vacio, por lo que la longitud no puede ser 0
+	- tengo que verificar que la palabra es un palindromo
 ---
 Invariante de Representación:
 	Rep:	estr	->	boolean
 	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
 		donde:
-		(1)	≡	e.long > 0
-		(2)	≡	e.long = 2*long(e.palabra) ∨ e.long = 2*long(e.palabra) - 1
+		(1)	≡	e.long = long(e.palabra)
+		(2)	≡	e.long > 0
+		(3) ≡ esPalindromo(e.palabra)
+		
+	esPalindromo: secu(α) -> bool
+	esPalindromo(s) ≡ s = reverso(s)
 ---
 Función de abstracción:
 	Abs:	estr	->	palindromo	{Rep(e)}
-	(∀e: estr) Abs(e) =obs pal: palindromo | (1)∨(2)
-		donde:
-		(1)	≡	(e.long % 2 = 0) ⇒L	(ver(pal) = e.palabra & reverso(e.palabra))
-		(2)	≡	(e.long % 2 = 1 ) ⇒L (ver(pal)) = e.palabra & reverso(com(e.palabra))
-		
-	reverso: secu(α) -> secu(α)
-	reverso(s) ≡	if vacía?(s) then
-									s
-								else
-									reverso(fin(s)) ◦ prim(s)
-								fi
+	(∀e: estr) Abs(e) =obs p: palindromo | (1)∧(2) 
+	donde:
+		(1)	≡ ver(p) = e.palabra
+
+//b)
 ---
 Interfaz:
-	Se explica con:	Palindromo
-	Géneros:	palindromo
-	
+	Se explica con:	Palindromo(α)
+	Géneros:		palindromo
+	Operaciones básicas: 
+		Ver(in p: palindromo(α)) -> res: secu(α)
+		Pre ≡ {true}
+		Post ≡ {res =obs Ver(p)}
+		Complejidad: Θ(1)
+		Descripción: Genera una secuencia en base al palindromo recibido.
+		Aliasing: res por referencia no modificable.
+		---
 	Algoritmos del módulo:
-	iver(in p: estr) -> res: secu(α)
-		res ← p.palabra & reverso(p.palabra)
-	---
-	ireverso(in s: secu(α)) -> res: secu(α)
-		if (vacía?(s)) then
-			s
-		else
-			res <- reverso(fin(s)) ◦ prim(s)
-		fi
-	---
-	iver(in p: estr) -> res: secu(α)
-		res ← e.palabra
-		if e.long % 2 = 0 then
-				for i = long(p.palabra) - 1 downto 0
-						res ← res • iesimo(p.palabra, i)
-				end for
-		else
-				for i = long(p.palabra) - 2 downto 0
-						res ← res • iesimo(p.palabra, i)
-				end for
-		fi
+		iVer(in e: estr) -> res: secu(α)
+			res ← e.palabra
+		---
+//c)
+
+Representación:
+	palindromo(α) se representa con estr donde
+		estr es tupla ⟨long: nat, palabra: 	secu(α)⟩
 ---
-	iver(in p: estr) -> res: secu(α)
-		res ← e.palabra
-		if e.long % 2 = 0 then
-			pal ← e.palabra
-			while long(e.pal) ≠ 0 do
-					res ← res • ult(pal)
-					pal ← com(pal)
-			end while
-		else
-			pal ← com(e.palabra)
-			while long(e.pal) ≠ 0 do
-					res ← res • ult(pal)
-					pal ← com(pal)
-			end while
-		fi
+Solución Informal:
+	- e.long debe ser igual que el doble de la longitud de e.palabra si e.long es par, caso contrario debe ser igual que el doble de la longitud de e.palabra - 1
+	- la tupla de palindromo no permite crear un palindromo vacio, por lo que la longitud no puede ser 0
 ---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	e.long ∈ {2*long(e.palabra), 2*long(e.palabra) - 1}
+		(2)	≡	long(e.palabra) > 0
+---
+Función de abstracción:
+	Abs:	estr	->	palindromo(α)	{Rep(e)}
+	(∀e: estr) Abs(e) =obs p: palindromo(α) | (1)
+		donde:
+		(1)	≡	if esPar(e.long) then
+						e.palabra & reverso(e.palabra)
+					else 
+						e.palabra & reverso(com(e.palabra)) 
+					fi
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+	Se explica con:	Palindromo(α)
+	Géneros:		palindromo(α)
+	
+	Operaciones básicas:
+		Ver(in p: palindromo(α))	-> res: secu(α)
+		Pre ≡ {true}
+		Post ≡ {res =obs Ver(p)}
+		Complejidad: O(long(ver(p)) * copy(α))
+		Descripción: Genera una secuencia en base al palindromo recibido.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iVer(in e: estr) -> res: secu(α)
+			res <- copy(e.palabra)
+			if esPar(e.long) then
+				i <- long(e.palabra)
+			else
+				i <- long(e.palabra) - 1
+			fi
+			for j <- 1 to i do
+				res <- agregarAtras(s, s[i-j])
+			end for
+				
+		---
