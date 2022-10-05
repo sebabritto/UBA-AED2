@@ -128,14 +128,39 @@ Interfaz:
 				res.coef <- copy(p1.coef)
 				res.grado <- p2.grado
 				i <- 0
-				while definido?(p1, i) do
+				while Definido?(p1, i) do
 					res[i] <- p2.coef[i] + p1.coef[i]
 					i <- i + 1
 				end while
 			end if
 		---
 		iProducto(in p1: estr, in p2: estr) -> res: estr
-			//Completar
+			res.grado <- p1.grado + p2.grado
+			res.coef <- CrearArreglo(res.grado)
+			i <- 0
+			if p1.grado > p2.grado then
+				while i ≤ p2.grado then
+					arr <- CrearArreglo(i + p1.grado)
+					j <- 0
+					while j ≤ p1.grado then
+						arr[i + j] <- p1[j] * p2[i]
+						j <- j + 1
+					end while
+					res <- Suma(res, arr) //Esto vale?
+					i <- i + 1
+				end while
+			else
+				while i ≤ p1.grado then
+					arr <- CrearArreglo(i + p2.grado)
+					j <- 0
+					while j ≤ p2.grado then
+						arr[i + j] <- p2[j] * p1[i]
+						j <- j + 1
+					end while
+					res <- Suma(res, arr) //Esto vale?
+					i <- i + 1
+				end while
+			end if
 		---
 		iEvaluar(in p: estr, in n: nat) -> res: nat
 			res <- EvaluarArreglo(p.coef, n, 0)
