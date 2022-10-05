@@ -1,20 +1,19 @@
 TAD Polinomio
 	Géneros:	polinomio
 	
-	Igualdad Observacional:	(∀ p1, p2: polinomio)(p1 =obs p2 ⇐⇒ (∀n: nat)(Evaluar(p1,n) =obs Evaluar(p2, n)));
-	
+	Igualdad Observacional:	(∀ p1, p2: polinomio)(p1 =obs p2 ⇐⇒ ((∀ n: nat)(Evaluar(p1, n) =obs Evaluar(p2, n))));
 	Observadores Básicos:
 		Evaluar: polinomio × nat -> nat
 	
 	Generadores:
-		Cte: nat -> polinomio
-		X: -> polinomio
+		Cte:	nat -> polinomio
+		X: 				-> polinomio
 		• + •: polinomio × polinomio -> polinomio
-		• * •: polinomio × polinomio -> polinomio
+		• • •: polinomio × polinomio -> polinomio
 		
 	Otras Operaciones:
 		Raiz: polinomio × nat -> bool
-	
+		
 	Axiomas: ∀c, n: nat, ∀ p1, p2: polinomio
 		Evaluar(Cte(c), n) ≡ c 
 		Evaluar(x, n) ≡ n 
@@ -24,83 +23,130 @@ TAD Polinomio
 		Raiz(p1, n) ≡ Evaluar(p, n) = 0
 	Fin TAD
 	
+//e.coef es un arreglo cuyos elementos multiplican a un X con coeficiente igual a su indice es decir:
+//e.coef = [3, 4, 1] ⇒ es igual al polinomio: x^2 + 4*x + 3*x^0 = x^2 + 4x + 3
 Representación:
 	polinomio se representa con estr donde
-		estr es tupla ⟨grado:	nat, coef: 	array[0...n]⟩
-
-Solución Informal:
-	- e.grado debe ser el maximo de los grados del array, es decir, n
-	- Si el grado fuera 0, lo que lo haria una constante, el valor deberia ser mayor a 0, ya que son naturales.
+		estr es tupla ⟨grado:	nat, coef: array[0...n] de nat⟩
 ---
-
+Solución Informal:
+	- e.grado tiene que ser el ultimo indice de e.coef.
+	- si representa un polinomio con un grado a lo sumo e.grado entonces e.coef[e.grado ] debe ser > 0.
+	- e.coef no puede ser vacio
+---
 Invariante de Representación:
 	Rep:	estr	->	boolean
-	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)
 		donde:
-		(1)	≡	e.grado = n
-		(2)	≡	e.coef[e.grado ] > 0 
+		(1)	≡	e.grado = tam(e.coef) - 1
+		(2) ≡ e.coef[e.grado ] > 0
+		(3) ≡ tam(e.coef) > 0
 ---
-
 Función de abstracción:
 	Abs:	estr	->	polinomio	{Rep(e)}
-	(∀e: estr) Abs(e) =obs pol: polinomio | (1)∧(2)
+	(∀e: estr) Abs(e) =obs p: polinomio | (1)∧(2)
 		donde:
-		(1)	≡	construirPolinomio(e, 0)
+		(1)	≡	(∀ n: nat)(Evaluar(p, n) = evaluarArreglo(e.coef, n, 0))
 		
-		construirPolinomio: estr × nat -> polinomio
-		construirPolinomio(e, g) ≡	if e.grado = g then
-		 															Cte(e.coef[g])
+	evaluarArreglo: ad(nat) × nat × nat -> nat
+	evaluarArreglo(arr, n, pos) ≡	if pos = tam(arr) - 1  then
+																	arr[pos] * (n^pos)
 																else
-																	Cte(e.coef[g]) + X*(construirPolinomio(e, g+1))
+																 	arr[pos] * (n^pos) + evaluarArreglo(arr, n, pos + 1)
 																fi
 ---
 Interfaz:
+	Parámetros formales:
+		Géneros:	α
 	Se explica con:	Polinomio
 	Géneros:		polinomio
 	
 	Operaciones básicas:
 		Cte(in n: nat)	-> res: polinomio
 		Pre ≡ {true}
-		Post ≡ {res =obs Cte(n)}
+		Post ≡ {res =obs cte(n)}
 		Complejidad: Θ(1)
-		Descripción: Genera un polinomio con un constante
+		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
 		X()	-> res: polinomio
 		Pre ≡ {true}
 		Post ≡ {res =obs X()}
 		Complejidad: Θ(1)
-		Descripción: Genera un polinomio "x"
+		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
-		Suma(in p1: polinomio, in p2: polinomio)	-> res: polinomio
+		Suma(in p1: polinomio, in p2: polinomio) -> res: polinomio
 		Pre ≡ {true}
 		Post ≡ {res =obs p1 + p2}
 		Complejidad: Θ(1)
-		Descripción: Genera una suma de polinomios.
+		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
-		Producto(in p1: polinomio, in p2: polinomio)	-> res: polinomio
+		Producto(in p1: polinomio, in p2: polinomio) -> res: polinomio
 		Pre ≡ {true}
-		Post ≡ {res =obs p1*p2}
+		Post ≡ {res =obs p1 * p2}
 		Complejidad: Θ(1)
-		Descripción: Genera un producto de polinomios
+		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
 		Evaluar(in p: polinomio, in n: nat)	-> res: nat
 		Pre ≡ {true}
 		Post ≡ {res =obs Evaluar(p, n)}
-		Complejidad: Θ(n)
+		Complejidad: Θ(1)
 		Descripción: Genera ...
 		Aliasing: No presenta aspectos de aliasing.
 		---
-	Algoritmos del módulo:
-		iEvaluar(in p: estr, in n: nat) -> res: nat
-			res ← 0
-			xn ← 1
-			i ← 0
-			while i <= p.grado do
-				res ← res + xn * p.coef[i]
-				xn ← x * n
-			end while
+		EvaluarArreglo(in arr: ad(α), in n: nat, in pos: nat) -> res: nat
+		Pre ≡ {tam(arr) > 0}
+		Post ≡ {res =obs evaluarArreglo(arr, n, pos)}
+		Complejidad: 
+		Descripción:
+		Aliasing:
 		---
+	Algoritmos del módulo:
+		iCte(in n: nat) -> res: estr
+			res.grado <- 0
+			res.coef <- crearArreglo(1)
+			res.coef[0] <- n
+		---
+		iX() -> res: estr
+			res.grado <- 1
+			res.coef <- crearArreglo(2)
+			res.coef[1] <- 1
+		---
+		iSuma(in p1: estr, in p2: estr) -> res: estr
+			if p1.grado > p2.grado then
+				res.coef <- copy(p1.coef)
+				res.grado <- p1.grado
+				i <- 0
+				while Definido?(p2, i) do 
+					res[i] <- p1.coef[i] + p2.coef[i]
+					i <- i + 1
+				end while
+			else
+				res.coef <- copy(p1.coef)
+				res.grado <- p2.grado
+				i <- 0
+				while definido?(p1, i) do
+					res[i] <- p2.coef[i] + p1.coef[i]
+					i <- i + 1
+				end while
+			end if
+		---
+		iProducto(in p1: estr, in p2: estr) -> res: estr
+			//Completar
+		---
+		iEvaluar(in p: estr, in n: nat) -> res: nat
+			res <- EvaluarArreglo(p.coef, n, 0)
+		---
+		iEvaluarArreglo(in arr: ad(α), in n: nat, in pos: nat) -> res: nat
+			res <- 0
+			if  Tamaño(arr) = 1 then
+				res <- arr[pos] * n^pos
+			else
+				while pos < Tamaño(arr) do
+					res <- res + arr[pos] * n^pos
+					pos <- pos + 1
+				end while
+			end if
