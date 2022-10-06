@@ -3,13 +3,17 @@ TAD ColaAcotada
 		verCola:		cacotada -> cola(nat)
 		capacidad:	cacotada -> nat
 	Generadores:
-		vacia:		nat 							-> cacotada
-		encolar:	nat × cacotada c	-> cacotada	{(tamaño(verCola(c)) < capacidad(c))}
+		vacia:			nat 							-> cacotada
+		encolar:		nat × cacotada c	-> cacotada	{(tamaño(verCola(c)) < capacidad(c))}
+		//Tengo que agregar desencolar, no tendria sentido que no este incluido.
+		desencolar: cacotada c 				-> cacotada {¬vacía?(verCola(cacotada))}
 	Axiomas:
 		verCola(vacia(c))					≡	vacia
 		verCola(encolar(a, c))		≡	encolar(a, verCola(c))
+		verCola(desencolar(c))    ≡ desencolar(verCola(c))
 		capacidad(vacia(n))				≡	n
 		capacidad(encolar(a, c))	≡	capacidad(c)
+		capacidad(desencolar(c))	≡ capacidad(c) 
 	Fin TAD
 //a)
 Representación:
@@ -62,11 +66,18 @@ Interfaz:
 		Aliasing: No presenta aspectos de aliasing.
 		---
 		Encolar(in n: nat, in/out ca: cacotada)
-		Pre ≡ {tamaño(verCola(ca)) < capacidad(ca)}
-		Post ≡ {res =obs Encolar(n, ca)}
-		Complejidad: Θ(copy(n))
+		Pre ≡ {ca = ca₀ ∧ tamaño(verCola(ca)) < capacidad(ca)}
+		Post ≡ {ca =obs encolar(n, ca₀)}
+		Complejidad: Θ(1)
 		Descripción: Agrega el elemento n como ultimo elemento de la cola acotada.
 		Aliasing: El elemento n se agrega por copia.
+		---
+		Desencolar(in/out ca: cacotada)
+		Pre ≡	{ca = ca₀ ∧ ¬vacía?(verCola(ca))}
+		Post ≡ {ca = desencolar(ca₀)}
+		Complejidad:
+		Descripción: desencola el proximo de ca.
+		Aliasing:
 		---
 		VerCola(in ca: cacotada)	-> res: cola(nat)
 		Pre ≡ {true}
@@ -90,24 +101,47 @@ Interfaz:
 		Aliasing: No presenta aspectos de aliasing.
 		---
 	Algoritmos del módulo:
-		//Es confuso esta parte, por un lado necesito valores para los indices e.inicio y e.fin,
-		//pero esos valores los deberia definir el usuario. CONSULTAR.
+		//res.inicio y res.fin apuntan al primer elemento de la lista, a medida que
+		//se desencola o encola la cacotada estos indices se van moviendo.
+		//Es importante acordarse que res.fin apunta al ultimo elemento encolado.
 		iVacia(in n: nat) -> res: estr
 			res.inicio <- 0
 			res.fin  <- 0
-			res.elem <- crearArreglo(n)
+			res.elem <- CrearArreglo(n)
 		---
-		//Esto lo hice asumiendo lo de arriba, es decir, que e.inicio ≤ e.fin
-		//Ademas como precondicion tengo que la cola no alcanzo su capacidad maxima.
 		iEncolar(in n: nat, in/out ca: estr)
-			j <- copy(n)
-			if Tam(ca.elem) = 0 then
-				i <- ca.inicio
-				ca.elem[i] <- j
+			if ca.inicio = ca.fin then //Esto solo pasa si solo hay un valor encolado 1 valor o ninguno.
+				if ca.elem[ca.fin ] != 0 then
+				 	ca.fin <- ca.fin + 1
+				end if
 			else
-			 	i <- ca.fin + 1
-				ca.elem[i] <- j
-			fi
+				if ca.fin = Tamaño(ca.elem) - 1
+					ca.fin <- 0
+				else
+					ca.fin <- ca.fin + 1
+				end if
+			end if
+			ca.elem[ca.fin ] <- n
+		---
+		iDesencolar(in/out ca: estr)
+			ca.elem[ca.inicio ] <- 0
+			if ca.inicio = ca.fin then //No puede estar vacia cacotada, asi que esto solo pasa si hay solo un elemento encolado.
+				if tam(ca.elem) != 1 then
+					if ca.fin = Tamaño(ca.elem) - 1 then
+						ca.inicio <- 0
+						ca.fin <- 0
+					else
+						ca.inicio <- ca.inicio + 1
+						ca.fin <- ca.fin + 1
+					end if
+				end if
+			else
+				if ca.inicio = Tamaño(ca.elem) - 1  then
+					ca.inicio <- 0
+				else
+					ca.inicio <- ca.inicio + 1
+				end if
+			end if
 		---
 		iVerCola(in ca: estr) -> res: cola(nat)
 			res <- ArregloACola(ca.inicio, ca.fin, ca.elem)
@@ -117,19 +151,15 @@ Interfaz:
 		---
 		iArregloACola(in inicio: nat, in fin: nat, in arr: ad(α)) -> res: cola(nat)
 			res <- Vacia()
-			while inicio != fin do
-				if fin = 0 then
-					Encolar(res, arr[fin])
-					fin <- Tamaño(arr) - 1
+			while inicio ≤ fin do
+				if inicio = Tamaño(arr) - 1 then
+					Encolar(res, arr[inicio])
+					inicio <- 0
 				else
-					Encolar(res, arr[fin])
-					fin <- fin - 1
+					Encolar(res, arr[inicio])
+					inicio <- inicio + 1
 				end if
 			end while
-			
-			if 	Tamaño(arr) != 0 then
-			 	Encolar(res, arr[fin])
-			end if
 			//if inicio = fin then
 			//	res <- Encolar(arr[inicio], Vacia())
 			//else if fin = 0  then
