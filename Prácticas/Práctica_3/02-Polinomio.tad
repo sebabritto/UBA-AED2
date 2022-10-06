@@ -79,21 +79,21 @@ Interfaz:
 		Suma(in p1: polinomio, in p2: polinomio) -> res: polinomio
 		Pre ≡ {true}
 		Post ≡ {res =obs p1 + p2}
-		Complejidad: Θ(1)
+		Complejidad: Θ(max(tam(p1.coef), tam(p2.coef)))
 		Descripción: Genera un polinomio en base a la suma de dos polinomios.
 		Aliasing: No presenta aspectos de aliasing.
 		---
 		Producto(in p1: polinomio, in p2: polinomio) -> res: polinomio
 		Pre ≡ {true}
 		Post ≡ {res =obs p1 * p2}
-		Complejidad: Θ(1)
+		Complejidad: Θ((max(tam(p1), tam(p2)))^2)
 		Descripción: Genera un polinomio en base al producto de dos polinomios.
 		Aliasing: No presenta aspectos de aliasing.
 		---
 		Evaluar(in p: polinomio, in n: nat)	-> res: nat
 		Pre ≡ {true}
 		Post ≡ {res =obs Evaluar(p, n)}
-		Complejidad: Θ(1)
+		Complejidad: Θ(tam(p.coef))
 		Descripción: Devuelve el valor de evaluar al polinomio p con el natural n.
 		Aliasing: No presenta aspectos de aliasing.
 		---
@@ -117,8 +117,11 @@ Interfaz:
 		---
 		iSuma(in p1: estr, in p2: estr) -> res: estr
 			if p1.grado > p2.grado then
-				res.coef <- copy(p1.coef) //Se lo puedo pasar por referencia? En ese caso hay aliasing?
-				res.grado <- p1.grado //Si se modifica p1.grado entonces res.grado esta desactualizado?
+			//CONSEJO, por parte de los profesores: siempre que quieras asignar como 
+			//valor una estructura a una variable es mejor pasarlo por copia.
+				res.coef <- copy(p1.coef) 
+			//Al asignar a una variable un natural se asume que es por copia.
+				res.grado <- p1.grado
 				i <- 0
 				while Definido?(p2, i) do 
 					res[i] <- p1.coef[i] + p2.coef[i]
@@ -146,7 +149,7 @@ Interfaz:
 						arr[i + j] <- p1[j] * p2[i]
 						j <- j + 1
 					end while
-					res <- Suma(res, arr) //Esto vale?
+					res <- Suma(res, arr) //Esto vale? Si, vale. Podemos usar otras funciones de nuestra interfaz.
 					i <- i + 1
 				end while
 			else
@@ -163,6 +166,8 @@ Interfaz:
 			end if
 		---
 		iEvaluar(in p: estr, in n: nat) -> res: nat
+		//Podemos usar funciones auxiliares en nuetro algoritmo siempre y cuando
+		//las incluyamos en la interfaz.
 			res <- EvaluarArreglo(p.coef, n, 0)
 		---
 		iEvaluarArreglo(in arr: ad(α), in n: nat, in pos: nat) -> res: nat
