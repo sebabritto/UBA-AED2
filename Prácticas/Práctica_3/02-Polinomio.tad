@@ -160,7 +160,7 @@ Interfaz:
 						arr[i + j] <- p2[j] * p1[i]
 						j <- j + 1
 					end while
-					res <- Suma(res, arr) //Esto vale?
+					res <- Suma(res, arr)
 					i <- i + 1
 				end while
 			end if
