@@ -1,0 +1,35 @@
+Representación:
+	oficina se representa con estr donde
+		estr es tupla ⟨catPrioritarios:	conj(categoria), tramites: dicc(id, categoria), 
+		tramitesXCat: dicc(categoria, conj(id)), pendPrioritarios: secu(id), pendientes: secu(id)⟩
+---
+Solución Informal:
+	- Las categorias prioritarias son categorias.
+	- Los pendientes prioritarios son pendientes y prioritarios.
+	- Los pendientes son tramites
+	- Todos los tramites tienen categoria
+	- No hay tramites repetidos en pendientes
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	e.catPrioritarios ⊆ claves(e.tramitesXCat)
+		(3)	≡ (∀ i: id)(está?(i, e.pendientes) ⇒L i ∈ claves(e.tramites))
+		(5) ≡ (∀ i: id)(def?(i, e.tramites) ⇒L (está?(i, e.pendientes) ∧ #apariciones(i, e.pendientes) = 1))
+		(2) ≡ (∀ i: id)(está?(i, e.pendPrioritarios) ⇒L (está?(i, e.pendientes) ∧ (def?(i, e.tramites) ∧L obtener(i, e.tramites) ∈ e.catPrioritarios))) ∧L
+					(∀ c: categoria)(def?(c, e.tramitesXCat) ∧ c ∈ e.catPrioritarios ⇒L 
+					(∀ i: id)(i ∈ obtener(c, e.tramitesXCat) ⇒L está?(i, e.pendientes)))
+		(4) ≡ (∀ i: id)(i ∈ claves(e.tramites) ⇒L (obtener(i, e.tramites) ∈ claves(e.tramitesXCat) ∧ def?(obtener(i, e.tramites), e.tramitesXCat) ∧L
+										i ∈ obtener(obtener(i, e.tramites), e.tramitesXCat))) ∧L
+					(∀ c: categoria)(def?(c, e.tramitesXCat) ⇒L obtener(c, e.tramitesXCat) ⊆ claves(e.tramites))
+---
+Función de abstracción:
+	Abs:	estr	->	oficina	{Rep(e)}
+	(∀e: estr) Abs(e) =obs o: oficina | (1)∧(2)∧(3)∧L(4)
+		donde:
+		(1)	≡	pendientes(o) = e.pendientes
+		(2)	≡	categorias(o) = claves(e.tramitesXCat)
+		(3) ≡ prioritarios(o) = e.catPrioritarios
+		(4) ≡ (∀ i: id)(i ∈ claves(e.tramites) ⇒L catTram(i, o) = obtener(i, e.tramites))
+---
