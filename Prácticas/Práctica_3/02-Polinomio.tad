@@ -44,7 +44,7 @@ Invariante de Representación:
 ---
 Función de abstracción:
 	Abs:	estr	->	polinomio	{Rep(e)}
-	(∀e: estr) Abs(e) =obs p: polinomio | (1)∧(2)
+	(∀e: estr) Abs(e) =obs p: polinomio | (1)
 		donde:
 		(1)	≡	(∀ n: nat)(Evaluar(p, n) = evaluarArreglo(e.coef, n, 0))
 		

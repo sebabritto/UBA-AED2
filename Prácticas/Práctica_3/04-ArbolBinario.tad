@@ -4,14 +4,20 @@ Representación:
 
 Solución Informal:
 	- e.altura debe ser igual a la altura del ArbolBinario
-	- si e.arg₁ ...
+	- en el TAD para consultar e.raiz el arbol no puede ser vacio, pero no estaria 
+		representando a todos los arboles binarios si restringo esto. Pero al mismo tiempo,
+		un nodo vacio no puede tener dos punteros q apunten a otros nodos vacios, de ser asi
+		tendria un arbol con nodos sin valor pero que apunten a otros.//CONSULTAR.
 ---
 Invariante de Representación:
 	Rep:	estr	->	boolean
 	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
 		donde:
-		(1)	≡	e.altura = altura(bin(e.izq, e.raiz, e.der))
+		(1)	≡	e.altura = alturaAux(e.izq, e.raiz, e.der)
 		(2) ≡
+		
+		alturaAux: puntero(ab(α)) × α × puntero(ab(α)) -> nat
+		alturaAux(izq, raiz, der) ≡ if 
 ---
 Función de abstracción:
 	Abs:	estr	->	ab	{Rep(e)}
