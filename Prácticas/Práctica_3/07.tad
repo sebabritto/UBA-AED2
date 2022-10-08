@@ -1,0 +1,84 @@
+TAD Planilla
+	Observadores Básicos:
+		actividades:	planilla									-> conjunto(actividad)
+		proyectos:		planilla									-> conjunto(proyecto)
+		proyecto:			actividad a × planilla p	-> proyecto		{(a ∈ actividades(p))}
+		mes:					actividad a × planilla p	-> mes				{(a ∈ actividades(p))}
+		horas:				actividad a × planilla p	-> horas			{(a ∈ actividades(p))}
+	Generadores:
+		nueva:																												-> planilla
+		ag:		actividad a × proyecto p × mes m × horas h × planilla q -> planilla	{a ∉ actividades(q)}
+	Otras Operaciones:
+		totProyXMes:		proyecto p × mes m × planilla q -> planilla				{(p ∈ proyectos(q))}
+		proysMasHoras:	planilla												-> conj(proyecto)	
+	Axiomas:
+		...
+Fin TAD
+
+Representación:
+	planilla se representa con estr donde
+		estr es tupla ⟨detalle: dicc(actividad, tupla⟨proy: proyecto, mes: mes, horas: nat⟩),
+									horasPorMes: dicc(proyecto, array[mes] de horas), conMasHoras: conj(proyecto)⟩
+---
+Solución Informal:
+	- Cada mes de cada proyecto le corresponde el valor de las horas totales de todas las actividades que le corresponen a dicho proyecto y mes.
+	- Todas las actividades deben corresponer a un proyecto valido.
+	- Se quiere conocer los proyectos con mas horas de entre todos.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	(∀ p: proyecto)(def?(p, e.horasPorMes) ⇒L 
+					(∀ m: mes)(1 ≤ m ≤ 12 ⇒L obtener(p, e.horasPorMes)[m] = horasTotales(e.detalle, p, m)))
+		(2)	≡	claves(e.horasPorMes) = proyectosTotales(e.detalle, claves(e.detalle))
+		(3) ≡ e.conMasHoras ∈ claves(e.horasPorMes) ∧L
+					(∀ p: proyecto)(p ∈ e.conMasHoras ⇒L sumarHoras(obtener(p, e.conMasHoras), 1) = maxHoras(e.horasPorMes)) 
+		
+		horasTotales: dicc(actividad, tupla⟨proy: proyecto, mes: mes, horas: nat⟩) × proyecto × mes -> nat
+		horasTotales(dc, p, m) ≡ horasTotalesAux(dc, claves(dc), p, m)
+		
+		horasTotalesAux: dicc(actividad, tupla⟨proy: proyecto, mes: mes, horas: nat⟩) × conj(actividad) × proyecto × mes -> nat
+		horasTotalesAux(dc, cl, p, m) ≡ if vacío?(cl) then
+																			0
+																		//Use π₁, π₂ y π₃ para referirme a los distintos campos de las tuplas,
+																		//pero tranquilamente podes hacer obtener(dameUno(cl), dc).proy o obtener(dameUno(cl), dc).mes
+																		else if  π₁(obtener(dameUno(cl), dc)) = p ∧ π₂(obtener(dameUno(cl), dc)) = m then
+																			π₁(obtener(dameUno(cl), dc)) + horasTotalesAux(dc, sinUno(cl), p, m)
+																		else
+																			horasTotalesAux(dc, sinUno(cl), p, m)
+																		fi
+																			
+		proyectosTotales: dicc(actividad, tupla⟨proy: proyecto, mes: mes, horas: nat⟩) × conj(actividad) -> conj(proyecto)
+		proyectosTotales(dc, cl) ≡	if vacío?(cl) then
+																	Ø
+																else
+																	Ag(π₁(obtener(dameUno(cl), dc)), proyectosTotales(dc, sinUno(cl)))
+																fi
+		sumarHoras: array[mes] de nat × nat pos -> nat
+		sumarHoras(arr, pos) ≡	if pos = 12 then
+															arr[pos]
+														else
+															arr[pos] + sumarHoras(arr, pos + 1)
+														fi
+														
+		maxHoras: dicc(proyecto, array[mes] de horas) -> nat
+		maxHoras(dc) ≡ maxHorasAux(claves(dc), dc)
+		
+		maxHorasAux: conj(proyecto) × dicc(proyecto, array[mes] de horas) -> nat
+		maxHorasAux(cl, dc) ≡ if #(cl) = 1 then
+															sumarHoras(obtener(dameUno(cl), e.conMasHoras), 1)
+													else
+														max(sumarHoras(obtener(dameUno(cl), e.conMasHoras), 1), maxHorasAux(sinUno(cl), dc))
+													fi
+---
+Función de abstracción:
+	Abs:	estr	->	planilla	{Rep(e)}
+	(∀e: estr) Abs(e) =obs p: planilla | (1)∧(2)
+		donde:
+		(1)	≡	actividades(p) = claves(e.detalle)
+		(2)	≡	proyectos(p) = claves(e.horasPorMes)
+		(3) ≡ (∀ a: actividad)(def?(a, e.detalle) ⇒L (proyecto(a, p) = π₁(obtener(a, e.detalle)) ∧ 
+						mes(a, p) = π₂(obtener(a, e.detalle)) ∧ horas(a, p) = π₃(obtener(a, e.detalle))))
+		(4) ≡ proysMasHoras(p) = e.conMasHoras //Puedo usar 'otras operaciones'?. CONSULTAR.
+---
