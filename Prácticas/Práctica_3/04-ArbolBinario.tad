@@ -16,8 +16,14 @@ Invariante de Representación:
 		(1)	≡	e.altura = alturaAux(e.izq, e.raiz, e.der)
 		(2) ≡
 		
+		//Bastante confuso, CONSULTAR.
 		alturaAux: puntero(ab(α)) × α × puntero(ab(α)) -> nat
-		alturaAux(izq, raiz, der) ≡ if 
+		alturaAux(izq, raiz, der) ≡	if izq = NULL ∧ der = NULL then
+																	1
+																else if izq = NULL then
+																	1 + alturaAux()
+																		
+																	
 ---
 Función de abstracción:
 	Abs:	estr	->	ab	{Rep(e)}
