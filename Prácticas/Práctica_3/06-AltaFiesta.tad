@@ -1,95 +1,101 @@
 TAD AltaFiesta
 	Observadores Básicos:
-		invitadosPendientes:	AltaFiesta 							-> conj(Persona)
-		regalos: 							AltaFiesta 							-> conj(Regalo)
-		personasPorRegalo: 		AltaFiesta a × Regalo r -> conj(Persona)	{r ∈ regalos(a)}
-		grupoMasNumeroso: 		AltaFiesta 							-> Grupo
+		invitadosPendientes:	AltaFiesta							-> conj(Persona)
+		regalos:							AltaFiesta							-> conj(Regalo)
+		personasPorRegalo:		AltaFiesta a × Regalo r -> conj(Persona) {r ∈ regalos(a)}
+		grupoMasNumeroso:			AltaFiesta							-> Grupo
 		
 	Generadores:
-		iniciarFiesta: conj(Persona) invitados -> Fiest
-		lleganInvitados: AltaFiesta a × conj(Persona) c × Grupo g × Regalo r -> AltaFiesta	{c ⊆ invitadosPendientes(a) ∧ r ∉ regalos(a)}
-	
+		iniciarFiesta:		conj(Persona) invitados 														-> AltaFiesta
+		lleganInvitados:	AltaFiesta a × conj(Persona) c × Grupo g × Regalo r -> AltaFiesta {c ⊆ invitadosPendientes(a) ∧ r ∉ regalos(a)}
 	Axiomas:
 		...
 Fin TAD
 
 Representación:
 	altafiesta se representa con estr donde
-		estr es tupla ⟨invitados: conj(persona), presentes: cola(persona), grupoDe: dicc(grupo, conj(persona)),
-									, regaloDeGrupo: dicc(grupo, regalo), grupoMasNumeroso: grupo⟩
-
+		estr es tupla ⟨invitados:	conj(persona), presentes: cola(persona), grupoDe: dicc(grupo, conj(persona)),
+									regaloDeGrupo: dicc(grupo, regalo), grupoMasNumeroso: grupo⟩
+---
 Solución Informal:
-	- En e.invitados estan todos los invitados de la fiesta, incluyendo tambien a aquellos que ya llegaron.
-	- En e.presentes estan los invitados que ya llegaron a la fiesta.
-	- En e.grupoDe se encuentra, para cada identificador de grupo i, las personas que al llegar agrupadas 
-		se identificaron como i.
-	- En e.regaloDeGrupo se encuentra que regalo trajo cada grupo.
-	- e.grupoMasNumeroso contiene al identificador del grupo de mas personas. En caso de empate, contiene al
-		lexicograficamente menor de los empatados (se asume que la funcion <string esta definida)
+	- Los presentes deben estar incluidos en los invitados
+	- Solo pueden estar en grupos las personas presentes.
+	- Todos los grupos deben tener un regalo.
+	- Una persona no puede estar en mas de un grupo.
+	- Los regalos no pueden repetirse.
+	- El grupo mas numeroso es el que tiene el conjunto mas grande de personas.
 ---
 Invariante de Representación:
 	Rep:	estr	->	boolean
-	(∀e: estr) Rep(e)	≡ true ⇐⇒ (4)∧(5)∧L(1)∧L(2)∧L(3)∧L(6)
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
 		donde:
-		(1) ∧ (2) ≡ (∀ p: persona)(estaEnCola(p, e.presentes) ⇒L p ∈ e.invitados ∧L
-								(∃ g: grupo)(g ∈ claves(e.grupoDe) ∧ p ∈ obtener(g, e.grupoDe)))
-		(3)	≡	 (∀ g, g': grupo)(({g, g'} ⊆ claves(e.grupoDe) ∧ g ≠ g') ⇒L 
-														(obtener(g, e.grupoDe) ∩ obtener(g', e.grupoDe)) = Ø ∧ 
-														obtener(g, e.regaloDeGrupo) ≠ obtener(g', e.regaloDeGrupo) ∧
-														obtener(g, e.grupoDe) ∪ obtener(g, e.grupoDe) ⊆ e.invitados)
-		(4)	≡	claves(e.regaloDeGrupo) = claves(e.grupoDe)
-		(5) ≡ e.grupoMasNumeroso ∈ claves(e.grupoDe)
-		(6)	≡ (∀ g: grupo)(g ∈ claves(e.grupoDe) ⇒L (#obtener(g, e.grupoDe) < #obtener(e.grupoMasNumeroso, e.grupoDe) ∨
-											 (#obtener(g, e.grupoDe) = #obtener(e.grupoMasNumeroso, e.grupoDe)) ∧ g < e.grupoMasNumeroso))
+		(1)	≡	colaAConjunto(e.presentes) ⊆ e.invitados
+		(2)	≡	(∀ g: grupo)(def?(g, e.grupoDe) ⇒L obtener(g, e.grupoDe) ⊆ colaAConjunto(e.presentes))
+		(3) ≡ claves(e.grupoDe) = claves(e.regaloDeGrupo)
+		(4) ≡ (∀ g1, g2: grupo)({g1, g2} ⊆ claves(e.grupoDe) ∧ g1 ≠ g2 ⇒L obtener(g1, e.grupoDe) ∩ obtener(g2, e.grupoDe) = Ø)
+		(5) ≡ (∀ g1, g2: grupo)({g1, g2} ⊆ claves(e.regaloDeGrupo) ∧ g1 ≠ g2 ⇒L obtener(g1, e.regaloDeGrupo) ≠ obtener(g2, e.regaloDeGrupo))
+		(6) ≡ e.grupoMasNumeroso ∈ claves(e.grupoDe) ∧L 
+					(∀ g: grupo)((def?(g, e.grupoDe) ∧ e.grupoMasNumeroso ≠ g ⇒L 
+					(#(obtener(g, e.grupoDe)) < #(obtener(e.grupoMasNumeroso. e.grupoDe))) ∨ 
+					(#(obtener(g, e.grupoDe)) = #(obtener(e.grupoMasNumeroso. e.grupoDe))) ∧ e.grupoMasNumeroso < g))
 		
-		estaEnCola: persona × cola(persona) -> bool
-		estaEnCola(p, cp) ≡	if vacía?(cp) then
-														false
-												else
-														proximo(cp) = p ∨ estaEnCola(p, desencolar(cp))
-												fi
+		colaAConjunto: cola(persona) -> conj(persona)
+		colaAConjunto(cola) ≡ if vacía?(cola) then
+														Ø
+													else
+														Ag(proximo(cola), colaAConjunto(desencolar(cola)))
+													fi
 ---
 Función de abstracción:
 	Abs:	estr	->	altafiesta	{Rep(e)}
-	(∀e: estr) Abs(e) =obs a: altafiesta | (1)∧(2)∧L(3)
+	(∀e: estr) Abs(e) =obs af: altafiesta | (1)∧(2)
 		donde:
-		(1)	≡	invitadosPendientes(a) = invitadosPend(e.invitados, e.presentes)
-		(2)	≡	grupoMasNumeroso(a) = e.grupoMasNumeroso
-		(3) ≡ (∀ r: regalo)(r ∈ regalos(a) ⇒L 
-		(∃ g: grupo)(g ∈ e.grupoDe ∧ r = obtener(g, e.regaloDeGrupo) ∧ personasPorRegalo(a, r) = obtener(g, e.grupoDe)))
-		
-	invitadosPend: conj(persona) × cola(persona) -> conj(persona)
-	invitadosPend(cj, cl) ≡ if vacio?(cj) ∨ vacía?(cl) then
-															<>
-													else
-															if proximo(cl) ∉ cj then
-																proximo(cl) • invitadosPend(cj, desencolar(cl))
-															else
-																invitadosPendientes(desencolar(cl))
-															fi
-													fi		
+		(1)	≡	invitadosPendientes(af) = e.invitados - colaAConjunto(e.presentes)
+		(2)	≡	(∀ g: grupo)(def?(g, e.regaloDeGrupo) ⇒L obtener(g, e.regaloDeGrupo) ∈ regalos(af))
+		(3) ≡ (∀ g: grupo)(def?(g, e.grupoDe) ⇒L personasPorRegalo(af, obtener(g, e.regaloDeGrupo)) = obtener(g, e.grupoDe))
+		(4) ≡ grupoMasNumeroso(af) = e.grupoMasNumeroso
 ---
 Interfaz:
 	Parámetros formales:
 		Géneros:	α
 		Función:
-			lleganInvitados(in/out a: AltaFiesta, in c: conj(Persona), in g: Grupo, in r: Regalo)
-			Pre ≡ {a = a₀ ∧ c ⊆ invitadosPendientes(a) ∧ r ∉ regalos(a)}
-			Post ≡ {a = lleganInvitados(a, c, g, r)}
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
 			Complejidad: Θ(copy(a))
-			Descripción: Agrega los invitados, junto con el nombre del grupo, y su respectivo regalo.
+			Descripción: Función copia de α's.
 			---
+	Se explica con:	AltaFiesta
+	Géneros:		altafiesta
+	
+	Operaciones básicas:
+		llegaGrupo(in/out a: altafiesta, in c: conj(persona), in g: grupo, in r: regalo)
+		Pre ≡ {a = a₀ ∧ c ⊆ invitadosPendientes(a) ∧ r ∉ regalos(a)}
+		Post ≡ {a =obs llegaGrupo(a₀, c, g, r)}
+		Complejidad: Θ(#(c))
+		Descripción: Agrega c en la cola de personas presentes, se agrega el grupo y su respectivo regalo.
+		Aliasing: No presenta aspectos de aliasing.
+		---
 	Algoritmos del módulo:
-		illeganInvitados(in/out a: estr, in c: conj(Persona), in g: Grupo, in r: Regalo)
-			inv ← c
-			while (¬(vacio?(inv))) do
-				encolar(dameUno(inv), e.presentes)
-				inv - dameUno(inv)
-			endwhile
-			cantDeGrupoMasNum ← #obtener(e.grupoMasNumeroso, e.grupoDe)
-			definir(g, c, e.grupoDe)
-			definir(g, r, e.regaloDeGrupo)
-			if #c > cantDeGrupoMasNum ∨ (#c = cantDeGrupoMasNum ∧ e.grupoMasNumeroso < g) then
-				e.grupoMasNumeroso = g
-			fi
+		illegaGrupo(in/out a: estr, in c: conj(persona), in g: grupo, in r: regalo)
+		//Aca se rompe el invariante ya que (2) no se cumple.
+			a.presentes <- agregarConjuntoACola(c, a.presentes)
+		//Aca se cumple (2) pero (3) no se cumple.
+			Definir(a.grupoDe, g, c)
+		//Aca se cumplen todos menos el (6)
+			Definir(a.regaloDeGrupo, g, r)
+			if #(Obtener(a.grupoDe, a.grupoMasNumeroso)) < #(c) then
+				a.grupoMasNumeroso <- g
+			else if #(Obtener(a.grupoMasNumeroso)) = #(c) then
+			 	if g < a.grupoMasNumeroso then
+					a.grupoMasNumeroso <- g
+				end if
+			end if
+		---
+		iagregarConjuntoACola(in conj: conj(persona), in/out cola: cola(persona))
+			c <- copy(conj)
+			while !(Vacio?(c)) do
+				Encolar(DameUno(c), cola)
+				c <- SinUno(c)
+			end while
 		---
