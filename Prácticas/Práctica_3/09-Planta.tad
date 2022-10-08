@@ -1,0 +1,99 @@
+TAD Planta
+	Observadores Básicos:
+		esAlarma:				planta × alarma 		-> bool
+		esSensor:				planta × sensor 		-> bool
+		sensoresAlarma:	planta p × alarma a -> conj(sensor)
+		umbral:					planta p × sensor s -> nat
+		medicion:				planta p × sensor s -> nat
+	Generadores:
+		crear:																											-> planta
+		agregarAlarma: planta p × alarma a													-> planta	{¬esAlarma(p, a)}
+		agregarSensor: planta p × sensor s × nat n × conj(alarma) c -> planta	
+									{¬esSensor(p, s) ∧L (∀ a: alarma)(a ∈ c ⇒L esAlarma(p, a) ∧ n > 0)}
+		nuevaMedicion: planta p × sensor s × nat 										-> planta {esSensor(p, s)}
+	Otras Operaciones:
+		encendida: planta p × alarma a -> bool	{esAlarma(p, a)}
+	Axiomas:
+		...
+Fin TAD
+
+Representación:
+	planta se representa con estr donde
+		estr es tupla ⟨alarmas: dicc(alarma, conj(sensor)), 
+									sensores: dicc(sensor, tupla⟨alarmas: conj(alarma), umbral: nat, medicion: nat⟩)⟩
+---
+Solución Informal:
+	- Solo puedo tener sensores en alarmas que ya existen.
+	- Todos los sensores encendidos de cada alarma deben ser sensores existentes.
+	- Todas las alarmas que tienen un sensor activado tienen que aparecer como tal en ambos en ambos diccionarios.
+	- Hay que asegurarse que los sensores activados estan realmente activados.
+	- No puede haber un sensor activado que no se encuentre como significado del diccionario alarmas.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)∧(4)
+		donde:
+		(1)	≡	claves(e.alarmas) = alarmasTotales(claves(e.sensores), e.sensores)
+		//Es ⊆ y no =, ya que pueden haber sensores que no esten activados, en ese caso, las alarmas relacionados a estos,
+		//pueden no estar en e.alarmas
+		(2)	≡	(∀ a: alarma)(def?(a, e.alarmas) ⇒L obtener(a, e.alarmas) ⊆ claves(e.sensores))
+		(3) ≡ (∀ a: alarma)(def?(a, e.alarmas) ⇒L 
+					(∀ s: sensor)(s ∈ obtener(a, e.alarmas) ⇒L obtener(s, e.sensores).alarmas = alarmasConSensorActivado(s, e.alarmas)))
+		(3) ≡ (∀ a: alarma)(def?(a, e.alarmas) ⇒L 
+					(∀ s: sensores)(s ∈ obtener(a, e.alarmas) ⇒L obtener(s, e.sensores).umbral < obtener(s, e.sensores).medicion))
+		(4) ≡ (∀ a: alarma)(def?(a, e.alarmas) ⇒L obtener(a, e.alarmas) ∩ sensoresNoActivados(claves(e.sensores), e.sensores) = Ø)
+		
+		
+		sensoresNoActivados: conj(sensor) × dicc(sensor, tupla⟨alarmas: conj(alarma), umbral: nat, medicion: nat⟩) -> conj(sensor)
+		sensoresNoActivados(cs, ds) ≡	if vacio?(cs) then
+																		Ø
+																	else
+																		if obtener(dameUno(cs), ds).umbral >= obtener(dameUno(cs), ds).medicion then
+																			Ag(dameUno(cs), sensoresNoActivados(sinUno(cs), ds))
+																		else
+																			sensoresNoActivados(sinUno(cs), ds)
+																		fi
+																	fi
+		
+		alarmasConSensorActivado: sensor × dicc(alarma, conj(sensor)) -> conj(alarma)
+		alarmasConSensorActivado(s, da) ≡ alarmasConSensorAux(s, claves(da), da)
+		
+		alarmasConSensorAux: sensor × conj(alarma) × dicc(alarma, conj(sensor)) -> conj(alarma)
+		alarmasConSensorAux(s, ca, da) ≡ if vacio?(ca) then
+																				Ø
+																			else
+																				if s ∈ obtener(dameUno(ca), da) then
+																					Ag(dameUno(ca), alarmasConSensorAux(s, sinUno(ca), da))
+																				else
+																					alarmasConSensorAux(s, sinUno(ca), da)
+																				fi
+																			fi
+		
+		alarmasTotales: conj(sensor) × dicc(sensor, tupla⟨alarmas: conj(alarma), umbral: nat, medicion: nat⟩) -> conj(alarma)
+		alarmasTotales(cs, dc) ≡	if vacio?(cs) then
+																Ø
+															else
+																obtener(dameUno(cs), dc).alarmas U alarmasTotales(sinUno(cs), dc)
+															fi
+---
+Función de abstracción:
+	Abs:	estr	->	planta	{Rep(e)}
+	(∀e: estr) Abs(e) =obs p: planta | (1)∧(2)
+		donde:
+		(1)	≡	(∀ a: alarma)(def?(a, e.alarmas) ⇒L esAlarma(p, a))
+		(2)	≡	(∀ s: sensor)(def?(s, e.sensores) ⇒L esSensor(p, s))
+		(3) ≡ (∀ a: alarma)(def?(a, e.alarmas) ⇒L sensoresAlarma(p, a) = sensoresDeUnaAlarma(a, claves(e.sensores), e.sensores))
+		(4) ≡ (∀ s: sensor)(def?(s, e.sensores) ⇒L umbral(p, s) = obtener(s, e.sensores).umbral)
+		(5) ≡ (∀ s: sensor)(def?(s, e.sensores) ⇒L medicion(p, s) = obtener(s, e.sensores).medicion)
+		
+		sensoresDeUnaAlarma: alarma × conj(sensor) × dicc(sensor, tupla⟨alarmas: conj(alarma), umbral: nat, medicion: nat⟩) -> 
+		sensoresDeUnaAlarma(a, cs, ds) ≡	if vacio?(cs) then
+																				Ø
+																			else
+																				if a ∈ obtener(dameUno(cs), ds).alarmas then
+																					Ag(dameUno(cs), sensoresDeUnaAlarma(a, sinUno(cs), ds))
+																				else
+																					sensoresDeUnaAlarma(a, sinUno(cs), ds)
+																				fi
+																			fi
+---
