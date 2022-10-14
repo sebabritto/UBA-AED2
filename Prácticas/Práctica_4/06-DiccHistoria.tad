@@ -1,0 +1,118 @@
+Representación:
+	diccHist se representa con estr donde
+		estr es tupla ⟨valores: diccLineal(clave, pila(significado))⟩
+Solución Informal:
+	- Ninguna clave del diccionario puede tener un significado vacio.
+---
+//Puede confundir un poco, pero las funciones que uso aca estan definidas en la interfaz de Diccionario Lineal,
+//y algunos se llaman igual que los observadores del tad diccHist. Pero acordarse que en el invariante no podemos
+//usar funciones del tad que estamos representando.
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)
+		donde:
+		(1)	≡	(∀ c: clave)(Definido?(c, e.valores) ⇒L #(Significado(c, e.valores)) > 0 )
+---
+Función de abstracción:
+	Abs:	estr	->	diccHist	{Rep(e)}
+	(∀e: estr) Abs(e) =obs dh: diccHist | (1)∧(2)
+		donde:
+		(1)	≡	(∀ c: clave)(Definido?(e.valores, c) ⇒L Definido?(c, dh))
+		(2)	≡	(∀ c: clave)(Definido?(e.valores, c) ⇒L Significado(c, dh) = Tope(Significado(e.valores, c)))
+		(3) ≡ (∀ c: clave)(Definido?(c, dh) ⇒L BorrarSignificado(c, dh) = BorrarSignificadoAux(e.valores, c))
+		
+		BorrarSignificadoAux: diccLineal(clave, pila(significado)) × clave c -> diccLineal(clave, pila(significado))
+		BorrarSignificadoAux(c, d) ≡	if #(Significado(d, c)) = 1 then
+																		if #Claves(d) = 1 then
+																			Vacio()
+																		else
+																			Borrar(d, c)
+																		fi
+																	else
+																		Definir(d, c, Desapilar(Significado(d, c)))
+																	fi
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	κ, σ
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	TipoDato
+	Géneros:		diccHist
+	
+	Operaciones básicas:
+		Vacio()	-> res: diccHist
+		Pre ≡ {true}
+		Post ≡ {res =obs Vacio()}
+		Complejidad: Θ(1)
+		Descripción: Genera un diccionario con historia vacio.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Definir(in c: κ, in s: σ, in/out dh: diccHist)
+		Pre ≡ {dh = dh₀}
+		Post ≡ {dh =obs Definir(c, s, dh₀)}
+		Complejidad: Θ(n)
+		Descripción: Asigna el ultimo significado de la clave c en el diccHist.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Definido?(in c: κ, in dh: diccHist)	-> res: bool
+		Pre ≡ {true}
+		Post ≡ {res =obs Definido?(c, dh)}
+		Complejidad: Θ(n)
+		Descripción: Devuelve true si y solo si c esta definido en el diccionario.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Significado(in c: κ, in dh: diccHist)	-> res: σ
+		Pre ≡ {Definido?(c, dh)}
+		Post ≡ {res =obs Significado(c, dh)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve el significado mas reciente de la clave c en dh.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		BorrarSignificado(in c: κ, in/out dh: diccHist)
+		Pre ≡ {Definido?(c, dh) ∧ dh = dh₀}
+		Post ≡ {dh =obs Borrar(c, dh₀)}
+		Complejidad: Θ(1)
+		Descripción: Elimina el mas reciente significado de la clave c, si ese era su unico significado tambien se borra la clave.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		CantSignificado(in c: κ, in dh: diccHist)	-> res: nat
+		Pre ≡ {Definido?(c, dh)}
+		Post ≡ {res =obs CantSignificado(c, dh)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la cantidad de significados de la clave c.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	//Todas las operaciones sobre pilas que use son O(1) mientras que los accesos al diccionario es O(n)
+	Algoritmos del módulo:
+		iVacio() -> res: estr
+			res.valores <- Vacio()
+		---
+		iDefinir(in c: κ, in s: σ, in/out dh: estr)
+			if Definido?(c, dh) then
+				Definir(dh.valores, c, Apilar(s, Significado(dh.valores, c)))
+			else
+				Definir(dh.valores, c, Apilar(s, Vacia()))
+			end if
+		---
+		iDefinido?(in c: κ, in dh: estr)	-> res: bool
+			res <- Definido?(dh.valores, c)
+		---
+		iSignificado(in c: κ, in dh: estr)	-> res: σ
+			res <- Tope(Significado(dh.valores, c))
+		---
+		iBorrarSignificado(in c: κ, in/out dh: estr)
+			if CantSignificado(c, dh) = 1 then
+				Borrar(dh.valores, c)
+			else
+				Definir(dh.valores, c, Desapilar(Significado(dh.valores, c)))
+			end if
+		---
+		iCantSignificado(in c: κ, in dh: estr)	-> res: nat
+			res <- #(Significado(dh.valores, c))
+		---
