@@ -1,0 +1,80 @@
+Representación:
+	iab se representa con estr donde
+		estr es tupla ⟨ingresantes: vector(nat)⟩
+Solución Informal:
+	- En la posicion i + 1 se le asigna el valor de sumar la cantidad de personas que llegaron el dia (i + 1) + las 
+		personas que llegaron hasta el dia i. Es decir, es acumulativo. Por lo que tiene que ir de menor a mayor.
+		No puede haber un valor menor en una posicion mayor.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	(∀ i, j: nat)(0 ≤ i < j < Longitud(e.ingresantes) ⇒L e.ingresantes[i] < e.ingresantes[j])
+---
+Función de abstracción:
+	Abs:	estr	->	iab	{Rep(e)}
+	(∀e: estr) Abs(e) =obs i: iab | (1)∧(2)
+		donde:
+		(1)	≡	totDias(i) = Longitud(e.ingresantes)
+		(2)	≡	(∀ d, h: nat)(1 ≤ d ≤ h ∧ h ≤ totDias(i) ⇒L (if d = 1 then e.ingresantes[h-1] else e.ingresantes[h-1] - e.ingresantes[d-2] fi ) =  cantPersonas(i, d, h))
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	TipoDato
+	Géneros:		iab
+	
+	Operaciones básicas:
+		Comenzar()	-> res: iab
+		Pre ≡ {true}
+		Post ≡ {res =obs Comenzar()}
+		Complejidad: Θ(1)
+		Descripción: Genera un iab.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	  TerminaDia(in/out i: iab, in n: nat)
+		Pre ≡ {i = i₀}
+		Post ≡ {i =obs TerminaDia(i₀, n)}
+		Complejidad: Θ(1)
+		Descripción: Termina el dia con n personas en el banco.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		totDias(in i: iab) -> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs totDias(i)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la cantidad de dias que pasaron desde que empezo iab.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		cantPersonas(in i: iab, in d: nat, in h: nat)	-> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs cantPersonas(i, d, h)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la cantidad de personas que ingresaron desde el dia d hasta el dia h.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iComenzar() -> res: estr
+			res.ingresantes <- Vacia()
+		---
+		iTerminaDia(in/out i: estr, in n: nat)
+			Agregar(i.ingresantes, Longitud(i.ingresantes), n)
+		---
+		itotDias(in i: estr) -> res: nat
+			Longitud(i.ingresantes)
+		---
+		icantPersonas(in i: estr, in d: nat, in h: nat)	-> res: nat
+			if d = 1 then
+				res <- i.ingresantes[h-1]
+			else
+				res <- i.ingresantes[h-1] - i.ingresantes[d - 2]
+			fi 
+		---
