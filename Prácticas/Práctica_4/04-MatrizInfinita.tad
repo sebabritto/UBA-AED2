@@ -1,0 +1,220 @@
+TAD MatrizInfinita
+	Géneros:	matriz
+	
+	Observadores Básicos:
+		ver: matriz × nat f × nat c -> bool
+		 
+	Generadores:
+		crear: -> matriz
+		asignar: matriz × nat f × nat c × bool -> matriz
+		
+	Otras Operaciones:
+		complementar: matriz -> matriz
+		intersecar: matriz × matriz -> matriz
+		
+	Axiomas:
+	...	
+Fin TAD
+
+Representación:
+	matrizinfinita se representa con estr donde
+		estr es tupla ⟨filasColumnas:	arr[arr[bool]], complemento: bool⟩
+---
+Solución Informal:
+	- Todas las filas deben tener la misma longitud.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	(∀ n, m: nat)((definido?(e.filasColumnas, n) ∧ def?(e.filasColumnas, m) ∧ n ≠ m) ⇒L (tam(e.filasColumnas[n]) = tam(e.filasColumnas[m])))
+---
+Función de abstracción:
+	Abs:	estr	->	matrizinfinita	{Rep(e)}
+	(∀e: estr) Abs(e) =obs m: matrizinfinita | (1)∧(2)
+		donde:
+		(1)	≡	(∀ f, c: nat)((definido?(e.filasColumnas, n) ∧ def?(e.filasColumnas, m)) ⇒L (e.filasColumnas[f][c] = ver(m, f, c)))
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	MatrizInfinita
+	Géneros:		matriz
+	
+	Operaciones básicas:
+		Crear()	-> res: matriz
+		Pre ≡ {true}
+		Post ≡ {res =obs crear()}
+		Complejidad: Θ(1)
+		Descripción: Genera una matriz infinita.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Asignar(in/out m: matriz, in f: nat, in c: nat, in b: bool)
+		Pre ≡ {m = m₀}
+		Post ≡ {m =obs asignar(m₀, f, c, b)}
+		Complejidad: O(f*c)
+		Descripción: Asigna b a la coordenada (f, c) de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Ver(in m: matriz, in f: nat, in c: nat)	-> res: bool
+		Pre ≡ {true}
+		Post ≡ {res =obs ver(m, f, c)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve el valor en la posicion.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Complementar(in/out m: matriz)
+		Pre ≡ {m = m₀}
+		Post ≡ {m =obs complementar(m₀)}
+		Complejidad: Θ(1)
+		Descripción: Invierte todos los valores de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Intersecar(in m1: matriz, in m2: matriz) -> res: matriz
+		Pre ≡ {true}
+		Post ≡ {res = intersecar(m1, m2)}
+		Complejidad: O(max(Tamaño(m1.filasColumnas), Tamaño(m2.filasColumnas)) * max(Tamaño(m1.filasColumnas[1]), Tamaño(m2.filasColumnas[1])))
+		Descripción: Toma dos matrices y realiza la conjuncion coordenada a coordenada.
+		Aliasing: 
+		---
+		ponerFilasEnMatriz(in/out mat: ad(α), in arr: ad(α))
+		Pre ≡ {mat = mat₀}
+		Post ≡ {mat = ponerFilasEnMatriz(mat₀, arr)}
+		Complejidad: O(tam(mat))
+		Descripción:	Agrega como filas arr a cada indice del arreglo mat.
+		---
+		llenarMatriz(in/out m: ad(ad(bool)))
+		Pre ≡ {m = m₀}
+		Post ≡ {m = llenarMatriz(m₀)}
+		Complejidad: O(tam(m)*tam(m[1]))
+		Descripción: Llena la matriz de valores 'false'.
+		---
+		copiarMatriz(in/out m1: ad(ad(bool)), in m2: ad(ad(bool)), in/out c: bool)
+		Pre ≡ {m1 = m1₀}
+		Post ≡ {m1 = copiarMatriz(m1₀, m2, c)}
+		Complejidad: O(tam(m2)*tam(m2[1]))
+		Descripción: Pasa los valores de m2 a m1.
+		---
+		actualizarMatriz(in/out m: ad(ad(bool)), in/out b: bool)
+		Pre ≡ {m = m₀}
+		Post ≡ {m = actualizarMatriz(m₀, b)}
+		Complejidad: O(tam(m)*tam(m[1]))
+		Descripción: Si el complemento es 'true' entonces tengo que actualizar todos los valores de la matriz, haciendo que los valores 'false' se conviertan en 'true' y viceversa.
+		---
+	//CONSEJO: en vez de que el indice empiece en 1 hacelo en 0, asi no te confudis si lo queres implementar en c++.
+	Algoritmos del módulo:
+		iCrear() -> res: estr
+			f <- CrearArreglo(1)	//O(1)
+			f[1] <- false 				//O(1)
+			res.filasColumnas <- CrearArreglo(1) //O(1)
+			res.filasColumnas[1] <- f //O(1)
+			res.complemento <- false //O(1)
+		---
+		iAsignar(in/out m: estr, in f: nat, in c: nat, in b: bool)
+			if f > Tamaño(m.filasColumnas) ∨ c > Tamaño(m.filasColumnas[1]) then
+				columnas <- CrearArreglo(c)
+				matriz <- CrearArreglo(f)
+				ponerFilasEnMatriz(matriz, columnas)	//O(f)
+				llenarMatriz(matriz)									//O(f * c)
+				copiarMatriz(matriz, m.filasColumnas, m.complemento) //O(tam(e.filasColumnas)*tam(filasColumnas[1]))
+				matriz[f][c] <- b											//O(1)
+				m.filasColumnas <- copy(matriz)				//O(copy(α))
+			else
+				m.filasColumnas[f ][c] <- b						//O(1)
+			end if
+		---
+		iVer(in m: estr, in f: nat, in c: nat) -> res: bool
+			if m.complemento = true then
+				res <- ¬(m.filasColumnas[f ][c])
+			else
+				res <- m.filasColumnas[f ][c]
+			end if
+		---
+		iComplementar(in/out m: matriz)
+			m.complemento <- true
+		---
+		iIntersecar(in m1: estr, in m2: estr) -> res: estr
+			fila <- max(Tamaño(m1.filasColumnas), Tamaño(m2.filasColumnas))						//O(1)
+			columnas <- max(Tamaño(m1.filasColumnas[1]), Tamaño(m2.filasColumnas[1]))	//O(1)
+			mat <- CrearArreglo(fila)																	//O(max(m1.filasColumnas, m2.filasColumnas))
+			ponerFilasEnMatriz(mat, columnas)													//O(max(m1.filasColumnas, m2.filasColumnas))
+			actualizarMatriz(m1.filasColumnas, m1.complemento)				//O(tam(m1.filasColumnas)*tam(m1.filasColumnas[1]))
+			actualizarMatriz(m2.filasColumnas, m2.complemento)				//O(tam(m2.filasColumnas)*tam(m2.filasColumnas[1]))
+			
+			mat1 <- copy(m1.filasColumnas)	//O(copy(m1.filasColumnas))
+			mat2 <- copy(m2.filasColumnas)	//O(copy(m2.filasColumnas))
+			
+			i <- 1
+			while i ≤ Tamaño(mat) do
+				j <- 1
+				while j ≤ Tamaño(mat[1]) do
+					if i ≤ Tamaño(mat1) ∧ i ≤ Tamaño(mat2) ∧ j ≤ Tamaño(mat1[1]) ∧ j ≤ Tamaño(mat2[1]) then
+						mat <- (mat1[i][j] ∧ mat2[i][j])
+					else if i ≤ Tamaño(mat1) ∧ j ≤ Tamaño(mat1[1]) then
+						mat <- mat1[i][j]
+					else 
+						mat <- mat2[i][j]
+					end if
+					j <- j + 1
+				end while
+				i <- i + 1
+			end while
+						
+		---
+		iponerFilasEnMatriz(in/out mat: ad(α), in arr: ad(α))
+			i <- 1
+			while (i ≤ Tamaño(mat)) do
+				mat[i] <- arr
+				i <- i + 1
+			end while
+		---
+		illenarMatriz(in/out arr: ad(ad(bool)))
+			i <- 1
+			while i ≤ Tamaño(mat) do
+				j <- 1
+				while j ≤ Tamaño(mat[i]) do
+					mat[i][j] <- false
+					j <- j + 1
+				end while
+				i <- i + 1
+			end while
+		---
+		icopiarMatriz(in/out m1: ad(ad(bool)), in m2: ad(ad(bool)), in/out c: bool)
+			i <- 1
+			while i ≤ Tamaño(m2) do
+				j <- 1
+				while j ≤ Tamaño(m2[1]) do
+					if c = true then
+						m1[i][j] <- ¬(m2[i][j])
+					else
+						m1[i][j] <- m2[i][j]
+					end if
+					j <- j + 1
+				end while
+				i <- i + 1
+			end while
+			if c = true then
+				c <- false
+			end if
+		---
+		iactualizarMatriz(in/out m: ad(ad(bool)), in/out b: bool)
+			if b = true then
+				i <- 1
+				while i ≤ Tamaño(m) do 
+					j <- 1
+					while j ≤ Tamaño(m[1]) do
+						m[i][j] <- ¬(m[i][j])
+						j <- j + 1
+					end while
+					i <- i + 1
+				end while
+			end if
+			b <- false
+					
