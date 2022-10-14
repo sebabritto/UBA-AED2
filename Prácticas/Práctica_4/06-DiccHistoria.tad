@@ -1,6 +1,7 @@
 Representación:
 	diccHist se representa con estr donde
 		estr es tupla ⟨valores: diccLineal(clave, pila(significado))⟩
+---
 Solución Informal:
 	- Ninguna clave del diccionario puede tener un significado vacio.
 ---
