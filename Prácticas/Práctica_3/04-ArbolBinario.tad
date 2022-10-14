@@ -4,55 +4,60 @@ Representación:
 
 Solución Informal:
 	- e.altura debe ser igual a la altura del ArbolBinario
-	- en el TAD para consultar e.raiz el arbol no puede ser vacio, pero no estaria 
-		representando a todos los arboles binarios si restringo esto. Pero al mismo tiempo,
-		un nodo vacio no puede tener dos punteros q apunten a otros nodos vacios, de ser asi
-		tendria un arbol con nodos sin valor pero que apunten a otros.//CONSULTAR.
+	- no puede haber un nodo que este tanto en el arbol izquierdo como el derecho.
 ---
 Invariante de Representación:
 	Rep:	estr	->	boolean
 	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
 		donde:
 		(1)	≡	e.altura = alturaAux(e.izq, e.raiz, e.der)
-		(2) ≡
+		(2) ≡ todosDistintos(prim(secuencia(e.izq, e.raiz, e.der)), fin(secuencia(e.izq, e.raiz, e.der)))
 		
-		//Bastante confuso, CONSULTAR.
-		alturaAux: puntero(ab(α)) × α × puntero(ab(α)) -> nat
+		//Seria puntero(estr) o puntero(ab(α))? CONSULTAR
+		alturaAux: puntero(ab(α)) × α × puntero(ab(α)) -> nat 
 		alturaAux(izq, raiz, der) ≡	if izq = NULL ∧ der = NULL then
 																	1
 																else if izq = NULL then
-																	1 + alturaAux()
-																		
-																	
+																	1 + alturaAux(*(der).izq, *(der).raiz, *(der).der)
+																else if der = NULL then
+																	1 + alturaAux(*(izq).izq, *(izq).raiz, *(izq).der)
+																else
+																	max(alturaAux(*(izq).izq, *(izq).raiz, *(izq).der), alturaAux(*(der).izq, *(der).raiz, *(der).der))
+																fi
+		
+		todosDistintos: α × secuencia(α) -> bool
+		todosDistintos(e, s) ≡	if vacía?(s) then
+															true
+														else if está?(e, s) then
+															false
+														else
+															todosDistintos(prim(s), fin(s))
+														fi
+		
+		secuencia: puntero(ab(α)) izq × α raiz × puntero(ab(α)) -> secu(α)
+		secuencia(izq, raiz, der) ≡ if izq = NULL ∧ der = NULL then
+																	raiz • <>
+																else if izq = NULL then
+																	raiz • secuencia(*(der).izq, *(der).raiz, *(der).der)
+																else if der = NULL then
+																	raiz • secuencia(*(izq).izq, *(izq).raiz, *(izq).der)
+																else
+																	secuencia(*(izq).izq, *(izq).raiz, *(izq).der) & (raiz • secuencia(*(der).izq, *(der).raiz, *(der).der))
+																fi
+		
 ---
 Función de abstracción:
 	Abs:	estr	->	ab	{Rep(e)}
-	(∀e: estr) Abs(e) =obs td: ab | (1)∧(2)
+	(∀e: estr) Abs(e) =obs a: ab | (1)∧(2)∧(3)∧(4)
 		donde:
-		(1)	≡	obs₁(td) = ...
-		(2)	≡	obs₂(td) = ...
+		(1)	≡	nil?(a) = (e.izq = NULL ∧ e.der = NULL ∧ raiz = NULL) //(??)
+		(2)	≡	raiz(a) = e.raiz
+		(3) ≡ izq(a) = *(e.izq) 
+		(4) ≡ der(a) = *(e.der)
 ---
-Interfaz:
-	Parámetros formales:
-		Géneros:	α
-		Función:
-			Copiar(in a:α) -> res: α
-			Pre ≡ {true}
-			Post ≡ {res = a}
-			Complejidad: Θ(copy(a))
-			Descripción: Función copia de α's.
-			---
-	Se explica con:	ArbolBinario
-	Géneros:		ab
-	Operaciones básicas:
-		NuevaOp(in n: nat)	-> res: tipoDato
-		Pre ≡ {true}
-		Post ≡ {res =obs ...}
-		Complejidad: Θ(1)
-		Descripción: Genera ...
-		Aliasing: No presenta aspectos de aliasing.
-		---
-	Algoritmos del módulo:
-		iNuevaOp(in n: nat) -> res: estr
-			res ← ⟨0, 9⟩	// Ejemplo
-		---
+Funcion de abstracción: //CONSULTAR
+	Abs: estr -> ab {Rep(e)}
+	(∀e: estr, ∀ a: α, ∀ i, d: ab(α))
+	Abs(nil()) ≡ 
+	Abs(bin(i, a, b)) ≡  
+---
