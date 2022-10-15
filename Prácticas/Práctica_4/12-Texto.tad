@@ -1,0 +1,176 @@
+Representación:
+	texto se representa con estr donde
+		estr es tupla ⟨texto:	vector(palabra), apariciones: diccTrie(palabra, conjLineal(nat)),
+									palabrasMasRepetidas: conjTrie(palabra)⟩
+---
+Solución Informal:
+	- Las claves de e.apariciones tienen que estar en e.texto.
+	- e.palabrasMasRepetidas deben estar en e.texto y en e.apariciones
+	- Las posiciones de cada palabra en e.apariciones deben cumplirse en e.texto.
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)
+		donde:
+		(1)	≡	(∀ p: palabra)(Está?(p, e.texto) ⇒L Definido?(p, e.apariciones))
+					(∀ p: palabra)(Definido?(p, e.apariciones) ⇒L (∃ i: nat)(0 ≤ i < Longitud(e.texto) ∧ e.texto[i] = p))
+					(∀ p: palabra)(Definido?(p, e.apariciones) ⇒L #(Significado(p, e.apariciones)) > 0)
+		(2) ≡ (∀ p: palabra)(Pertenece?(e.palabrasMasRepetidas, p) ⇒L Definido?(p, e.apariciones))
+		(3)	≡	(∀ p: palabra)(Definido?(e.apariciones, p) ⇒L estaEnCadaPos(p, Significado(e.apariciones, p), e.texto))
+		(4) ≡ (∀ p: palabra)(Pertenece?(e.palabrasMasRepetidas, p) ⇒L #(Significado(e.apariciones, p)) = maxApariciones(e.apariciones))
+		
+		estaEnCadaPos: palabra × conjLineal(nat) × vector(palabra) -> bool
+		estaEnCadaPos(p, c, v) ≡	if EsVacio(c)? then
+																true
+															else
+																v[dameUno(c)] = p ∧ estaEnCadaPos(p, sinUno(c), v)
+															fi
+		maxApariciones: diccTrie(palabra, conjLineal(nat)) -> nat
+		maxApariciones(d) ≡ maxAparicionesAux(claves(d), d)
+		
+		maxAparicionesAux: conjTrie(palabra) × diccTrie(palabra, conjLineal(nat)) -> nat
+		maxAparicionesAux(c, d) ≡	if #(c) = 1 then
+																#(Significado(d, dameUno(c)))
+															else if #(Significado(d, dameUno(c))) > maxAparicionesAux(sinUno(c), d) then
+																#(Significado(d, dameUno(c)))
+															else
+																maxAparicionesAux(sinUno(c), d)
+															fi
+																
+---
+Función de abstracción:
+	Abs:	estr	->	texto	{Rep(e)}
+	(∀e: estr) Abs(e) =obs txt: texto | (1)∧(2)
+		donde:
+		(1)	≡	cantPalabras(txt) = Longitud(e.texto)
+		(2)	≡	(∀ n: nat)(1 ≤ n < Longitud(e.texto) ⇒L e.texto[n-1] = enPos(t, n))
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	Texto, Palabra
+	Géneros:		txt
+	
+	Operaciones básicas:
+		enBlanco()	-> res: txt
+		Pre ≡ {true}
+		Post ≡ {res =obs enBlanco()}
+		Complejidad: Θ(1)
+		Descripción: Genera un texto.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		agPalabra(in/out t: txt, in p: palabra)
+		Pre ≡ {t = t₀}
+		Post ≡ {t = agPalabra(t₀, p)}
+		Complejidad: Θ(1)
+		Descripción: Agrega una palabra al texto.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		cantPalabras(in t: txt)	-> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs cantPalabras(t)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la cantidad de palabras en el texto.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		enPos(in t: txt, in p: nat)	-> res: palabra
+		Pre ≡ {1 ≤ n ≤ cantPalabras(t)}
+		Post ≡ {res =obs enPos(t, p)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la palabra que se encuentra en la posicion n
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		cambiarPalabra(in/out t: txt, in p1: palabra, in p2: palabra)
+		Pre ≡ {true}
+		Post ≡ {res =obs cambiarPalabra(t, p1, p2)}
+		Complejidad: Θ(k), donde k es la cantidad de veces que se repite la palabra a cambiar.
+		Descripción: Cambia la palabra p2 por p1 en el texto.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		subtexto(in t: txt, in ini: nat, in fin: nat) -> res: txt
+		Pre ≡ {true}
+		Post ≡ {res =obs subtexto(t, ini, fin)}
+		Complejidad: Θ(fin - inicio)
+		Descripción: Devuelve el subtexto que empieza en ini y termina en fin.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		palabrasMasRepetidas(in t: txt)	-> res: conj(palabra)
+		Pre ≡ {cantPalabras(t) > 0}
+		Post ≡ {res =obs palabrasMasRepetidas(t)}
+		Complejidad: Θ(1)
+		Descripción: Genera ...
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		ienBlanco() -> res: estr
+			res.texto <- Vacia()
+			res.apariciones <- Vacio()
+			res.palabrasMasRepetidas <- Vacio()
+		---
+		iagPalabra(in/out t: txt, in p: palabra)
+			if Definido?(t.apariciones, p) then
+				Definir(t.apariciones, p, Agregar(Longitud(t.texto), Significado(t.apariciones, p)))
+			else
+				Definir(t.apariciones, p, Agregar(Longitud(t.texto), Vacio()))
+			end if
+			AgregarAtras(t.texto, p)
+			if #(Significado(t.apariciones, p)) > #(Significado(t.apariciones, dameUno(e.palabrasMasRepetidas))) then
+				t.palabrasMasRepetidas <- Ag(p, Vacio())
+			else if #(Significado(t.apariciones, p)) = #(Significado(t.apariciones, dameUno(e.palabrasMasRepetidas))) then
+				Agregar(t.palabrasMasRepetidas, p)
+			end if
+		---
+		icantPalabras(in t: txt)	-> res: nat
+			res <- Longitud(t.texto)
+		---
+		ienPos(in t: txt, in p: nat)	-> res: palabra
+			res <- t.texto[p - 1]
+		---
+		icambiarPalabra(in/out t: txt, in p1: palabra, in p2: palabra)
+			if Definido?(t.apariciones, p1) then
+				pos <- Significado(t.apariciones, p1)
+				
+				while !(EsVacio?(pos)) do
+					t.txt[ dameUno(pos)] <- p2
+					pos <- sinUno(pos)
+				end while
+				
+				if Definido?(t.apariciones, p2) then
+					nuevoSig <- Significado(t.apariciones, p1) ∪ Significado(t.apariciones, p2)
+					Definir(t.apariciones, p2, nuevoSig)
+					if #(nuevoSig) > #(Significado(t.apariciones, dameUno(t.palabrasMasRepetidas))) then
+						t.palabrasMasRepetidas <- Agregar(Vacio(), p2)
+					else if #(nuevoSig) = #(Significado(t.apariciones, dameUno(t.palabrasMasRepetidas))) then
+						Agregar(t.palabrasMasRepetidas, p2)
+					end if
+				else
+					Definir(t.apariciones, p2, Significado(t.apariciones, p1))
+				fi
+				
+				if Pertenece?(t.palabrasMasRepetidas, p1) then
+					Eliminar(t.palabrasMasRepetidas, p1)
+					Agregar(t.palabrasMasRepetidas, p2)
+				end if
+				
+				Borrar(t.apariciones, p1)
+			end if
+		---
+		isubtexto(in/out t: txt, in ini: nat, in fin: nat)
+			subt <- copy(t.texto)
+			t <- enBlanco()
+		  i <- ini - 1
+			while i < fin do
+				agPalabra(t, subt[i])
+				i <- i + 1
+			end while
+		---
+		ipalabrasMasRepetidas(in t: txt)	-> res: conj(palabra)
+			res <- t.palabrasMasRepetidas
+		---
