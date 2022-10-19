@@ -1,0 +1,143 @@
+TAD MatrizFinita(nat)
+	Géneros:	matrizf
+	
+	Observadores Básicos:
+		#filas:			matrizf										-> nat
+		#columnas:	matrizf										-> nat
+		obtener:		matrizf m × nat f × nat c -> nat									{0 ≤ f < #filas(m) ∧  0 ≤ c < #columnas(m)}
+	Generadores:
+		crear:		nat f × nat c 											-> matrizf
+		definir:	matrizf m × nat f × nat c × nat valor	-> matrizf		{0 ≤ f < #filas(m) ∧  0 ≤ c < #columnas(m)}
+		
+	Otras Operaciones:
+		sumarMatrices:	matrizf m1 × matrizf m2 -> matrizf						{#filas(m1) = #filas(m2) ∧ #columnas(m1) = #columnas(m2)}
+	Axiomas:
+	...
+Fin TAD
+
+Representación:
+	matrizf se representa con estr donde
+		estr es tupla ⟨#filas: nat, #columnas: nat, celdasNoNulas: lista(tupla⟨fila: nat, columna: nat, valor: nat⟩)⟩
+---
+Solución Informal:
+	- Las filas y columnas deberan estar dentro de las de la matriz.
+	- No puede haber dos elementos de la misma fila y columna.
+	- La lista debera estar ordenada primero por fila y despues columna
+---
+Invariante de Representación:
+	Rep:	estr	->	boolean
+	(∀e: estr) Rep(e)	≡ true ⇐⇒ (1)∧(2)∧(3)
+		donde:
+		(1)	≡	e.#filas > 0 ∧ e.#columnas > 0 ∧L
+					(∀ i, j: nat)(0 ≤ i < Longitud(e.celdasNoNulas) ⇒L 0 ≤ e.celdasNoNulas[i].fila < e.#filas ∧ 0 ≤ e.celdasNoNulas[i].columna < e.#columnas)
+		(2)∧(3)	≡ (∀ i, j: nat)(0 ≤ i < j < Longitud(e.celdasNoNulas) ⇒L e.celdasNoNulas[i].fila ≤ e.celdasNoNulas[j].fila) ∧L
+							(∀ i, j: nat)((0 ≤ i < j < Longitud(e.celdasNoNulas) ∧ e.celdasNoNulas[i].fila = e.celdasNoNulas[j].fila)
+												⇒L e.celdasNoNulas[i].columna < e.celdasNoNulas[j].columna)
+---
+Función de abstracción:
+	Abs:	estr	->	matrizf	{Rep(e)}
+	(∀e: estr) Abs(e) =obs mf: matrizf | (1)∧(2)
+		donde:
+		(1)	≡	#filas(mf) = e.#filas
+		(2)	≡	#columnas(mf) = e.#columnas
+		(3) = (∀ f, c: nat)(0 ≤ f < #filas(mf) ∧ 0 ≤ c < #columnas(mf) ⇒L obtener(mf, f, c) = obtenerDeLista(e.celdasNoNulas, f, c))
+		
+		obtenerDeLista: lista(tupla⟨fila: nat, columna: nat, valor: nat⟩) × nat fila × nat columna -> nat
+		obtenerDeLista(l, f, c) ≡	if ¬(Esta?(l, f, c)) then
+																0
+															else if Primero(l).fila = f ∧ Primero(l).columna = c then
+																Primero(l).valor
+															else
+																obtenerDeLista(Fin(l), f, c)
+															fi
+		
+		Esta?: lista(tupla⟨fila: nat, columna: nat, valor: nat⟩) × nat fila × nat columna -> bool
+		Esta?(l, f, c) ≡	if EsVacia?(l) then
+												false
+											else if Primero(l).fila = f ∧ Primero(l).columna = c then
+											 	true
+											else 
+												Esta?(Fin(l), f, c)
+											fi
+---
+Interfaz:
+	Parámetros formales:
+		Géneros:	α
+		Función:
+			Copiar(in a:α) -> res: α
+			Pre ≡ {true}
+			Post ≡ {res = a}
+			Complejidad: Θ(copy(a))
+			Descripción: Función copia de α's.
+			---
+	Se explica con:	MatrizFinita
+	Géneros:		matrizf
+	
+	Operaciones básicas:
+		Crear(in f: nat, in c: nat)	-> res: matrizf
+		Pre ≡ {f > 0 ∧ c > 0}
+		Post ≡ {res =obs crear(f, c)}
+		Complejidad: Θ(1)
+		Descripción: Genera una matriz finita con f filas y c columnas.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Definir(in/out m: matrizf, in f: nat, in c: nat, in valor: nat)
+		Pre ≡ {m = m₀ ∧ 0 ≤ f < #filas(m) ∧  0 ≤ c < #columnas(m)}
+		Post ≡ {m =obs definir(m₀, f, c, valor)}
+		Complejidad: Θ(1)
+		Descripción: Define el valor para un posicion valida de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		#Filas(in m: matrizf)	-> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs #filas(m)}
+		Complejidad: Θ(1)
+		Descripción: Retorna la cantidad de filas de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		#Columnas(in m: matrizf)	-> res: nat
+		Pre ≡ {true}
+		Post ≡ {res =obs #columnas(m)}
+		Complejidad: Θ(1)
+		Descripción: Retorna la cantidad de columnas de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		Obtener(in m: matriz, in f: nat, in c: nat)	-> res: nat
+		Pre ≡ {0 ≤ f < #filas(m) ∧  0 ≤ c < #columnas(m)}
+		Post ≡ {res =obs obtener(m, f, c)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve el valor de una posicion valida de la matriz.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+		sumarMatrices(in m1: matrizf, in m2: matrizf)	-> res: matrizf
+		Pre ≡ {#filas(m1) = #filas(m2) ∧ #columnas(m1) = #columnas(m2)}
+		Post ≡ {res =obs sumarMatrices(m1, m2)}
+		Complejidad: Θ(1)
+		Descripción: Devuelve la suma de dos matrices.
+		Aliasing: No presenta aspectos de aliasing.
+		---
+	Algoritmos del módulo:
+		iCrear(in f: nat, in c: nat)	-> res: matrizf
+			res.#filas <- f
+			res.#columnas <- c
+			res.celdasNoNulas <- Vacia()
+		---
+		iDefinir(in/out m: estr, in f: nat, in c: nat, in valor: nat)
+			it <- CrearIt(m.celdasNoNulas)
+			while HaySiguiente(it) ∧ (Siguiente(it).fila < f ∨ (Siguiente(it).fila = f ∧ Siguiente(it).columna < c)) do
+				Avanzar(it)
+			end while
+			if HaySiguiente(it) //CONSULTAR
+		---
+		i#Filas(in m: estr)	-> res: nat
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
+		i#Columnas(in m: estr)	-> res: nat
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
+		iObtener(in m: estr, in f: nat, in c: nat)	-> res: nat
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
+		isumarMatrices(in m1: estr, in m2: estr)	-> res: matrizf
+			res ← ⟨0, 9⟩	// Ejemplo
+		---
