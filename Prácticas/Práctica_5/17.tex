@@ -14,12 +14,12 @@ A = [2, 4, 3, 6, 5]
 }
     \begin{algorithmic}[1]
         \State i $\gets$ tam(A)
-        \While{i > 1}
-            \If{A[i] < A[i-1]}
+        \While{i $>$ 1}
+            \If{A[i] $<$ A[i-1]}
                 \State Swap(A[i], A[i-1])
             \EndIf
             \State i $\gets$ i - 1
         \EndWhile
     \end{algorithmic}
-    \Complexity{$O(n^2)$}
+    \Complexity{$O(n)$}
 \end{algorithm}
