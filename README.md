@@ -14,6 +14,7 @@ Ha tener en cuenta que muchos de los ejercicios no fueron consultados con los pr
   - Práctica 2: [Enunciado](Prácticas/Práctica_2/Complejidad.pdf), [Soluciones](Prácticas/Práctica_2/Practica_2.pdf) (Faltan ejercicios)
   - Práctica 3: [Enunciado](Prácticas/Práctica_3/Diseño.pdf), [Soluciones](Prácticas/Práctica_3) (Faltan ejercicios)
   - Práctica 4: [Enunciado](Prácticas/Práctica_4/Eleccion_de_Estructuras.pdf), [Soluciones](Prácticas/Práctica_4) (Faltan ejercicios)
+  - Práctica 5: [Enunciado](Prácticas/Práctica_5/Ordenamiento.pdf), [Soluciones](Prácticas/Práctica_5/Practica_5.pdf) (Faltan ejercicios)
   
 - Laboratorios
 
