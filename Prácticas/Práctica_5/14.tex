@@ -1,0 +1,110 @@
+\section{Ejercicio 14: Multiplos}
+\textbf{Sea k = 3:}
+\begin{lstlisting}
+A = [2, 5, 1]
+A_{1} = [2, 4 ,6]
+A_{2} = [5, 10, 15]
+A_{3} = [1, 2, 3]
+\end{lstlisting}
+Usando lo solucion de honi:
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenarMultiplos}(\textbf{in} A: arreglo(nat), \textbf{in} k: nat) $\to$ \textbf{out} res: arreglo(nat)
+}
+    \begin{algorithmic}[1]
+        \State mat $\gets$ Arreglo(Arreglo(nat))::CrearArreglo(tam(A))
+        \For{i $\gets$ 1 \textbf{to} tam(A)} \Comment{O(n*k)}
+            \State mat[i] $\gets$ ArregloDeMultiplo(A[i], k) \Comment{O(k)}
+        \EndFor
+        \State UnirOrdenados(mat) \Comment{O(nklog(n))}
+    \end{algorithmic}
+    \Complexity{$O(nklog(n))$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{ArregloDeMultiplo}(\textbf{in} e: nat, \textbf{in} k: nat) $\to$ \textbf{out} res: arreglo(nat)
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ Arreglo::CrearArreglo(k)
+        \For{i $\gets$ 1 \textbf{to} k}
+            \State res[i] $\gets$ e * i
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(k)$}
+\end{algorithm}
+
+Otra opcion usando heap:\\
+La idea seria tener un puntero por fila, asi cada puntero apunta al 1er elemento de cada fila de la matriz, y los elementos a los cuales estos punteros apuntan los voy insertando en un heap, luego al sacar el minimo e insertarlo en un arreglo despues avanzas la posicion de la fila del cual pertenece y asi hasta no poder seguir mas con los punteros, no se me ocurrio como hacerlo asi que lo hice a lo bruto.
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenarMultiplos}(\textbf{in} A: arreglo(nat), \textbf{in} k: nat) $\to$ \textbf{out} res: arreglo(nat)
+}
+    \begin{algorithmic}[1]
+        \State mat $\gets$ Arreglo(Arreglo(nat))::CrearArreglo(tam(A))
+        \For{i $\gets$ 1 \textbf{to} tam(A)} \Comment{O(n*k)}
+            \State mat[i] $\gets$ ArregloDeMultiplo(A[i], k) \Comment{O(k)}
+        \EndFor
+        \State res $\gets$ MatrizConHeap(mat) \Comment{O(nklog(n))}
+    \end{algorithmic}
+    \Complexity{$O(nklog(n))$}
+\end{algorithm}
+
+1era Opcion:
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{MatrizConHeap}(\textbf{in} M: arreglo(arreglo(nat))) $\to$ \textbf{out} res: arreglo(nat)
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ CrearArreglo(tam(M)*tam(M[1])) \Comment{O(n*k)}
+        \State C $\gets$ CrearArreglo(tam(M)) \Comment{O(n)}
+        \State H $\gets$ Heap::Vacio() \Comment{O(1)}
+        \While{tam(M) $>$ 0} \Comment{O(nk*log(n))}
+            \For{i $\gets$ 1 \textbf{to} tam(M)} \Comment{O(n*log(n))}
+                \State Insertar(H, $\langle$M[i][1], i$\rangle$)
+            \EndFor
+            \State min $\gets$ Minimo(H) \Comment{O(1)}
+            \State BorrarMinimo(H) \Comment{O(log(n))}
+            \State AgregarAtras(C, min) \Comment{O(1)}
+            \State Eliminar(M[$\pi_{2}(min)$], 1) \Comment{O(k)}
+            \If{tam(M[$\pi_{2}(min)]$) == 0} 
+                \State Eliminar(M, $\pi_{2}(min)$) \Comment{O(n)}
+            \EndIf
+            \State H $\gets$ Heap::Vacio() \Comment{O(1)}
+        \EndWhile
+        \State res $\gets$ C
+    \end{algorithmic}
+    \Complexity{$O(n^2)$}
+\end{algorithm}
+
+2da Opcion:
+\begin{algorithm}[H]
+\caption{
+    \textbf{MatrizConHeap}(\textbf{in} M: arreglo(arreglo(nat))) $\to$ \textbf{out} res: arreglo(nat)
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ CrearArreglo(tam(M)*tam(M[1])) \Comment{O(n*k)}
+        \State C $\gets$ Vector::Vacio() \Comment{O(n)}
+        \State H $\gets$ HeapMin::Vacio() \Comment{O(1)}
+        \State k $\gets$ tam(M[1]) \Comment{O(1)}
+        \State B $\gets$ Arreglo::CrearArreglo(tam(M)) \Comment{O(n)}
+        \For{j $\gets$ 1 \textbf{to} tam(B)} \Comment{O(n)}
+            \State B[i] $\gets$ 1
+        \EndFor
+        \For{i $\gets$ 1 \textbf{to} tam(M)} \Comment{O(n)}
+            \State Insertar(H, $\langle$M[i][1], i $\rangle$)
+        \EndFor
+        \While{tam(M)*k $>$ Longitud(C)} \Comment{O(nk*log(n))}
+           \State min $\gets$ Minimo(H) \Comment{O(1)}
+           \State BorrarMinimo(H) \Comment{O(log(n))}
+           \If{B[$\pi{2}(min)$] != tam(M[1])}
+                \State Insertar(H, M[$\pi{2}(min)$][B[$\pi{2}(min)$]+1])  \Comment{O(log(n))}
+                \State B[$\pi{2}(min)$] $\gets$ B[$\pi{2}(min)$] + 1 
+            \EndIf
+            \State AgregarAtras(C, [$\pi{1}(min)$) \Comment{O(1)}
+        \EndWhile
+        \State res $\gets$ C
+    \end{algorithmic}
+    \Complexity{$O(n^2)$}
+\end{algorithm}

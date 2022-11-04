@@ -1,0 +1,36 @@
+\section{Ejercicio 7: AVL Sort}
+Como aconseja el ejercicio uso arboles AVL, ya que todas las operaciones sobre este seran O(log d), para implementarlo lo pense como un arbol de tuplas, siendo el 1er elemento de la tupla el valor que agregamos y el 2do la cantidad de veces que lo agregamos. Si se agrega por primera vez se le pone un 1 en el 2do elemento, luego si lo agregas de nuevo se le suma 1 y asi...\\
+Primero recorro el arreglo y agrego cada elemento al arbol, luego de haber recorrido todo el arreglo saco el minimo valor y la cantidad de veces que aparece del arbol y lo inserto en el arreglo, una vez termine con ese minimo lo borro y busco el siguiente minimo, y asi hasta que el arbol me quede vacio.
+\begin{algorithm}[H]
+\caption{
+    \textbf{AVLSort}(\textbf{in/out} A: arreglo)
+}
+    \begin{algorithmic}[1]
+        \State arbol $\gets$ Vacio::AVL($\langle$nat, nat$\rangle$)
+        \For{i $\gets$ 1 $\textbf{to}$ tam(A)}
+            \State Insertar(arbol, A[i])
+        \EndFor
+        \State A $\gets$ AVLAArreglo(arbol, A)
+    \end{algorithmic}
+    \Complexity{$O(nlog(d))$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{AVLAArreglo}(\textbf{in} AB: abAVL($\langle$nat, nat$\rangle$)) $\to$ \textbf{out} res: arreglo
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ Vacia::Arreglo 
+        \While{!Vacia?(arbol)} \Comment{O(n)}
+            \State min $\gets$ minimo(arbol) \Comment{O(log d)}
+            \State cant $\gets$ $\pi_{2}(min)$ \Comment{O(1)}
+            \State val $\gets$ $\pi_{1}(min)$ \Comment{O(1)}
+            \For{j $\gets$ 1 \textbf{to} cant} \Comment{O(m), siendo m la cantidad de veces que aparece el elemento, si sumo todos los m me da n}
+                \State AgregarAtras(res, val) \Comment{O(1)}
+            \EndFor
+            \State borrarMinimo(arbol)  \Comment{O(log d)}
+        \EndWhile
+        
+    \end{algorithmic}
+    \Complexity{$O(n^2)$}
+\end{algorithm}

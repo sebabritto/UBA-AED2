@@ -1,0 +1,49 @@
+\section{Ejercicio 5: frecuencia}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenarPorFrecuencia}(\textbf{in/out} A: arreglo(nat))
+}
+    \begin{algorithmic}[1]
+        \State frecuencia $\gets$ DiccLineal::Vacio()   \Comment{$O(1)$}
+        \State mergeSort(A)    \Comment{$O(n log(n))$}
+        \State n $\gets$ Longitud(A) \Comment{$O(1)$}
+        \For{i $\gets$ 1 \textbf{to} n} \Comment{$O(n^2)$}
+            \If{Definido?(frecuencia, A[i])}   \Comment{$O(n)$}
+                \State aux $\gets$ Significado(frecuencia, A[i]) \Comment{$O(n)$}
+                \State Definir(frecuencia, A[i], aux + 1)   \Comment{$O(n)$}
+            \Else
+                \State Definir(frecuencia, A[i], 1) \Comment{$O(n)$}
+            \EndIf
+        \EndFor
+        \State res $\gets$ Arreglo::Vacia() \Comment{$O(1)$}
+        \While{$\#$Claves(frecuencia) $>$ 0}    \Comment{$O(n^2)$}
+            \State c $\gets$ obtenerMax(frecuencia)
+            \For{i $\gets$ 1 \textbf{to} Significado(frecuencia, b)}
+                \State AgregarAtras(res, c)
+            \EndFor
+            \State Borrar(frecuencia, c)
+        \EndWhile
+        \State A $\gets$ res
+    \end{algorithmic}
+    \Complexity{$O(n^2)$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{
+        \textbf{obtenerMax}(\textbf{in} D: diccLineal(nat, nat)) $\to$ \textbf{out} res: nat
+    }
+    \begin{algorithmic}[1]
+        \State max $\gets$ 0 \Comment{$O(1)$}
+        \State res $\gets$ 0 \Comment{$O(1)$}
+        \State it $\gets$ CrearIt(D) \Comment{$O(1)$}
+        \While{HaySiguiente(it)} \Comment{$O(n)$}
+            \If{SiguienteSignificado(it) $>$ max}
+                \State max $\gets$ SiguienteSignificado(it)
+                \State res $\gets$ SiguienteClave(it)
+            \EndIf
+            \State Avanzar(it)
+        \EndWhile
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}

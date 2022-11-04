@@ -1,0 +1,25 @@
+\section{Ejercicio 11: Counting Sort}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{CountingSort}(\textbf{in/out} A: arreglo)
+}
+    \begin{algorithmic}[1]
+        \State m $\gets$ 0
+        \For{i $\gets$ 1 \textbf{to} tam(A)}
+            \State m $\gets$ max(m, A[i])
+        \EndFor
+        \State B $\gets$ Arreglo::CrearArreglo(m)
+        \For{i $\gets$ 1 \textbf{to} tam(A)}
+            \State B[A[i]] $\gets$ B[A[i]] + 1
+        \EndFor
+        \State i $\gets$ 0
+        \For{j $\gets$ 1 \textbf{to} m}
+            \For{t $\gets$ 1 \textbf{to} B[j]}
+                \State A[i] $\gets$ j
+                \State i $\gets$ i + 1
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}

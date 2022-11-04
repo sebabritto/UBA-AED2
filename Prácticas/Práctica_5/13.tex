@@ -1,0 +1,31 @@
+\section{Ejercicio 13: Tuplas}
+
+\subsection{}
+\begin{algorithm}[H]
+\caption{
+    \textbf{tuplas}(\textbf{in/out} A: arreglo($\langle$c1: nat, c2: string[l]$\rangle$))
+}
+    \begin{algorithmic}[1]
+        \State RadixSort(A) \Comment{O(nl), Clave de ordenamiento: la longitud del string}
+        \State MergeSort(A) \Comment{O(nlog(n)), Clave de ordenamiento: 1er elemento de cada tupla}
+    \end{algorithmic}
+    \Complexity{$O(nl + nlog(n))$}
+\end{algorithm}
+
+El RadixSort tiene complejidad O(l(n + k)), ya que, en mi caso, usa BucketSort, el cual tiene una Complejidad O(n + k), siendo n el largo del arreglo y k la cantidad maxima posible de caracteres siendo esta = 257, por lo que esta acotada. Luego Repito recursivamente el BucketSort l veces, siendo asi la complejidad O(nl)\\
+Luego para cumplir con la complejidad uso MergeSort, la cual tiene complejidad O(nlog(n)) \\
+Sumando todo te queda, O(nl + nlog(n))
+
+\subsection{}
+\begin{algorithm}[H]
+\caption{
+    \textbf{tuplas}(\textbf{in/out} A: arreglo($\langle$c1: nat, c2: string[l]$\rangle$))
+}
+    \begin{algorithmic}[1]
+        \State RadixSort(A) \Comment{O(nl), Clave de ordenamiento: la longitud del string}
+        \State CountingSort(A) \Comment{O(n), Por el 1er componente ya que esta acotado}
+    \end{algorithmic}
+    \Complexity{$O(nl)$}
+\end{algorithm}
+
+Para ordenar por el 2do componente uso de nuevo el RadixSort ya que no me cambio nada respecto a eso, luego para el 1er componente al estar acotado puedo usar CoutingSort, lo cual me da O(n)

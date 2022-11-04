@@ -1,0 +1,65 @@
+\section{Ejercicio 9: Planilla}
+\subsection{}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenaPlanilla}(\textbf{in/out} p: planilla)
+}
+    \begin{algorithmic}[1]
+    \State alumnos $\gets$ Vector::Vacia()  \Comment{$O(1)$}
+    \State n $\gets$ Longitud(p)    \Comment{$O(1)$}
+    \For{i $\gets$ 1 \textbf{to} 10}
+        \For{j $\gets$ 1 \textbf{to} n} \Comment{$O(n)$}
+            \If{p[j].puntaje = i}
+                \State AgregarAtras(alumnos, p[j])
+            \EndIf
+        \EndFor
+    \EndFor
+    \State t $\gets$ 0
+    \For{alum \textbf{in} alumnos} \Comment{$O(n)$}
+        \If{alum.genero = FEM}
+            \State p[t] = alum
+            \State t $\gets$ t + 1
+        \EndIf
+    \EndFor
+    \For{alum \textbf{in} alumnos} \Comment{$O(n)$}
+        \If{alum.genero = MASC}
+            \State p[t] = alum
+            \State t $\gets$ t + 1
+        \EndIf
+    \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}
+
+\subsection{}
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenaPlanilla}(\textbf{in/out} p: planilla)
+}
+    \begin{algorithmic}[1]
+    \State alumnos $\gets$ Vector::Vacia()  \Comment{$O(1)$}
+    \State n $\gets$ Longitud(p)    \Comment{$O(1)$}
+    \For{i $\gets$ 1 \textbf{to} 10}
+        \For{j $\gets$ 1 \textbf{to} n} \Comment{$O(n)$}
+            \If{p[j].puntaje = i}
+                \State AgregarAtras(alumnos, p[j])
+            \EndIf
+        \EndFor
+    \EndFor
+    \State t $\gets$ 0
+    \For{g \textbf{in} GEN}
+        \For{alum \textbf{in} alumnos} \Comment{$O(n)$}
+            \If{alum.genero = g}
+                \State p[t] = alum
+                \State t $\gets$ t + 1
+            \EndIf
+        \EndFor
+    \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}
+
+\subsection{}
+
+El lower bound solo se aplica a algoritmos de ordenamiento basados en comparaciones. Y en nuestro algoritmo nunca comparamos 1 a 1 los elementos de nuestro arreglo.

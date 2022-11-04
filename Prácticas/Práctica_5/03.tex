@@ -1,0 +1,26 @@
+\section{Ejercicio 3: K elementos mas chicos}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{kMasChicos}(\textbf{in} A: arreglo(nat), \textbf{in} k: nat) $\to$ \textbf{out} res: arreglo(nat)
+}
+\Pre{k $\leq$ Longitud(A)}
+    \begin{algorithmic}[1]
+        \State res $\gets$ crearArreglo(k)
+        \State max $\gets$ maximo(A)
+        \State n $\gets$ Longitud(A)
+        \For{i $\gets$ 1 \textbf{to} k}
+            \State res[i] $\gets$ max
+        \EndFor
+        \For{i $\gets$ 1 \textbf{to} k}
+            \For{j $\gets$ 1 \textbf{to} n}
+                \If{res[i] $>$ A[j] $\yLuego$ (i = 0 $\oLuego$ A[j] $>$ res[i-1])}
+                    \State res[i] $\gets$ A[j]
+                \EndIf
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(kn)$}
+\end{algorithm}
+
+Si k $>$ log(n), conviene ordenarlo primero usando mergeSort el cual tiene complejidad O(n log(n)).

@@ -1,0 +1,27 @@
+\section{Ejercicio 12: Mediciones}
+Se que la mayoria de los valores estan entre 20 y 40, de ahi tengo una cota, luego $\sqrt{n}$ elementos estan fuera del rango, pero tambien tengo otra cota, siendo 19 el maximo, luego tengo los elementos mayores a 40, eso lo puedo ordenar con un mergeSort
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{Mediciones}(\textbf{in/out} A: arreglo(nat))
+}
+    \begin{algorithmic}[1]
+        \State IZQ $\gets$ Vector::Vacia() \Comment{O(1)}
+        \State MED $\gets$ Vector::Vacia() \Comment{O(1)}
+        \State DER $\gets$ Vector::Vacia() \Comment{O(1)}
+        \For{i $\gets$ 1 \textbf{to} tam(A)} \Comment{O(n)}
+            \If{A[i] $<$ 20}
+                \State AgregarAtras(IZQ, A[i])
+            \ElsIf{A[i] $>$ 40}
+                \State AgregarAtras(DER, A[i])
+            \Else
+                \State AgregarAtras(MED, A[i])
+            \EndIf
+        \EndFor
+        \State CountingSort(IZQ) \Comment{O(n), con cota 19.}
+        \State CountingSort(MED) \Comment{O(n), con cota minima 20 y maxima 40}
+        \State MergeSort(DER) \Comment{O($\sqrt{n}*log(\sqrt{n})$ $<$ O($(\sqrt{n})^2$)) = O(n)}
+        \State Merge(IZQ, MED, DER) \Comment{O(n)}
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}

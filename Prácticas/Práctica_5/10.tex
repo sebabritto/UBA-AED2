@@ -1,0 +1,27 @@
+\section{Ejercicio 10: casiSort}
+
+\subsection{}
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenarConCasiSort}(\textbf{in/out} A: arreglo(nat))
+}
+    \begin{algorithmic}[1]
+        \If{tam(A) == 2}
+            \If{A[1] > A[2]}
+                \State Swap(A[1], A[2])
+            \EndIf
+        \Else
+            \State casiSort(A) \Comment{O(n)}
+            \State mitadIzq $\gets$ A[1...tam(A)/2] \Comment{O(n)}
+            \State mitadDer $\gets$ ordenarConCasiSort([tam(A)/2+1...tam(A)]) \Comment{O(n)}
+            \State A $\gets$ merge(mitadIzq, mitadDer) \Comment{O(n)}
+        \EndIf
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}
+
+\subsection{}
+La complejidad es O(n)
+
+\subsection{}
+No, no es posible sin tener mas informacion, si tuviera una cota podria usar BucketSort, CountingSort o RadixSort. Pero al no ser asi el caso la minima complejidad que puedo tener es O(nlog(n)), usando MergeSort, HeapSort, entre otros.

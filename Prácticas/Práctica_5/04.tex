@@ -1,0 +1,61 @@
+\section{Ejercicio 4: Conjunto de secuencias}
+\begin{algorithm}[H]
+    \caption{
+        \textbf{unirOrdenados}(\textbf{in} A: arreglo(arreglo(nat))) $\to$ \textbf{out} res: arreglo(nat) 
+    }
+    \Pre{$(\forall i: nat)(1 \leq i \leq Longitud(A) \implicaLuego estaOrdenado($A[i]$))$}
+    \begin{algorithmic}[1]
+        \If{Longitud(A) = 1}
+            \State res $\gets$ A[1]
+        \Else
+            \State izq $\gets$ Vector::Vacia();
+            \State der $\gets$ Vector::Vacia();
+            \For{i $\gets$ 1 \textbf{to} Longitud(A)}
+                \If{i $\leq$ Longitud(A)/2}
+                    \State AgregarAtras(izq, A[i])
+                \Else
+                    \State AgregarAtras(der, A[i])
+                \EndIf
+            \EndFor
+            \State res $\gets$ merge(unirOrdenados(izq), unirOrdenados(der))
+        \EndIf
+    \end{algorithmic}
+    \Complexity{$O(m*long(n))$}
+\end{algorithm}
+
+Sea n la cantidad de secuencias en A, en cada llamada recursiva divido al arreglo en dos, hasta llegar a n = 1, entonces $n/2^{i} = 1$ lo que es igual a $i = log(n)$, es decir el costo de cada llamada recursiva va a ser O(log(n)). \\
+Luego el peor caso del merge es de O(m), siendo m la cantidad total de elementos en el arreglo. Luego como hacemos el merge de m elementos recursivamente el costo total es O(m log(n))
+
+\begin{algorithm}[H]
+    \caption{
+        \textbf{merge}(\textbf{in} izq: vector(nat), \textbf{in} der: vector(nat)) $\to$ \textbf{out} res: vector(nat)
+    }
+    \begin{algorithmic}[1]
+        \State res $\gets$ Vector::Vacia()
+        \While{!EsVacio?(izq) $\oLuego$ !EsVacio?(der)}
+            \If{EsVacio?(izq)}
+                \While{!EsVacio?(der)}
+                    \State AgregarAtras(res, der[0])
+                    \State Eliminar(der, 0)
+                \EndWhile
+            \Else
+                \If{EsVacio?(der)}
+                    \While{!EsVacio?(izq)}
+                        \State AgregarAtras(res, izq[0])
+                        \State Eliminar(izq, 0)
+                    \EndWhile
+                \Else
+                    \If{izq[0] $\leq$ der[0]}
+                        \State AgregarAtras(res, izq[0])
+                        \State Eliminar(izq, 0)
+                    \Else
+                        \State AgregarAtras(res, der[0])
+                        \State Eliminar(der, 0)
+                    \EndIf
+                \EndIf
+            \EndIf
+        \EndWhile
+    \end{algorithmic}
+    \Complexity{$O(n)$, siendo n = Longitud(izq) + Longitud(der)}
+\end{algorithm}
+

@@ -1,0 +1,42 @@
+\section{Ejercicio 8: Dos arreglos}
+\begin{algorithm}[H]
+\caption{
+    \textbf{DosArreglos}(\textbf{in} A: arreglo, \textbf{in} B: arreglo) $\to$ \textbf{out} res: arreglo 
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ Arreglo::CrearArreglo(tam(A)+tam(B))
+        \State C $\gets$ arregloTuplas(A) \Comment{O(n)}
+        \State D $\gets$ arregloTuplas(B) \Comment{O(m)}
+        \State E $\gets$ mergeSort(C, B) \Comment{O((n' + m)log(n' + m)), Clave de ordenamiento de ambas: 1er elemento de la tupla.}
+        \State k $\gets$ 1
+        \For{i $\gets$ 1 \textbf{to} tam(E)} \Comment{O(n + m)}
+            \For{j $\gets$ 1 \textbf{to} $\pi_{2}(E[i])$}
+                \State res[k] $\gets$ $\pi_{1}(E[i])$
+                \State k $\gets$ k + 1
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n + (n' + m)log(n' + m))$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{arregloTuplas}(\textbf{in} A: arreglo(nat)) $\to$ \textbf{out} res: arreglo($\langle$nat, nat$\rangle$) 
+}
+    \begin{algorithmic}[1]
+        \State C $\gets$ Vector::Vacia()
+        \State val $\gets$ A[1]
+        \State cant $\gets$ 1
+        \For{i $\gets$ 2 $\textbf{to}$ tam(A)} \Comment{O(n)}
+            \If{A[i] == val} \Comment{O(1)}
+                \State cant $\gets$ cant + 1 \Comment{O(1)}
+            \Else
+                \State AgregarAtras(C, $\langle$val, cant$\rangle$) \Comment{O(1)}
+                \State val $\gets$ A[i] \Comment{O(1)}
+                \State cant $\gets$ 1 \Comment{O(1)}
+            \EndIf
+        \EndFor
+        \State res $\gets$ C
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}

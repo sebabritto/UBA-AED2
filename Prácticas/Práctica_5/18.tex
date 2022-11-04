@@ -1,0 +1,32 @@
+\section{Ejercicio 18}
+
+\subsection{}
+\begin{algorithm}[H]
+    \caption{
+        \textbf{ordenarEnN}(\textbf{in} A: arreglo(nat))
+    }
+    \begin{algorithmic}[1]
+    \State countingSort(A)
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}
+
+\subsection{}
+\begin{algorithm}[H]
+    \caption{
+        \textbf{ordenarEn$N^2$}(\textbf{in} A: arreglo(nat))
+    }
+    \begin{algorithmic}[1]
+        \State n $\gets$ Longitud(A)
+        \State baseN $\gets$ CrearArreglo(n)
+        \For{i $\gets$ 1 \textbf{to} n}
+            \State baseN[i] $\gets$ $\langle$ A[i] div n, A[i] mod n $\rangle$
+        \EndFor
+        \State ordenarEnN(baseN) \Comment{O(n), ordenar por la 2da tupla}
+        \State ordenarEnN(baseN) \Comment{O(n), ordenar por la 1era tupla}
+        \For{i $\gets$ 1 \textbf{to} n}
+            \State A[i] $\gets$ BaseN[i][0] * n + BaseN[i][1]
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n)$}
+\end{algorithm}

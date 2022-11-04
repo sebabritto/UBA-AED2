@@ -1,0 +1,40 @@
+\section{Ejercicio 6: Escalera}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{ordenarEscalera}(\textbf{in/out} r: recibe)
+}
+    \begin{algorithmic}[1]
+        \State B $\gets$ obtenerEscaleras(A)
+        \State mergeSort(B, A) \Comment{O(n log(n)), clave de ordenamiento: B[i][0] en el arreglo A.}
+        \State mergeSortPorLong(B) \Comment{O(n log(n)), clave de ordenamiento: B[i][1] - B[i][0] + 1, es decir la longitud.}
+        \State C $\gets$ Copiar(A)
+        \State k $\gets$ 1
+        \For{i $\gets$ 1 \textbf{to} Longitud(B)}
+            \For{j $\gets$ B[i][0] \textbf{to} B[i][1]}
+                \State A[k] $\gets$ C[j]
+                \State k $\gets$ k + 1
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+    \Complexity{$O(n log(n))$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{
+    \textbf{obtenerEscaleras}(\textbf{in} A: arreglo(nat)) $\to$ \textbf{out} res: arreglo($\langle$ nat, nat $\rangle$) 
+}
+    \begin{algorithmic}[1]
+        \State res $\gets$ Vector::Vacia()
+        \State i $\gets$ 1
+        \While{i $\leq$ n}
+             \State j $\gets$ i
+            \While{j $<$ n \yLuego A[j] + 1 = A[j+1]}
+                \State j $\gets$ j + 1
+            \EndWhile
+                \State AgregarAtras(res, $\langle$i, j$\rangle$)
+                \State i $\gets$ j + 1
+        \EndWhile
+    \end{algorithmic}
+    \Complexity{$O(n^2)$}
+\end{algorithm}
