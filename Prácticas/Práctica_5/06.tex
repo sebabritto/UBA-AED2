@@ -5,7 +5,7 @@
     \textbf{ordenarEscalera}(\textbf{in/out} r: recibe)
 }
     \begin{algorithmic}[1]
-        \State B $\gets$ obtenerEscaleras(A)
+        \State B $\gets$ obtenerEscaleras(A) \Comment{O(n)}
         \State mergeSort(B, A) \Comment{O(n log(n)), clave de ordenamiento: B[i][0] en el arreglo A.}
         \State mergeSortPorLong(B) \Comment{O(n log(n)), clave de ordenamiento: B[i][1] - B[i][0] + 1, es decir la longitud.}
         \State C $\gets$ Copiar(A)
@@ -36,5 +36,5 @@
                 \State i $\gets$ j + 1
         \EndWhile
     \end{algorithmic}
-    \Complexity{$O(n^2)$}
+    \Complexity{$O(n)$}
 \end{algorithm}
